@@ -1,6 +1,6 @@
-import 'taskid.scss'; //TODO заменить имя файла со стилями
+import './woodenrailway.scss';
 
-export class Task { //TODO название класса должно совпадать с id задачи, но с заглавной буквы
+export class Woodenrailway {
 
     /**
      *
@@ -9,8 +9,6 @@ export class Task { //TODO название класса должно совпа
      */
     constructor(settings) {
         this.settings = settings;
-
-        //TODO здесь можно совершить инициализацию, которая не зависит от положения в DOM и kioapi
     }
 
     /**
@@ -19,7 +17,7 @@ export class Task { //TODO название класса должно совпа
      * @returns {string} идентификатор задачи
      */
     id() {
-        return 'taskid' + this.settings.level; //TODO заменить task-id на реальный id задачи
+        return 'woodenrailway' + this.settings.level; //TODO заменить task-id на реальный id задачи
     }
 
     /**
@@ -30,15 +28,6 @@ export class Task { //TODO название класса должно совпа
      */
     initialize(domNode, kioapi, preferred_width) {
         this.kioapi = kioapi;
-
-        //TODO реализовать инициализацию
-    }
-
-    static preloadManifest() {
-        return [
-            // {id: "pic1", src: "taskid-resources/pic1.png"},
-            // {id: "pic2", src: "taskid-resources/pic2.png"}
-        ]; //TODO перечислить загружаемые ресурсы. Они находятся в каталоге taskid-resources
     }
 
     parameters() {
