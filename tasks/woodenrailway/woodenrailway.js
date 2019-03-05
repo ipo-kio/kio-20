@@ -35,12 +35,12 @@ export class Woodenrailway {
         canvas.height = 500;
         domNode.append(canvas);
 
-        let ver = go_railways(canvas.width, canvas.height, canvas);
+        this.ver = go_railways(canvas.width, canvas.height, canvas);
 
-        var loop = function() {
-            ver.frame(16);
-            ver.draw();
-            requestAnimFrame(loop);
+        let loop = () => {
+            this.ver.frame(16);
+            this.ver.draw();
+            requestAnimationFrame(loop);
         };
 
         loop();
@@ -53,12 +53,12 @@ export class Woodenrailway {
     }
 
     solution() {
-        //TODO вернуть объект с описанием решения участника
+        return this.ver.composites[0].serialize();
     }
 
     loadSolution(solution) {
         // Все объекты, которые сюда передаются, были ранее возвращены методом solution,
         // но проверять их все равно необходимо.
-        //TODO загрузить объект с решением участника.
+        this.ver.composites[0].deserialize(solution);
     }
 }

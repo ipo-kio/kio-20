@@ -30,15 +30,6 @@ import {PinConstraint} from "./constraint";
 
 export {go_railways} from './kiorailways';
 
-window.requestAnimFrame = window.requestAnimationFrame
-    || window.webkitRequestAnimationFrame
-    || window.mozRequestAnimationFrame
-    || window.oRequestAnimationFrame
-    || window.msRequestAnimationFrame
-    || function (callback) {
-        window.setTimeout(callback, 1000 / 60);
-    };
-
 export function Particle(pos) {
     this.pos = (new Vec2()).mutableSet(pos);
     this.lastPos = (new Vec2()).mutableSet(pos);

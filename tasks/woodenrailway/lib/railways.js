@@ -159,16 +159,30 @@ export class RailwayBlock extends Composite {
     }
 
     deserialize(s) {
+        let old_elements = this.elements;
+        let old_connections = this.connections;
+        let old_particles = this.particles;
+        let old_constraints = this.constraints;
+
         this.elements = [];
         this.connections = [];
         this.particles = [];
         this.constraints = [];
 
-        for (let e of s.e)
-            this.add_element(RailwayElement.static_deserialize(e, this));
+        try {
+            for (let e of s.e)
+                this.add_element(RailwayElement.static_deserialize(e, this));
 
-        for (let c of s.c)
-            this.add_connecton(Connection.static_deserialize(c, this));
+            for (let c of s.c)
+                this.add_connecton(Connection.static_deserialize(c, this));
+        } catch (e) {
+            console.debug('error while deserializing', e, s);
+
+            this.elements = old_elements;
+            this.connections = old_connections;
+            this.particles = old_particles;
+            this.constraints = old_constraints;
+        }
     }
 }
 
