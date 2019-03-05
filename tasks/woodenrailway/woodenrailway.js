@@ -1,4 +1,5 @@
 import './woodenrailway.scss';
+import {go_railways} from "./lib/kiorailways";
 
 export class Woodenrailway {
 
@@ -17,7 +18,7 @@ export class Woodenrailway {
      * @returns {string} идентификатор задачи
      */
     id() {
-        return 'woodenrailway' + this.settings.level; //TODO заменить task-id на реальный id задачи
+        return 'woodenrailway' + this.settings.level;
     }
 
     /**
@@ -28,6 +29,21 @@ export class Woodenrailway {
      */
     initialize(domNode, kioapi, preferred_width) {
         this.kioapi = kioapi;
+
+        let canvas = document.createElement('canvas');
+        canvas.width = 800;
+        canvas.height = 500;
+        domNode.append(canvas);
+
+        let ver = go_railways(canvas.width, canvas.height, canvas);
+
+        var loop = function() {
+            ver.frame(16);
+            ver.draw();
+            requestAnimFrame(loop);
+        };
+
+        loop();
     }
 
     parameters() {

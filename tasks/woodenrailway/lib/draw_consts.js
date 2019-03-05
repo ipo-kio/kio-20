@@ -1,0 +1,7 @@
+export const MM_TO_PX = 4;
+export const STRAIGHT_ELEMENT_LENGTH = 17 * MM_TO_PX;
+export const ROUND_ELEMENT_RADIUS = 8 * STRAIGHT_ELEMENT_LENGTH / 2 / Math.PI; //2pi r / 8 = STRAIGHT_ELEMENT_LENGTH
+
+export const DRAW_ELEMENT_WIDTH = 4 * MM_TO_PX;
+export const DRAW_INNER_RAILS_WIDTH = 2 * MM_TO_PX;
+export const DRAW_RAILS_WIDTH = 0.7 * MM_TO_PX;
