@@ -6,7 +6,7 @@ import {
     ROUND_ELEMENT_RADIUS,
     STRAIGHT_ELEMENT_LENGTH
 } from "./draw_consts";
-import {AngleConstraint, DistanceConstraint} from "./constraint";
+import {AngleConstraint, DistanceConstraint, PinConstraint} from "./constraint";
 import {ONE, ZERO, Endpoint, add_to_array, remove_array_from_array, remove_element_from_array} from "./railways";
 
 export class RailwayElement {
@@ -14,7 +14,9 @@ export class RailwayElement {
     center_point; /* Endpoint */
     points; /*array of Endpoint*/
     constraints;
-    is_pinned = false;
+
+    pins = 0;
+    pin_constraints = [];
 
     initial_angle;
 
@@ -98,6 +100,8 @@ export class RailwayElement {
     }
 
     empty_block() {
+        this.set_pins(0);
+
         remove_element_from_array(this.block.particles, this.center_point);
         remove_array_from_array(this.block.particles, this.points);
 
@@ -168,7 +172,7 @@ export class RailwayElement {
         let all_points_serialized = [];
         for (let p of this.points)
             all_points_serialized.push(p.serialize());
-        return {t: this.TYPE, cp: this.center_point.serialize(), ap: all_points_serialized};
+        return {t: this.TYPE, cp: this.center_point.serialize(), ap: all_points_serialized, p: this.pins};
     }
 
     static static_deserialize(s, block) {
@@ -190,7 +194,36 @@ export class RailwayElement {
         for (let i = 0; i < s.ap.length; i++)
             element.points[i].deserialize(s.ap[i]);
 
+        let pins = s.p;
+        if (pins >= 0 && pins <= 2)
+            element.set_pins(pins);
+
         return element;
+    }
+
+    set_pins(pins) {
+        if (this.pins === pins)
+            return;
+
+        remove_array_from_array(this.block.constraints, this.pin_constraints);
+
+        this.pins = pins;
+        this.pin_constraints = [];
+
+        switch (pins) {
+            case 0:
+                //do nothing
+                break;
+            case 1:
+                this.pin_constraints.push(new PinConstraint(this.center_point, this.center_point.pos));
+                break;
+            case 2:
+                for (let p of this.points)
+                    this.pin_constraints.push(new PinConstraint(p, p.pos))
+                break;
+        }
+
+        this.block.constraints.push(...this.pin_constraints);
     }
 }
 

@@ -1,6 +1,7 @@
 import {AngleRangeConstraint, Composite, DistanceRangeConstraint, Particle} from "./verlet";
 import Vec2 from "./vec2";
 import {RailwayElement} from "./elements";
+import {PinConstraint} from "./constraint";
 
 const MAX_CONNECTION_DISTANCE = 3;
 const MAX_ANGLE = 3; // in degrees
@@ -121,8 +122,9 @@ export class RailwayBlock extends Composite {
     elements = [];
     connections = [];
 
-    constructor() {
+    constructor(kioapi) {
         super();
+        this.kioapi = kioapi;
     }
 
     add_element(element) {
@@ -139,7 +141,6 @@ export class RailwayBlock extends Composite {
         for (const c of this.connections.slice())
             if (element.contains_endpoint(c.endpoint1) || element.contains_endpoint(c.endpoint2))
                 this.remove_connection(c);
-
     }
 
     add_connecton(connection) {
@@ -161,6 +162,11 @@ export class RailwayBlock extends Composite {
     drawConstraints(ctx) {
         for (let c of this.connections)
             c.draw(ctx);
+
+        let nail = this.kioapi.getResource('nail');
+        for (let c of this.constraints)
+            if (c instanceof PinConstraint)
+                ctx.drawImage(nail, c.pos.x - nail.width / 2, c.pos.y - nail.height / 2);
     }
 
     drawParticles(ctx) {

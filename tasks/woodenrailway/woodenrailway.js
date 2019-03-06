@@ -46,8 +46,7 @@ export class Woodenrailway {
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         });
         this.ver.gravity = new Vec2(0, 0);
-        let block = new RailwayBlock();
-        block.kioapi = kioapi;
+        let block = new RailwayBlock(kioapi);
         this.ver.composites.push(block);
         this.block = block;
 
@@ -184,8 +183,8 @@ function fill_elements(block) {
     e3.move_to(new Vec2(300 + 200 * Math.cos(2 * Math.PI / 8 * 6), 200 + 200 * Math.sin(2 * Math.PI / 8 * 6)));
     e2.move_to(new Vec2(300 + 200 * Math.cos(2 * Math.PI / 8 * 7), 200 + 200 * Math.sin(2 * Math.PI / 8 * 7)));
 
-    block.constraints.push(new PinConstraint(e2.center_point, new Vec2(200, 200)));
-    block.constraints.push(new PinConstraint(e6.center_point, new Vec2(350, 200)));
+    // block.constraints.push(new PinConstraint(e2.center_point, new Vec2(200, 200)));
+    // block.constraints.push(new PinConstraint(e6.center_point, new Vec2(350, 200)));
 
     // ------------------------------------------------------------------------------------
     let ee2 = new RoundElement(block, true);

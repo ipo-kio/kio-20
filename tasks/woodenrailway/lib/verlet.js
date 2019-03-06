@@ -91,17 +91,17 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
             this.draggedEntity = nearest;
         }
 
+        /*
         switch (kiotask.selected_tool) {
             case 'move':
                 break;
             case 'nail':
                 if (nearest && nearest.is_center_point) {
                     this.draggedEntity = false;
-                    if (nearest.is_pinned) {
-                        nearest.is_pinned = false;
-                        let pc = new PinConstraint(nearest, nearest.pos);
-                        kiotask.block.pin(nearest);
-                    }
+                    let e = nearest.element;
+                    let pins = e.pins + 1;
+                    if (pins > 2) pins = 0;
+                    e.set_pins(pins);
                 }
                 break;
             case 'straight':
@@ -110,7 +110,7 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
                 break;
             case 'split':
                 break;
-        }
+        }*/
     };
 
     this.canvas.onmouseup = e => {
@@ -136,9 +136,21 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
             return;
 
         if (ne.is_center_point) {
-            let e = ne.element;
-            this.composites[0].remove_element(e); //TODO is there a beter way? May be, move this out to kio
-            return;
+            if (this.kiotask.selected_tool !== 'nail') {
+                //then remove
+                let e = ne.element;
+                this.composites[0].remove_element(e); //TODO is there a beter way? May be, move this out to kio
+                return;
+            } else {
+                //then change pins
+                if (ne && ne.is_center_point) {
+                    this.draggedEntity = false;
+                    let e = ne.element;
+                    let pins = e.pins + 1;
+                    if (pins > 2) pins = 0;
+                    e.set_pins(pins);
+                }
+            }
         }
 
         if (!ne.is_center_point && ne.connection !== null)
@@ -153,7 +165,7 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
 
     // simulation params
     this.gravity = new Vec2(0, 0.2);
-    this.friction = 0.3;//99;
+    this.friction = 0.6; //0.3;//0.99;
     this.groundFriction = 0.8;
 
     // holds composite entities
@@ -242,15 +254,6 @@ VerletJS.prototype.draw = function () {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     for (c in this.composites) {
-        // draw constraints
-        if (this.composites[c].drawConstraints) {
-            this.composites[c].drawConstraints(this.ctx, this.composites[c]);
-        } else {
-            var constraints = this.composites[c].constraints;
-            for (let constr of constraints)
-                constr.draw(this.ctx);
-        }
-
         // draw particles
         if (this.composites[c].drawParticles) {
             this.composites[c].drawParticles(this.ctx, this.composites[c]);
@@ -258,6 +261,15 @@ VerletJS.prototype.draw = function () {
             var particles = this.composites[c].particles;
             for (i in particles)
                 particles[i].draw(this.ctx);
+        }
+
+        // draw constraints
+        if (this.composites[c].drawConstraints) {
+            this.composites[c].drawConstraints(this.ctx, this.composites[c]);
+        } else {
+            var constraints = this.composites[c].constraints;
+            for (let constr of constraints)
+                constr.draw(this.ctx);
         }
     }
 
@@ -303,7 +315,6 @@ VerletJS.prototype.draw = function () {
 VerletJS.prototype.nearestEntity = function (filter = e => true) {
     var d2Nearest = 0;
     var entity = null;
-    var constraintsNearest = null;
 
     // find nearest point
     for (let c of this.composites) {
@@ -313,16 +324,10 @@ VerletJS.prototype.nearestEntity = function (filter = e => true) {
                 var d2 = p.pos.dist2(this.mouse);
                 if (d2 <= this.selectionRadius * this.selectionRadius && (entity == null || d2 < d2Nearest)) {
                     entity = p;
-                    constraintsNearest = c.constraints;
                     d2Nearest = d2;
                 }
             }
     }
-
-    // search for pinned constraints for this entity
-    for (i in constraintsNearest)
-        if (constraintsNearest[i] instanceof PinConstraint && constraintsNearest[i].a === entity)
-            entity = constraintsNearest[i];
 
     if (entity) {
         let ec = entity.connection;
