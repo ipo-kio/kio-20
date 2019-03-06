@@ -14,6 +14,7 @@ export class RailwayElement {
     center_point; /* Endpoint */
     points; /*array of Endpoint*/
     constraints;
+    is_pinned = false;
 
     initial_angle;
 
@@ -152,7 +153,8 @@ export class RailwayElement {
     }
 
     fill_rails(ctx) {
-        ctx.fillStyle = "#ffa43c";
+        // ctx.fillStyle = "#ffa43c";
+        ctx.fillStyle = ctx.createPattern(this.block.kioapi.getResource('wood'), "repeat");
         ctx.fill();
     }
 

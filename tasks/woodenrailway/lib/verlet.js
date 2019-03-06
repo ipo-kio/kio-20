@@ -29,8 +29,6 @@ export * from "./constraint";
 import {PinConstraint} from "./constraint";
 import {Connection} from "./railways";
 
-export {go_railways} from './kiorailways';
-
 export function Particle(pos) {
     this.pos = (new Vec2()).mutableSet(pos);
     this.lastPos = (new Vec2()).mutableSet(pos);
@@ -52,7 +50,7 @@ Particle.prototype.deserialize = function(s) {
     this.lastPos.deserialize(s);
 };
 
-export function VerletJS(width, height, canvas) {
+export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
     this.width = width;
     this.height = height;
     this.canvas = canvas;
@@ -63,6 +61,8 @@ export function VerletJS(width, height, canvas) {
     this.selectionRadius = 20;
     this.highlightColorConnection = "rgba(200, 0, 0, 0.7)";
     this.highlightColorParticle = "rgba(0, 200, 0, 0.7)";
+    this.kiotask = kiotask;
+    this.bg_drawer = bg_drawer;
 
     this.bounds = function (particle) {
         if (particle.pos.y < 0)
@@ -85,14 +85,38 @@ export function VerletJS(width, height, canvas) {
 
     this.canvas.onmousedown = e => {
         this.mouseDown = true;
-        var nearest = this.nearestEntity();
+
+        let nearest = this.nearestEntity();
         if (nearest) {
             this.draggedEntity = nearest;
+        }
+
+        switch (kiotask.selected_tool) {
+            case 'move':
+                break;
+            case 'nail':
+                if (nearest && nearest.is_center_point) {
+                    this.draggedEntity = false;
+                    if (nearest.is_pinned) {
+                        nearest.is_pinned = false;
+                        let pc = new PinConstraint(nearest, nearest.pos);
+                        kiotask.block.pin(nearest);
+                    }
+                }
+                break;
+            case 'straight':
+                break;
+            case 'round':
+                break;
+            case 'split':
+                break;
         }
     };
 
     this.canvas.onmouseup = e => {
         let d_point = this.draggedEntity;
+
+        //add connection if needed
         //if this is a dragged endpoint without a connection
         if (d_point && !d_point.is_center_point && d_point.connection === null) {
             let d_element = d_point.element;
@@ -212,7 +236,10 @@ VerletJS.prototype.frame = function (step) {
 VerletJS.prototype.draw = function () {
     var i, c;
 
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    if (this.bg_drawer)
+        this.bg_drawer(this.ctx);
+    else
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     for (c in this.composites) {
         // draw constraints
