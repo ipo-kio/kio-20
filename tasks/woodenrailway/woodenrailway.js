@@ -34,12 +34,14 @@ export class Woodenrailway {
         this.kioapi = kioapi;
 
         let tools = this.create_tools_div();
+        this.info = this.create_info_div();
         let canvas = document.createElement('canvas');
         canvas.width = 800;
         canvas.height = 500;
         canvas.style.display = 'inline-block';
         domNode.append(tools);
         domNode.append(canvas);
+        domNode.append(this.info);
 
         this.ver = new VerletJS(canvas.width, canvas.height, canvas, this, ctx => {
             ctx.fillStyle = ctx.createPattern(this.kioapi.getResource('bg'), 'no-repeat');
@@ -63,7 +65,11 @@ export class Woodenrailway {
 
     parameters() {
         return [
-            //TODO добавить список параметров
+            {
+                name: 'num',
+                title: 'Количество элементов',
+                ordering: 'maximize'
+            }
         ];
     }
 
@@ -75,6 +81,8 @@ export class Woodenrailway {
         // Все объекты, которые сюда передаются, были ранее возвращены методом solution,
         // но проверять их все равно необходимо.
         this.ver.composites[0].deserialize(solution);
+
+        this.ver.submit();
     }
 
     static preloadManifest() {
@@ -92,7 +100,7 @@ export class Woodenrailway {
         tools.style.verticalAlign = 'top';
 
         let all_tools = [];
-        function create_tool(img, action) {
+        function create_tool(img, action, type) {
             let tool = document.createElement('button');
             tool.style.background = 'url(woodenrailway-resources/' + img + ') center no-repeat';
             tool.style.display = 'block';
@@ -100,9 +108,11 @@ export class Woodenrailway {
             tool.style.height = '60px';
             tool.style.margin = '0.6em 0';
             tool.className = 'tool-no-select';
+            tool._type = type;
             tool.addEventListener('click', e => {
                 for (let t of all_tools)
-                    t.className = 'tool-no-select';
+                    if (t._type === type)
+                        t.className = 'tool-no-select';
                 tool.className = 'tool-select';
 
                 action(e);
@@ -113,37 +123,57 @@ export class Woodenrailway {
         }
 
         create_tool('nail.png', e => {
-            this.selected_tool = 'move';
-            console.log('click on move tool');
-        });
+            this.selected_tool_over = 'delete';
+        }, 1);
 
         create_tool('nail.png', e => {
-            this.selected_tool = 'nail';
-            console.log('click on nail tool');
-        });
+            this.selected_tool_over = 'nail';
+        }, 1);
 
         create_tool('nail.png', e => {
-            this.selected_tool = 'straight';
-            console.log('click on straight tool');
-        });
+            this.selected_tool_miss = 'straight';
+        }, 2);
 
         create_tool('nail.png', e => {
-            this.selected_tool = 'round';
-            console.log('click on round tool');
-        });
+            this.selected_tool_miss = 'round';
+        },2);
 
         create_tool('nail.png', e => {
-            this.selected_tool = 'split';
-            console.log('click on split tool');
-        });
+            this.selected_tool_miss = 'split';
+        }, 2);
+
+        this.selected_tool_over = 'delete';
+        this.selected_tool_miss = 'straight';
 
         all_tools[0].className = 'tool-select';
+        all_tools[2].className = 'tool-select';
 
         return tools;
+    }
+
+    create_info_div() {
+        let info = document.createElement('div');
+        info.className = 'woodenrailway-info';
+
+        let hint = document.createElement('span');
+        hint.innerText = 'Неустойчиво!';
+        let loadButton = document.createElement('button');
+        loadButton.innerText = 'Загрузить последнее устойчивое состояние';
+
+        loadButton.addEventListener('click', e => {
+            this.block.deserialize(this.ver.last_stable_solution);
+        });
+
+        info.append(hint);
+        info.append(loadButton);
+
+        return info;
     }
 }
 
 function fill_elements(block) {
+    return;
+
     // let e1 = new StraightElement(block);
 
     let e2 = new RoundElement(block);

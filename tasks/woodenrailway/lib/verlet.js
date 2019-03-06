@@ -90,31 +90,16 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
         let nearest = this.nearestEntity();
         if (nearest) {
             this.draggedEntity = nearest;
+            this.draggingDisplacement = nearest.pos.sub(this.mouse);
         }
-
-        /*
-        switch (kiotask.selected_tool) {
-            case 'move':
-                break;
-            case 'nail':
-                if (nearest && nearest.is_center_point) {
-                    this.draggedEntity = false;
-                    let e = nearest.element;
-                    let pins = e.pins + 1;
-                    if (pins > 2) pins = 0;
-                    e.set_pins(pins);
-                }
-                break;
-            case 'straight':
-                break;
-            case 'round':
-                break;
-            case 'split':
-                break;
-        }*/
     };
 
+    document.addEventListener('mouseup', e => {
+    });
+
     this.canvas.onmouseup = e => {
+        console.log('can mouse up');
+
         let d_point = this.draggedEntity;
 
         //add connection if needed
@@ -122,8 +107,10 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
         if (d_point && !d_point.is_center_point && d_point.connection === null) {
             let d_element = d_point.element;
             let other_nearest = this.nearestEntity(p => !d_element.contains_endpoint(p) && !p.is_center_point && p.connection === null);
-            if (other_nearest)
+            if (other_nearest) {
                 this.composites[0].add_connecton(new Connection(d_point, other_nearest));
+                this.submit();
+            }
         }
 
         this.mouseDown = false;
@@ -138,7 +125,7 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
         if (!ne) {
             //dbl click on an empty space
             let new_element = null;
-            switch (this.kiotask.selected_tool) {
+            switch (this.kiotask.selected_tool_miss) {
                 case 'straight':
                     new_element = new StraightElement(block);
                     break;
@@ -152,16 +139,16 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
             if (new_element !== null) {
                 new_element.move_to(this.mouse);
                 block.add_element(new_element);
+                this.submit();
             }
             return;
         }
 
         if (ne.is_center_point) {
-            if (this.kiotask.selected_tool !== 'nail') {
+            if (this.kiotask.selected_tool_over !== 'nail') {
                 //then remove
                 let e = ne.element;
-                block.remove_element(e); //TODO is there a beter way? May be, move this out to kio
-                return;
+                block.remove_element(e); //TODO is there a better way? May be, move this out to kio
             } else {
                 //then change pins
                 if (ne && ne.is_center_point) {
@@ -172,10 +159,13 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
                     e.set_pins(pins);
                 }
             }
+            this.submit();
         }
 
-        if (!ne.is_center_point && ne.connection !== null)
+        if (!ne.is_center_point && ne.connection !== null) {
             block.remove_connection(ne.connection);
+            this.submit();
+        }
     };
 
     this.canvas.onmousemove = e => {
@@ -191,6 +181,10 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
 
     // holds composite entities
     this.composites = [];
+
+    //stability
+    this.last_stable_solution = {e: [], c: []}; //TODO move this to block
+    this.was_stable = false;
 }
 
 VerletJS.prototype.Composite = Composite;
@@ -244,10 +238,22 @@ VerletJS.prototype.frame = function (step) {
     }
 
     let is_stable = total_velocity < 1e-8;
+    if (this.was_stable !== is_stable) {
+        if (is_stable) {
+            this.last_stable_solution = this.composites[0].serialize();
+            this.kiotask.info.style.visibility = 'hidden';
+
+            this.submit();
+        } else {
+            this.kiotask.info.style.visibility = 'visible';
+        }
+
+        this.was_stable = is_stable;
+    }
 
     // handle dragging of entities
     if (this.draggedEntity)
-        this.draggedEntity.pos.mutableSet(this.mouse);
+        this.draggedEntity.pos.mutableSet(this.mouse.add(this.draggingDisplacement));
 
     // relax
     var stepCoef = 1 / step;
@@ -264,6 +270,12 @@ VerletJS.prototype.frame = function (step) {
         for (i in particles)
             this.bounds(particles[i]);
     }
+};
+
+VerletJS.prototype.submit = function() {
+    this.kiotask.kioapi.submitResult({
+        num : this.composites[0].elements.length
+    });
 };
 
 VerletJS.prototype.draw = function () {
