@@ -150,10 +150,13 @@ export class RailwayElement {
         let c = this.center_point.pos;
         let translate = pos.sub(c);
 
-        for (let p of this.points)
+        for (let p of this.points) {
             p.pos.mutableAdd(translate);
+            p.lastPos.mutableAdd(translate);
+        }
 
         this.center_point.pos.mutableSet(pos);
+        this.center_point.lastPos.mutableSet(pos);
     }
 
     fill_rails(ctx) {

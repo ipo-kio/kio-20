@@ -28,6 +28,7 @@ export Vec2 from "./vec2";
 export * from "./constraint";
 import {PinConstraint} from "./constraint";
 import {Connection} from "./railways";
+import {RoundElement, SplitElement, StraightElement} from "./elements";
 
 export function Particle(pos) {
     this.pos = (new Vec2()).mutableSet(pos);
@@ -132,14 +133,34 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
     this.canvas.ondblclick = e => {
         let ne = this.nearestEntity();
 
-        if (!ne)
+        let block = this.composites[0];
+
+        if (!ne) {
+            //dbl click on an empty space
+            let new_element = null;
+            switch (this.kiotask.selected_tool) {
+                case 'straight':
+                    new_element = new StraightElement(block);
+                    break;
+                case 'round':
+                    new_element = new RoundElement(block);
+                    break;
+                case 'split':
+                    new_element = new SplitElement(block);
+                    break;
+            }
+            if (new_element !== null) {
+                new_element.move_to(this.mouse);
+                block.add_element(new_element);
+            }
             return;
+        }
 
         if (ne.is_center_point) {
             if (this.kiotask.selected_tool !== 'nail') {
                 //then remove
                 let e = ne.element;
-                this.composites[0].remove_element(e); //TODO is there a beter way? May be, move this out to kio
+                block.remove_element(e); //TODO is there a beter way? May be, move this out to kio
                 return;
             } else {
                 //then change pins
@@ -154,7 +175,7 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
         }
 
         if (!ne.is_center_point && ne.connection !== null)
-            this.composites[0].remove_connection(ne.connection);
+            block.remove_connection(ne.connection);
     };
 
     this.canvas.onmousemove = e => {
