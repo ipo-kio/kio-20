@@ -2,8 +2,8 @@ import {AngleRangeConstraint, Composite, DistanceRangeConstraint, Particle} from
 import Vec2 from "./vec2";
 import {RailwayElement} from "./elements";
 
-const MAX_CONNECTION_DISTANCE = 2;
-const MAX_ANGLE = 2; // in degrees
+const MAX_CONNECTION_DISTANCE = 3;
+const MAX_ANGLE = 3; // in degrees
 
 export const ZERO = new Vec2(0, 0);
 export const ONE = new Vec2(1, 0);
@@ -72,10 +72,30 @@ export class Connection {
         remove_array_from_array(this.endpoint1.element.block.constraints, this.constraints);
     }
 
+    is_satisfied() {
+        for (let c of this.constraints)
+            if (!c.is_satisfied())
+                return false;
+        return true;
+    }
+
     draw(ctx) {
-        // ctx.save();
-        // this.endpoint1.pos
-        // ctx.restore();
+        /*if (this.is_satisfied())
+            return;
+
+        ctx.save();
+        let c = this.endpoint1.pos; //.add(this.endpoint2.pos).scale(0.5);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'red';
+        let n = 3;
+        ctx.beginPath();
+        ctx.moveTo(c.x + n, c.y + n);
+        ctx.lineTo(c.x - n, c.y - n);
+        ctx.moveTo(c.x + n, c.y - n);
+        ctx.lineTo(c.x - n, c.y + n);
+        ctx.stroke();
+
+        ctx.restore();*/
     }
 
     serialize() {

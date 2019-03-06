@@ -122,33 +122,17 @@ export function AngleRangeConstraint(a, b, c, minAngle, maxAngle, stiffness) {
 }
 
 AngleRangeConstraint.prototype.relax = function (stepCoef) {
-    let angle = this.b.pos.angle2(this.a.pos, this.c.pos);
-    let diff = this.minAngle - angle;
+    let {angle, diff, diffMid, is_satisfied} = this.relaxation_params();
 
-    function normalize(a) {
-        while (a < -Math.PI)
-            a += 2 * Math.PI;
-        while (a > Math.PI)
-            a -= 2 * Math.PI;
-        return a;
-    }
-
-    //now, which is closer, min or max.
-    let angleMid = (this.minAngle + this.maxAngle) / 2;
-    let angleVar = Math.abs(this.minAngle - this.maxAngle) / 2;
-    let diffMid = normalize(angle - angleMid);
-
-
-    if (Math.abs(diffMid) <= angleVar) {
-        return; // in range
-    }
+    if (is_satisfied)
+        return;
 
     if (diffMid < 0) {
         diff = angle - this.minAngle;
     } else {
         diff = angle - this.maxAngle;
     }
-    diff = normalize(diff);
+    diff = AngleRangeConstraint.normalize(diff);
 
     diff *= stepCoef * this.stiffness;
 
@@ -160,6 +144,43 @@ AngleRangeConstraint.prototype.relax = function (stepCoef) {
 
 AngleRangeConstraint.prototype.draw = AngleConstraint.prototype.draw;
 
+AngleRangeConstraint.normalize = function (a) {
+    while (a < -Math.PI)
+        a += 2 * Math.PI;
+    while (a > Math.PI)
+        a -= 2 * Math.PI;
+    return a;
+};
+
+AngleRangeConstraint.prototype.aaa = function () {
+    let angle = this.b.pos.angle2(this.a.pos, this.c.pos);
+    let diff = this.minAngle - angle;
+
+    //now, which is closer, min or max.
+    let angleMid = (this.minAngle + this.maxAngle) / 2;
+    let angleVar = Math.abs(this.minAngle - this.maxAngle) / 2;
+    let diffMid = AngleRangeConstraint.normalize(angle - angleMid);
+
+    console.log('aaa', diffMid, angleVar);
+};
+
+AngleRangeConstraint.prototype.relaxation_params = function () {
+    let angle = this.b.pos.angle2(this.a.pos, this.c.pos);
+    let diff = this.minAngle - angle;
+
+    //now, which is closer, min or max.
+    let angleMid = (this.minAngle + this.maxAngle) / 2;
+    let angleVar = Math.abs(this.minAngle - this.maxAngle) / 2;
+    let diffMid = AngleRangeConstraint.normalize(angle - angleMid);
+
+    return {angle, diff, diffMid, is_satisfied: Math.abs(diffMid) <= angleVar};
+}
+
+AngleRangeConstraint.prototype.is_satisfied = function () {
+    let {is_satisfied} = this.relaxation_params();
+    return is_satisfied;
+}
+
 export function DistanceRangeConstraint(a, b, stiffness, minDistance, maxDistance) {
     this.a = a;
     this.b = b;
@@ -168,7 +189,7 @@ export function DistanceRangeConstraint(a, b, stiffness, minDistance, maxDistanc
     this.stiffness = stiffness;
 }
 
-DistanceRangeConstraint.prototype.relax = function (stepCoef) {
+DistanceRangeConstraint.prototype.relaxation_data = function() {
     let normal = this.a.pos.sub(this.b.pos);
     let m2 = normal.length2();
     let m = Math.sqrt(m2);
@@ -188,6 +209,11 @@ DistanceRangeConstraint.prototype.relax = function (stepCoef) {
         dist = m;
 
     let scale = (dist - m) / m;
+    return {normal, scale};
+}
+
+DistanceRangeConstraint.prototype.relax = function (stepCoef) {
+    let {normal, scale} = this.relaxation_data();
     // let scale = (dist * dist - m2) / m2;
     normal.mutableScale(scale * this.stiffness * stepCoef);
     this.a.pos.mutableAdd(normal);
@@ -203,3 +229,8 @@ function log(...a) {
     console.log(...a);
     log_cnt++;
 }
+
+DistanceRangeConstraint.prototype.is_satisfied = function () {
+    let {scale} = this.relaxation_data();
+    return Math.abs(scale) < 1e-12;
+};
