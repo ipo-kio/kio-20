@@ -27,6 +27,7 @@ import Vec2 from "./vec2";
 export Vec2 from "./vec2";
 export * from "./constraint";
 import {PinConstraint} from "./constraint";
+import {Connection} from "./railways";
 
 export {go_railways} from './kiorailways';
 
@@ -88,14 +89,17 @@ export function VerletJS(width, height, canvas) {
         if (nearest) {
             this.draggedEntity = nearest;
         }
-
-        if (this.draggedEntity)
-            this.draggedEntity.mouse_state_down = true;
     };
 
     this.canvas.onmouseup = e => {
-        if (this.draggedEntity)
-            this.draggedEntity.mouse_state_down = false;
+        let d_point = this.draggedEntity;
+        //if this is a dragged endpoint without a connection
+        if (d_point && !d_point.is_center_point && d_point.connection === null) {
+            let d_element = d_point.element;
+            let other_nearest = this.nearestEntity(p => !d_element.contains_endpoint(p) && !p.is_center_point && p.connection === null);
+            if (other_nearest)
+                this.composites[0].add_connecton(new Connection(d_point, other_nearest));
+        }
 
         this.mouseDown = false;
         this.draggedEntity = null;
@@ -113,7 +117,8 @@ export function VerletJS(width, height, canvas) {
             return;
         }
 
-        //TODO make pin
+        if (!ne.is_center_point && ne.connection !== null)
+            this.composites[0].remove_connection(ne.connection);
     };
 
     this.canvas.onmousemove = e => {
@@ -230,7 +235,8 @@ VerletJS.prototype.draw = function () {
     }
 
     // highlight nearest / dragged entity
-    let nearest = this.draggedEntity || this.nearestEntity();
+    let de = this.draggedEntity;
+    let nearest = de || this.nearestEntity();
     if (nearest) {
         if (nearest.is_center_point)
             nearest.element.draw_outline(this.ctx);
@@ -244,25 +250,46 @@ VerletJS.prototype.draw = function () {
             this.ctx.restore();
         }
     }
+
+    //draw link, if it is possible to connect
+    if (de && !de.is_center_point && de.connection === null) {
+        let other_nearest = this.nearestEntity(e => !de.element.contains_endpoint(e) && !e.is_center_point && e.connection == null);
+        if (other_nearest) {
+            this.ctx.save();
+            this.ctx.beginPath();
+            this.ctx.arc(other_nearest.pos.x, other_nearest.pos.y, 3, 0, 2 * Math.PI);
+            this.ctx.fillStyle = 'black';
+            this.ctx.fill();
+
+            this.ctx.beginPath();
+            this.ctx.lineWidth = 2;
+            this.ctx.setLineDash([4, 4]);
+            this.ctx.moveTo(nearest.pos.x, nearest.pos.y);
+            this.ctx.lineTo(other_nearest.pos.x, other_nearest.pos.y);
+            this.ctx.stroke();
+
+            this.ctx.restore();
+        }
+    }
 };
 
-VerletJS.prototype.nearestEntity = function () {
-    var c, i;
+VerletJS.prototype.nearestEntity = function (filter = e => true) {
     var d2Nearest = 0;
     var entity = null;
     var constraintsNearest = null;
 
     // find nearest point
-    for (c in this.composites) {
-        var particles = this.composites[c].particles;
-        for (i in particles) {
-            var d2 = particles[i].pos.dist2(this.mouse);
-            if (d2 <= this.selectionRadius * this.selectionRadius && (entity == null || d2 < d2Nearest)) {
-                entity = particles[i];
-                constraintsNearest = this.composites[c].constraints;
-                d2Nearest = d2;
+    for (let c of this.composites) {
+        var particles = c.particles;
+        for (let p of particles)
+            if (filter(p)) {
+                var d2 = p.pos.dist2(this.mouse);
+                if (d2 <= this.selectionRadius * this.selectionRadius && (entity == null || d2 < d2Nearest)) {
+                    entity = p;
+                    constraintsNearest = c.constraints;
+                    d2Nearest = d2;
+                }
             }
-        }
     }
 
     // search for pinned constraints for this entity

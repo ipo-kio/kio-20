@@ -116,7 +116,7 @@ export class RailwayBlock extends Composite {
         element.empty_block();
 
         //remove also all corresponding constraints
-        for (const c of this.connections)
+        for (const c of this.connections.slice())
             if (element.contains_endpoint(c.endpoint1) || element.contains_endpoint(c.endpoint2))
                 this.remove_connection(c);
 
