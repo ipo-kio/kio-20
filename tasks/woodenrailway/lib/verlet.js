@@ -91,15 +91,25 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
         if (nearest) {
             this.draggedEntity = nearest;
             this.draggingDisplacement = nearest.pos.sub(this.mouse);
+
+            //uncomment this for debug
+            /*let con = nearest.connection;
+            if (con) {
+                for (let c of con.constraints) {
+                    let {info} = c.relaxation_data();
+                    lalalog(info);
+                }
+                lalalog('sat ', con.is_satisfied());
+            }*/
         }
     };
 
     document.addEventListener('mouseup', e => {
+        if (this.mouseDown)
+            this.canvas.onmouseup(e);
     });
 
     this.canvas.onmouseup = e => {
-        console.log('can mouse up');
-
         let d_point = this.draggedEntity;
 
         //add connection if needed
@@ -273,8 +283,10 @@ VerletJS.prototype.frame = function (step) {
 };
 
 VerletJS.prototype.submit = function() {
-    this.kiotask.kioapi.submitResult({
-        num : this.composites[0].elements.length
+    requestAnimationFrame(() => {
+        this.kiotask.kioapi.submitResult({
+            num : this.composites[0].elements.length
+        });
     });
 };
 

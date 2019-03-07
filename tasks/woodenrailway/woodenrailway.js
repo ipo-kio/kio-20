@@ -102,7 +102,7 @@ export class Woodenrailway {
         let all_tools = [];
         function create_tool(img, action, type) {
             let tool = document.createElement('button');
-            tool.style.background = 'url(woodenrailway-resources/' + img + ') center no-repeat';
+            tool.style.background = 'white url(woodenrailway-resources/' + img + ') center no-repeat';
             tool.style.display = 'block';
             tool.style.width = '60px';
             tool.style.height = '60px';

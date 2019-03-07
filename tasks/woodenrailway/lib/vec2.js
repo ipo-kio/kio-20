@@ -134,8 +134,17 @@ Vec2.prototype.angle2 = function(vLeft, vRight) {
 Vec2.prototype.rotate = function(origin, theta) {
 	var x = this.x - origin.x;
 	var y = this.y - origin.y;
-	return new Vec2(x*Math.cos(theta) - y*Math.sin(theta) + origin.x, x*Math.sin(theta) + y*Math.cos(theta) + origin.y);
+    let s = Math.sin(theta);
+    let c = Math.cos(theta);
+    return new Vec2(x*c - y*s + origin.x, x*s + y*c + origin.y);
 };
+
+Vec2.prototype.rotate_cos_sin = function({x: ox, y: oy}, cos_theta, sin_theta) {
+    var x = this.x - ox;
+    var y = this.y - oy;
+    return new Vec2(x*cos_theta - y*sin_theta + ox, x*sin_theta + y*cos_theta + oy);
+};
+
 
 Vec2.polar = function(r, phi) {
     return new Vec2(r * Math.cos(phi), r * Math.sin(phi));

@@ -163,10 +163,27 @@ export class RailwayBlock extends Composite {
         for (let c of this.connections)
             c.draw(ctx);
 
+        //draw nails
         let nail = this.kioapi.getResource('nail');
         for (let c of this.constraints)
             if (c instanceof PinConstraint)
                 ctx.drawImage(nail, c.pos.x - nail.width / 2, c.pos.y - nail.height / 2);
+
+        //draw unsatisfied connections
+        ctx.save();
+        for (let con of this.connections)
+            if (!con.is_satisfied()) {
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = 'red';
+                let {x, y} = con.endpoint1.pos;
+                ctx.beginPath();
+                ctx.moveTo(x - 5, y - 5);
+                ctx.lineTo(x + 5, y + 5);
+                ctx.moveTo(x - 5, y + 5);
+                ctx.lineTo(x + 5, y - 5);
+                ctx.stroke();
+            }
+        ctx.restore();
     }
 
     drawParticles(ctx) {
