@@ -2,6 +2,8 @@ import {AngleRangeConstraint, Composite, DistanceRangeConstraint, Particle} from
 import Vec2 from "./vec2";
 import {RailwayElement} from "./elements";
 import {PinConstraint} from "./constraint";
+import {STRAIGHT_ELEMENT_LENGTH} from "./draw_consts";
+import {intersect_polys} from "./intersection";
 
 const MAX_CONNECTION_DISTANCE = 3;
 const MAX_ANGLE = 3; // in degrees
@@ -75,7 +77,7 @@ export class Connection {
 
     is_satisfied() {
         for (let c of this.constraints)
-            if (!c.is_satisfied())
+            if (!c.is_satisfied)
                 return false;
         return true;
     }
@@ -225,6 +227,38 @@ export class RailwayBlock extends Composite {
             this.connections = old_connections;
             this.particles = old_particles;
             this.constraints = old_constraints;
+        }
+    }
+
+    is_satisfied() {
+        for (let c of this.connections)
+            if (!c.is_satisfied())
+                return false;
+        return true;
+    }
+
+    update_intersections() {
+        let elements_count = this.elements.length;
+
+        //clear all intersections
+        for (let e of this.elements)
+            e.intersected = false;
+
+        for (let i = 0; i < elements_count; i++) {
+            let e1 = this.elements[i];
+            for (let j = elements_count + 1; j < elements_count; j++) {
+                let e2 = this.elements[j];
+
+                let len = e1.center_point.pos.sub(e2.center_point.pos).length2();
+                if (len > STRAIGHT_ELEMENT_LENGTH * STRAIGHT_ELEMENT_LENGTH)
+                    continue;
+
+                if (intersect_polys(e1.intersection_outline(), e2.intersection_outline())) {
+                    e1.intersected = true;
+                    e2.intersected = true;
+                    console.log('intersects', e1, e2);
+                }
+            }
         }
     }
 }

@@ -27,7 +27,7 @@ import Vec2 from "./vec2";
 export Vec2 from "./vec2";
 export * from "./constraint";
 import {PinConstraint} from "./constraint";
-import {Connection} from "./railways";
+import {Connection, ZERO} from "./railways";
 import {RoundElement, SplitElement, StraightElement} from "./elements";
 
 export function Particle(pos) {
@@ -91,17 +91,9 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
         if (nearest) {
             this.draggedEntity = nearest;
             this.draggingDisplacement = nearest.pos.sub(this.mouse);
-
-            //uncomment this for debug
-            /*let con = nearest.connection;
-            if (con) {
-                for (let c of con.constraints) {
-                    let {info} = c.relaxation_data();
-                    lalalog(info);
-                }
-                lalalog('sat ', con.is_satisfied());
-            }*/
         }
+
+        this.composites[0].e1.update_intersections();
     };
 
     document.addEventListener('mouseup', e => {
@@ -186,7 +178,7 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
 
     // simulation params
     this.gravity = new Vec2(0, 0.2);
-    this.friction = 0.6; //0.3;//0.99;
+    this.friction = 0.9; //0.3;//0.99;
     this.groundFriction = 0.8;
 
     // holds composite entities
@@ -217,24 +209,20 @@ Composite.prototype.pin = function (index, pos) {
 VerletJS.prototype.frame = function (step) {
     var i, j, c;
 
-    let total_velocity = 0;
+    let all_constraints_are_satisfied = this.composites[0].is_satisfied();
 
     for (c in this.composites) {
         for (i in this.composites[c].particles) {
             let particles = this.composites[c].particles;
 
             // calculate velocity
-            let velocity = particles[i].pos.sub(particles[i].lastPos).scale(this.friction);
+            let velocity;
+            if (all_constraints_are_satisfied)
+                velocity = ZERO;
+            else
+                velocity = particles[i].pos.sub(particles[i].lastPos).scale(this.friction);
 
-            // ground friction
-            if (particles[i].pos.y >= this.height - 1 && velocity.length2() > 0.000001) {
-                var m = velocity.length();
-                velocity.x /= m;
-                velocity.y /= m;
-                velocity.mutableScale(m * this.groundFriction);
-            }
-
-            total_velocity += velocity.length2();
+            // ground friction removed
 
             // save last good state
             particles[i].lastPos.mutableSet(particles[i].pos);
@@ -247,7 +235,8 @@ VerletJS.prototype.frame = function (step) {
         }
     }
 
-    let is_stable = total_velocity < 1e-8;
+    let is_stable = all_constraints_are_satisfied;
+
     if (this.was_stable !== is_stable) {
         if (is_stable) {
             this.last_stable_solution = this.composites[0].serialize();
