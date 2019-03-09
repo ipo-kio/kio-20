@@ -116,7 +116,7 @@ export class RailwayElement {
         let ctx = new OutlineContext();
         this.transform_context(ctx);
         this.outline_path(ctx);
-        return ctx.path;
+        return ctx.get_path();
     }
 
     draw_outline(ctx) {
@@ -526,7 +526,6 @@ export class SplitElement extends RailwayElement {
         ctx.beginPath();
         ctx.moveTo(-l, w);
         ctx.lineTo(-l, -w);
-        ctx.lineTo(-l, -w);
         ctx.bezierCurveTo(
             -l + 10, -w,
             l * xd + w * wxd - 10 * xd, -l * yd - w * wyd + 10 * yd,
@@ -543,6 +542,4 @@ export class SplitElement extends RailwayElement {
 
         ctx.closePath();
     }
-
-    seria
 }
