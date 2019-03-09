@@ -237,26 +237,29 @@ export class RailwayBlock extends Composite {
         return true;
     }
 
-    update_intersections() {
+    update_intersections(debug_ctx) {
         let elements_count = this.elements.length;
 
         //clear all intersections
         for (let e of this.elements)
-            e.intersected = false;
+            e.clear_intersected();
 
         for (let i = 0; i < elements_count; i++) {
             let e1 = this.elements[i];
-            for (let j = elements_count + 1; j < elements_count; j++) {
+
+            for (let j = i + 1; j < elements_count; j++) {
                 let e2 = this.elements[j];
 
+                if (e1.is_connected_with(e2))
+                    continue;
+
                 let len = e1.center_point.pos.sub(e2.center_point.pos).length2();
-                if (len > STRAIGHT_ELEMENT_LENGTH * STRAIGHT_ELEMENT_LENGTH)
+                if (len > STRAIGHT_ELEMENT_LENGTH * STRAIGHT_ELEMENT_LENGTH) //TODO get radius from elements
                     continue;
 
                 if (intersect_polys(e1.intersection_outline(), e2.intersection_outline())) {
-                    e1.intersected = true;
-                    e2.intersected = true;
-                    console.log('intersects', e1, e2);
+                    e1.set_intersected();
+                    e2.set_intersected();
                 }
             }
         }

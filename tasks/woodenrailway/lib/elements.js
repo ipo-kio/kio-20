@@ -8,6 +8,7 @@ import {
 } from "./draw_consts";
 import {AngleConstraint, DistanceConstraint, PinConstraint, RailwayElementConstraint} from "./constraint";
 import {ONE, ZERO, Endpoint, add_to_array, remove_array_from_array, remove_element_from_array} from "./railways";
+import {OutlineContext} from "./intersection";
 
 const CONSTRAINT_REGIME = 'simple'; //simple - old, many dist and angle constraints. element - a new, element constraint
 
@@ -21,6 +22,8 @@ export class RailwayElement {
     pin_constraints = [];
 
     initial_angle;
+
+    intersected = false;
 
     constructor(block, positions, directions) {
         this.block = block;
@@ -109,6 +112,13 @@ export class RailwayElement {
         //to be overriden
     }
 
+    intersection_outline() {
+        let ctx = new OutlineContext();
+        this.transform_context(ctx);
+        this.outline_path(ctx);
+        return ctx.path;
+    }
+
     draw_outline(ctx) {
         ctx.save();
         this.transform_context(ctx);
@@ -151,7 +161,6 @@ export class RailwayElement {
         //draw elements
 
         ctx.strokeStyle = "black";
-        // ctx.fillStyle = "black";
         ctx.beginPath();
         // ctx.moveTo(this.points[0].pos.x, this.points[0].pos.y);
         // for (let i = 1; i < this.points.length; i++)
@@ -190,6 +199,11 @@ export class RailwayElement {
         // ctx.fillStyle = "#ffa43c";
         ctx.fillStyle = ctx.createPattern(this.block.kioapi.getResource('wood'), "repeat");
         ctx.fill();
+
+        if (this.intersected) {
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+            ctx.fill();
+        }
     }
 
     stroke_rails(ctx) {
@@ -254,6 +268,31 @@ export class RailwayElement {
         }
 
         this.block.constraints.push(...this.pin_constraints);
+    }
+
+    clear_intersected() {
+        this.intersected = false;
+    }
+
+    set_intersected() {
+        this.intersected = true;
+    }
+
+    contains_connection(con) {
+        for (let p of this.points)
+            if (con.endpoint1 === p || con.endpoint2 === p)
+                return true;
+        return false;
+    }
+
+    is_connected_with(other_element) {
+        for (let other_p of other_element.points) {
+            let con = other_p.connection;
+            if (con && this.contains_connection(con))
+                return true;
+        }
+
+        return false;
     }
 }
 
@@ -424,7 +463,7 @@ export class SplitElement extends RailwayElement {
             [
                 new Vec2(-STRAIGHT_ELEMENT_LENGTH / 2, 0),
                 new Vec2(STRAIGHT_ELEMENT_LENGTH / 2 * xd, STRAIGHT_ELEMENT_LENGTH / 2 * yd),
-                new Vec2(STRAIGHT_ELEMENT_LENGTH / 2 * xd, - STRAIGHT_ELEMENT_LENGTH / 2 * yd)
+                new Vec2(STRAIGHT_ELEMENT_LENGTH / 2 * xd, -STRAIGHT_ELEMENT_LENGTH / 2 * yd)
             ],
             [new Vec2(-1, 0), new Vec2(xd, yd), new Vec2(xd, -yd)]
         );

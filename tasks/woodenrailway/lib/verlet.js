@@ -92,8 +92,6 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
             this.draggedEntity = nearest;
             this.draggingDisplacement = nearest.pos.sub(this.mouse);
         }
-
-        // this.composites[0].e1.update_intersections();
     };
 
     document.addEventListener('mouseup', e => {
@@ -276,6 +274,8 @@ VerletJS.prototype.frame = function (step) {
             this.bounds(particles[i]);
     }
 
+    this.composites[0].update_intersections();
+
     // console.log('tv', total_velocity, total_velocity < 1e-1, is_stable, total_velocity < 1e-1 && !is_stable);
     let mean_velocity = total_velocity / total_particles;
     return mean_velocity < 0.1 && !is_stable;
@@ -354,6 +354,23 @@ VerletJS.prototype.draw = function () {
             this.ctx.restore();
         }
     }
+
+    //draw intersection outlines, uncomment to view intersection outlines
+    /*let debug_ctx = this.ctx;
+    for (let e of this.composites[0].elements) {
+        debug_ctx.save();
+        debug_ctx.lineWidth = 1;
+        debug_ctx.strokeStyle = 'black';
+        let o = e.intersection_outline();
+        debug_ctx.beginPath();
+        debug_ctx.moveTo(o[0], o[1]);
+        for (let i = 2; i < o.length; i += 2)
+            debug_ctx.lineTo(o[i], o[i + 1]);
+        debug_ctx.closePath();
+        debug_ctx.stroke();
+
+        debug_ctx.restore();
+    }*/
 };
 
 VerletJS.prototype.nearestEntity = function (filter = e => true) {

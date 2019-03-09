@@ -59,7 +59,6 @@ export class Woodenrailway {
             if (need_repeat && !this.ver.mouseDown) {
                 for (let i = 0; i < 20; i++)
                     this.ver.frame(16);
-                console.log('repeated');
             }
 
             this.ver.draw();
