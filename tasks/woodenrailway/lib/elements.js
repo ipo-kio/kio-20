@@ -6,8 +6,10 @@ import {
     ROUND_ELEMENT_RADIUS,
     STRAIGHT_ELEMENT_LENGTH
 } from "./draw_consts";
-import {AngleConstraint, DistanceConstraint, PinConstraint} from "./constraint";
+import {AngleConstraint, DistanceConstraint, PinConstraint, RailwayElementConstraint} from "./constraint";
 import {ONE, ZERO, Endpoint, add_to_array, remove_array_from_array, remove_element_from_array} from "./railways";
+
+const CONSTRAINT_REGIME = 'simple'; //simple - old, many dist and angle constraints. element - a new, element constraint
 
 export class RailwayElement {
     block; /*railway block*/
@@ -29,17 +31,21 @@ export class RailwayElement {
 
         //constraints for points to keep them with each other
         this.constraints = [];
-        for (let i = 0; i < this.points.length; i++) {
-            for (let j = i + 1; j < this.points.length; j++)
-                this.constraints.push(new DistanceConstraint(this.points[i], this.points[j], 1));
-            this.constraints.push(new DistanceConstraint(this.points[i], this.center_point, 1));
-        }
 
-        //constraints for points to keep their angles
-        for (let i = 0; i < this.points.length; i++) {
-            let j = (i + 1) % this.points.length;
-            this.constraints.push(new AngleConstraint(this.points[i], this.center_point, this.points[j], 1));
-        }
+        if (CONSTRAINT_REGIME === 'simple') {
+            for (let i = 0; i < this.points.length; i++) {
+                for (let j = i + 1; j < this.points.length; j++)
+                    this.constraints.push(new DistanceConstraint(this.points[i], this.points[j], 1));
+                this.constraints.push(new DistanceConstraint(this.points[i], this.center_point, 1));
+            }
+
+            //constraints for points to keep their angles
+            for (let i = 0; i < this.points.length; i++) {
+                let j = (i + 1) % this.points.length;
+                this.constraints.push(new AngleConstraint(this.points[i], this.center_point, this.points[j], 1));
+            }
+        } else
+            this.constraints.push(new RailwayElementConstraint(this));
 
         //initial angle
         this.initial_angle = 0;
@@ -52,11 +58,16 @@ export class RailwayElement {
             this.initial_angle += p.angle(ONE);
         }
         this.initial_angle /= positions.length;
+
+        //initial mass center shift
+        this.mass_shift = new Vec2(0, 0);
+        for (let p of positions)
+            this.mass_shift.mutableAdd(p);
+        this.mass_shift.mutableScale(1 / positions.length);
     }
 
-    transform_context(ctx) {
+    current_angle() {
         let c = this.center_point.pos;
-        ctx.translate(c.x, c.y);
 
         let a_total = 0;
         let last_angle = 0;
@@ -70,6 +81,22 @@ export class RailwayElement {
         }
 
         a_total /= this.points.length;
+
+        return a_total;
+    }
+
+    current_mass_center() {
+        let sum = new Vec2(0, 0);
+        for (let p of this.points)
+            sum.mutableAdd(p.pos);
+        return sum.scale(1 / this.points.length);
+    }
+
+    transform_context(ctx) {
+        let c = this.center_point.pos;
+        ctx.translate(c.x, c.y);
+
+        let a_total = this.current_angle();
 
         ctx.rotate(this.initial_angle - a_total);
     }

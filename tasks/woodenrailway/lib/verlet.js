@@ -93,7 +93,7 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
             this.draggingDisplacement = nearest.pos.sub(this.mouse);
         }
 
-        this.composites[0].e1.update_intersections();
+        // this.composites[0].e1.update_intersections();
     };
 
     document.addEventListener('mouseup', e => {
@@ -211,6 +211,9 @@ VerletJS.prototype.frame = function (step) {
 
     let all_constraints_are_satisfied = this.composites[0].is_satisfied();
 
+    let total_velocity = 0;
+    let total_particles = 0;
+
     for (c in this.composites) {
         for (i in this.composites[c].particles) {
             let particles = this.composites[c].particles;
@@ -232,6 +235,9 @@ VerletJS.prototype.frame = function (step) {
 
             // inertia
             particles[i].pos.mutableAdd(velocity);
+
+            total_velocity += velocity.length2();
+            total_particles += 1;
         }
     }
 
@@ -269,6 +275,10 @@ VerletJS.prototype.frame = function (step) {
         for (i in particles)
             this.bounds(particles[i]);
     }
+
+    // console.log('tv', total_velocity, total_velocity < 1e-1, is_stable, total_velocity < 1e-1 && !is_stable);
+    let mean_velocity = total_velocity / total_particles;
+    return mean_velocity < 0.1 && !is_stable;
 };
 
 VerletJS.prototype.submit = function() {

@@ -27,6 +27,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // AngleConstraint -- constrains 3 particles to an angle
 
 import Vec2 from "./vec2";
+import {ZERO} from "./railways";
 
 export function DistanceConstraint(a, b, stiffness, distance /*optional*/) {
     this.a = a;
@@ -145,6 +146,7 @@ AngleRangeConstraint.prototype.relax = function (stepCoef) {
     //TODO experimental
     if (Math.abs(diff) < 0.005)
         diff = 0.005 * Math.sign(diff);
+        // diff *= 2;
 
     diff *= stepCoef * this.stiffness;
 
@@ -198,10 +200,11 @@ DistanceRangeConstraint.prototype.relax = function (stepCoef) {
         this.is_satisfied = true;
     }
 
-    //TODO experimental
     let scale = (dist - m) / m;
+    // TODO experimental
     if (Math.abs(scale) < 0.01)
         scale = 0.01 * Math.sign(scale);
+        // scale *= 3;
 
     normal.mutableScale(scale * this.stiffness * stepCoef);
     this.a.pos.mutableAdd(normal);
@@ -210,6 +213,33 @@ DistanceRangeConstraint.prototype.relax = function (stepCoef) {
 
 DistanceRangeConstraint.prototype.draw = DistanceConstraint.prototype.draw;
 
+export class RailwayElementConstraint {
+
+    railway_element;
+
+    constructor(railway_element) {
+        this.railway_element = railway_element;
+    }
+
+    relax(stepCoef) {
+        let current_angle = this.railway_element.current_angle();
+        let initial_angle = this.railway_element.initial_angle;
+        let phi = current_angle - initial_angle;
+        // console.log(current_angle, initial_angle, phi);
+
+        let mass_shift = this.railway_element.mass_shift.rotate(phi);
+        let current_center = this.railway_element.current_mass_center().sub(mass_shift);
+
+        for (let endpoint of this.railway_element.points) {
+            let new_pos = endpoint.initial_pos.rotate(ZERO, phi).add(current_center);
+            let v = new_pos.sub(endpoint.pos);
+            endpoint.pos.mutableSet(endpoint.pos.add(v.scale(stepCoef)))
+        }
+
+        let cp = this.railway_element.center_point;
+        cp.pos.mutableSet(cp.pos.add(current_center.sub(cp.pos).scale(stepCoef)));
+    }
+}
 /*
 let log_cnt = 0;
 export function lalalog(...a) {

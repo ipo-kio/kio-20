@@ -55,7 +55,13 @@ export class Woodenrailway {
         fill_elements(block);
 
         let loop = () => {
-            this.ver.frame(16);
+            let need_repeat = this.ver.frame(16);
+            if (need_repeat && !this.ver.mouseDown) {
+                for (let i = 0; i < 20; i++)
+                    this.ver.frame(16);
+                console.log('repeated');
+            }
+
             this.ver.draw();
             requestAnimationFrame(loop);
         };
