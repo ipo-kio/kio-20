@@ -19,9 +19,9 @@ export class City {
     draw(ctx) {
         ctx.save();
         ctx.translate(this.pos.x + 0.5, this.pos.y + 0.5);
-        ctx.fillStyle = this.highlighted ? 'red' : 'blue';
+        ctx.fillStyle = this.highlighted ? 'blue' : 'red';
         ctx.fillRect(-4, -4, 8, 8);
-        ctx.strokeStyle = this.highlighted ? 'red' : 'blue';
+        ctx.strokeStyle = this.highlighted ? 'blue' : 'red';
         ctx.setLineDash([2, 2]);
         ctx.strokeRect(-this.r, -this.r, 2 * this.r, 2 * this.r);
         ctx.restore();

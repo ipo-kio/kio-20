@@ -1,11 +1,22 @@
 .kio-base-box {
 
-  .tool-no-select {
-    border: none;
-  }
+  .woodenrailway-tools {
+    button {
+      outline: none;
+      border: none;
+    }
 
-  .tool-select {
-    border: 1px solid blue;
+    button:hover {
+      background-position: 0 -60px;
+    }
+
+    .tool-no-select {
+      background-position: 0 0;
+    }
+
+    .tool-select {
+      background-position: 0 -120px;
+    }
   }
 
   webkit-user-select: none; /* webkit (safari, chrome) browsers */
