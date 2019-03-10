@@ -28,13 +28,17 @@
 
 .woodenrailway-info {
   button {
+    background-color: black;
+    color: white;
   }
 
   span {
     font-weight: bold;
     margin-right: 1em;
     color: #ff3215;
-    font: 20px 'Arial', sans-serif;
+    font: 19px 'Verdana', sans-serif;
+    background-color: white;
+    padding: 0.2em 1em;
   }
 
   padding: 1em;

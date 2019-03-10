@@ -190,18 +190,22 @@ export class RailwayBlock extends Composite {
 
         //draw unsatisfied connections
         ctx.save();
-        for (let con of this.connections)
+        let r = 7;
+        for (let con of this.connections) {
             if (!con.is_satisfied()) {
-                ctx.lineWidth = 1;
-                ctx.strokeStyle = 'red';
                 let {x, y} = con.endpoint1.pos;
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#ffffff';
                 ctx.beginPath();
-                ctx.moveTo(x - 5, y - 5);
-                ctx.lineTo(x + 5, y + 5);
-                ctx.moveTo(x - 5, y + 5);
-                ctx.lineTo(x + 5, y - 5);
+                ctx.moveTo(x - r, y - r);
+                ctx.lineTo(x + r, y + r);
+                ctx.moveTo(x - r, y + r);
+                ctx.lineTo(x + r, y - r);
                 ctx.stroke();
+                ctx.strokeRect(x - r, y - r, 2 * r, 2 * r);
             }
+        }
+
         ctx.restore();
     }
 
@@ -209,6 +213,14 @@ export class RailwayBlock extends Composite {
         //draw cities
         for (let c of this.cities)
             c.draw(ctx);
+
+        //draw underconstraints
+        let r = 7;
+        for (let c of this.connections) {
+            let {x, y} = c.endpoint1.pos;
+            ctx.fillStyle = 'rgba(113, 68, 31, 0.5)';//71441f
+            ctx.fillRect(x - r, y - r, 2 * r, 2 * r);
+        }
 
         //draw elements
         for (let e of this.elements) {

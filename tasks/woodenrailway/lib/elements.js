@@ -131,8 +131,8 @@ export class RailwayElement {
     draw_outline(ctx) {
         ctx.save();
         this.transform_context(ctx);
-        ctx.lineWidth = 6;
-        ctx.strokeStyle = 'rgba(178, 178, 0, 0.7)';
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = 'rgba(120, 255, 253, 0.8)';
         this.outline_path(ctx);
         ctx.stroke();
         ctx.restore();
@@ -216,7 +216,7 @@ export class RailwayElement {
     }
 
     stroke_rails(ctx) {
-        ctx.strokeStyle = '#222';
+        ctx.strokeStyle = '#615e5a';
         ctx.lineWidth = DRAW_RAILS_WIDTH;
         ctx.stroke();
     }

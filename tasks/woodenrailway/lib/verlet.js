@@ -60,8 +60,8 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
     this.mouseDown = false;
     this.draggedEntity = null;
     this.selectionRadius = 20;
-    this.highlightColorConnection = "rgba(200, 0, 0, 0.7)";
-    this.highlightColorParticle = "rgba(0, 200, 0, 0.7)";
+    this.highlightColorConnection = "#ff0465";
+    this.highlightColorParticle = "#fcff04";
     this.kiotask = kiotask;
     this.bg_drawer = bg_drawer;
     this.all_constraints_are_satisfied = false;
@@ -342,7 +342,7 @@ VerletJS.prototype.draw = function () {
             this.ctx.beginPath();
             this.ctx.arc(nearest.pos.x, nearest.pos.y, 8, 0, 2 * Math.PI);
             this.ctx.strokeStyle = nearest.connection ? this.highlightColorConnection : this.highlightColorParticle;
-            this.ctx.lineWidth = 6;
+            this.ctx.lineWidth = 4;
             this.ctx.stroke();
             this.ctx.restore();
         }
