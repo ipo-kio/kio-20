@@ -3,6 +3,7 @@ import {PinConstraint, VerletJS} from "./lib/verlet";
 import Vec2 from "./lib/vec2";
 import {Connection, RailwayBlock} from "./lib/railways";
 import {RoundElement, SplitElement, StraightElement} from "./lib/elements";
+import {City} from "./lib/city";
 
 export class Woodenrailway {
 
@@ -48,7 +49,8 @@ export class Woodenrailway {
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         });
         this.ver.gravity = new Vec2(0, 0);
-        let block = new RailwayBlock(kioapi);
+
+        let block = new RailwayBlock(kioapi, Woodenrailway.create_cities());
         this.ver.composites.push(block);
         this.block = block;
         this.block.ver = this.ver;
@@ -69,6 +71,24 @@ export class Woodenrailway {
         loop();
     }
 
+    static create_cities() {
+
+        let cities = [];
+
+        let W = 800;
+        let H = 500;
+        let skip = 80;
+        let x0 = 40;
+        let y0 = 40;
+        let r = 25;
+
+        for (let x = x0; x < W; x += skip)
+            for (let y = y0; y < H; y += skip)
+                cities.push(new City(new Vec2(x, y), r));
+
+        return cities;
+    }
+
     parameters() {
         return [
             {
@@ -81,6 +101,11 @@ export class Woodenrailway {
                     else
                         return 'нет';
                 }
+            },
+            {
+                name: 'intersections',
+                title: 'Пересечений',
+                ordering: 'minimize'
             },
             {
                 name: 'station',

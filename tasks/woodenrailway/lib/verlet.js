@@ -110,7 +110,7 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
             let other_nearest = this.nearestEntity(p => !d_element.contains_endpoint(p) && !p.is_center_point && p.connection === null);
             if (other_nearest) {
                 this.block().add_connecton(new Connection(d_point, other_nearest));
-                this.block().submit();
+                this.invalidate_frame();
             }
         }
 
@@ -140,7 +140,7 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
             if (new_element !== null) {
                 new_element.move_to(this.mouse);
                 block.add_element(new_element);
-                block.submit();
+                this.invalidate_frame();
             }
             return;
         }
@@ -150,7 +150,7 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
                 //then remove
                 let e = ne.element;
                 block.remove_element(e);
-                block.submit();
+                this.invalidate_frame();
             } else {
                 //then change pins
                 if (ne && ne.is_center_point) {
@@ -159,14 +159,14 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
                     let pins = e.pins + 1;
                     if (pins > 2) pins = 0;
                     e.set_pins(pins);
-                    this.block().submit();
+                    this.invalidate_frame();
                 }
             }
         }
 
         if (!ne.is_center_point && ne.connection !== null) {
             block.remove_connection(ne.connection);
-            block.submit();
+            this.invalidate_frame();
         }
     };
 
@@ -279,6 +279,7 @@ VerletJS.prototype.frame = function (step) {
     }
 
     this.block().update_intersections();
+    this.block().update_cities();
 
     // console.log('tv', total_velocity, total_velocity < 1e-1, is_stable, total_velocity < 1e-1 && !is_stable);
     let mean_velocity = total_velocity / total_particles;
@@ -292,7 +293,12 @@ VerletJS.prototype.frame = function (step) {
 
 VerletJS.prototype.block = function() {
     return this.composites[0];
-}
+};
+
+VerletJS.prototype.invalidate_frame = function() {
+    this.all_constraints_are_satisfied = false;
+};
+
 
 VerletJS.prototype.draw = function () {
     var i, c;

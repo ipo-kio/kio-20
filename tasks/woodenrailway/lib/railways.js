@@ -129,9 +129,12 @@ export class RailwayBlock extends Composite {
 
     frame_index = 0; //allows optimize intersections evaluation
 
-    constructor(kioapi) {
+    cities;
+
+    constructor(kioapi, cities) {
         super();
         this.kioapi = kioapi;
+        this.cities = cities;
     }
 
     add_element(element) {
@@ -202,6 +205,11 @@ export class RailwayBlock extends Composite {
     }
 
     drawParticles(ctx) {
+        //draw cities
+        for (let c of this.cities)
+            c.draw(ctx);
+
+        //draw elements
         for (let e of this.elements)
             e.draw(ctx);
     }
@@ -308,18 +316,52 @@ export class RailwayBlock extends Composite {
             let {components_count} = this.get_graph().kraskal();
 
             let leafs = 0;
-            for (let e of this.elements)
+            let intersections = 0;
+            let v = 0;
+            for (let e of this.elements) {
+                if (e.intersected)
+                    intersections++;
+                if (e.TYPE === 'v')
+                    v++;
                 for (let p of e.points)
                     if (!p.connection)
                         leafs++;
+            }
 
             this.kioapi.submitResult({
                 ok: this.ver.all_constraints_are_satisfied,
                 num : this.elements.length,
                 components: components_count,
-                leafs
+                leafs,
+                intersections,
+                station: this.max_cities_on_a_path,
+                v
             });
         // });
+    }
+
+    // cities
+    update_cities() {
+        let n = this.elements.length;
+        let all_colors_count = new Array(n);
+        for (let i = 0; i < n; i++)
+            all_colors_count[i] = 0;
+
+        for (let c of this.cities) {
+            let {colors_count, total_colors} = c.count_elements_nearby(this);
+
+            c.highlighted = total_colors > 0;
+
+            for (let i = 0; i < n; i++)
+                all_colors_count[i] += colors_count[i];
+        }
+
+        let max = 0;
+        for (let i = 0; i < n; i++)
+            if (all_colors_count[i] > max)
+                max = all_colors_count[i];
+
+        this.max_cities_on_a_path = max;
     }
 }
 
