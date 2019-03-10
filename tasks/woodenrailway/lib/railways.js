@@ -80,6 +80,7 @@ export class Connection {
         for (let c of this.constraints)
             if (!c.is_satisfied)
                 return false;
+
         return true;
     }
 
@@ -210,8 +211,14 @@ export class RailwayBlock extends Composite {
             c.draw(ctx);
 
         //draw elements
-        for (let e of this.elements)
+        for (let e of this.elements) {
+            //uncomment to make unsatisfied element red
+            /*for (let c of e.constraints)
+                if (!c.is_satisfied)
+                    e.intersected = true;*/
+
             e.draw(ctx);
+        }
     }
 
     serialize() {
@@ -257,6 +264,12 @@ export class RailwayBlock extends Composite {
         for (let c of this.connections)
             if (!c.is_satisfied())
                 return false;
+
+        for (let e of this.elements)
+            for (let c of e.constraints)
+                if (!c.is_satisfied)
+                    return false;
+
         return true;
     }
 

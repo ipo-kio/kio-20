@@ -29,11 +29,15 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import Vec2 from "./vec2";
 import {ZERO} from "./railways";
 
+let LEN_EPS = 1e-2;
+let ANG_EPS = 1e-3;
+
 export function DistanceConstraint(a, b, stiffness, distance /*optional*/) {
     this.a = a;
     this.b = b;
     this.distance = typeof distance != "undefined" ? distance : a.pos.sub(b.pos).length();
     this.stiffness = stiffness;
+    this.is_satisfied = false;
 }
 
 DistanceConstraint.prototype.relax = function (stepCoef) {
@@ -41,14 +45,18 @@ DistanceConstraint.prototype.relax = function (stepCoef) {
     var m = normal.length2();
     normal.mutableScale(((this.distance * this.distance - m) / m) * this.stiffness * stepCoef);
 
-    //2 * normal -> a.relax_weight / b.relax_weight
-    let aw = 1; //this.a.relax_weight();
-    let bw = 1; //this.b.relax_weight();
-    let n1 = normal.scale(2 * bw / (aw + bw));
-    let n2 = normal.scale(2 * aw / (aw + bw));
+    this.is_satisfied = Math.abs(Math.sqrt(m) - this.distance) < LEN_EPS;
+    if (this.is_satisfied)
+        return;
 
-    this.a.pos.mutableAdd(n1);
-    this.b.pos.mutableSub(n2);
+    //2 * normal -> a.relax_weight / b.relax_weight
+    // let aw = 1; //this.a.relax_weight();
+    // let bw = 1; //this.b.relax_weight();
+    // let n1 = normal.scale(2 * bw / (aw + bw));
+    // let n2 = normal.scale(2 * aw / (aw + bw));
+
+    this.a.pos.mutableAdd(normal);
+    this.b.pos.mutableSub(normal);
 };
 
 DistanceConstraint.prototype.draw = function (ctx) {
@@ -82,6 +90,7 @@ export function AngleConstraint(a, b, c, stiffness) {
     this.c = c;
     this.angle = this.b.pos.angle2(this.a.pos, this.c.pos);
     this.stiffness = stiffness;
+    this.is_satisfied = false;
 }
 
 AngleConstraint.prototype.relax = function (stepCoef) {
@@ -92,6 +101,10 @@ AngleConstraint.prototype.relax = function (stepCoef) {
         diff += 2 * Math.PI;
     else if (diff >= Math.PI)
         diff -= 2 * Math.PI;
+
+    this.is_satisfied = Math.abs(diff) < ANG_EPS;
+    if (this.is_satisfied)
+        return;
 
     diff *= stepCoef * this.stiffness;
 
