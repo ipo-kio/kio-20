@@ -1,0 +1,79 @@
+div.canvas_cont_div{
+    position: relative;
+}
+.canvas_bottom{
+    background-color: white;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    z-index: 100;
+}
+.canvas_top{
+
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    z-index: 101;
+}
+
+.param_input{
+    width: 50px;
+}
+
+div.control_div
+{
+    display: block;
+    background-color: #cccccc;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.go_btn
+{
+    margin-left: 10px;
+    font-size: 18px;
+}
+
+.canvas_go
+{
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    z-index: 1;
+}
+
+.clear_btn
+{
+    margin-left: 10px;
+    font-size: 18px;
+}
+
+div.tik_div
+{
+    display: inline-block;
+}
+
+.go_btn1{
+    font-weight: bold;
+    font-size: 24px;
+    width: 50px;
+    height: 35px;
+    vertical-align: top;
+    color: black;
+}
+.go_btn1:disabled
+{
+    color: silver;
+}
+
+.tik_div
+{
+    display: inline-block;
+    margin-left: 2px;
+    margin-right: 2px;
+    border: black solid 1px;
+    border-radius: 4px;
+    padding: 4px;
+    vertical-align: top;
+    margin-top: 3px;
+}
