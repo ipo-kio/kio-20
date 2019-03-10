@@ -33,6 +33,7 @@ export class Woodenrailway {
      */
     initialize(domNode, kioapi, preferred_width) {
         this.kioapi = kioapi;
+        this.level = this.settings.level;
 
         let tools = this.create_tools_div();
         this.info = this.create_info_div();
@@ -50,7 +51,7 @@ export class Woodenrailway {
         });
         this.ver.gravity = new Vec2(0, 0);
 
-        let block = new RailwayBlock(kioapi, Woodenrailway.create_cities());
+        let block = new RailwayBlock(kioapi, this.create_cities());
         this.ver.composites.push(block);
         this.block = block;
         this.block.ver = this.ver;
@@ -71,7 +72,7 @@ export class Woodenrailway {
         loop();
     }
 
-    static create_cities() {
+    create_cities() {
 
         let cities = [];
 
@@ -82,6 +83,13 @@ export class Woodenrailway {
         let y0 = 40;
         let r = 25;
 
+        if (this.level === 0) {
+            skip = 130;
+            x0 = 60;
+            y0 = 60;
+            r = 30;
+        }
+
         for (let x = x0; x < W; x += skip)
             for (let y = y0; y < H; y += skip)
                 cities.push(new City(new Vec2(x, y), r));
@@ -90,49 +98,57 @@ export class Woodenrailway {
     }
 
     parameters() {
-        return [
-            {
-                name: 'ok',
-                title: 'Дорога корректна',
-                ordering: 'maximize',
-                view: v => {
-                    if (v)
-                        return 'да';
-                    else
-                        return 'нет';
-                }
-            },
-            {
-                name: 'intersections',
-                title: 'Пересечений',
-                ordering: 'minimize'
-            },
-            {
-                name: 'station',
-                title: 'Станций соединено',
-                ordering: 'maximize'
-            },
-            {
-                name: 'num',
-                title: 'Количество элементов',
-                ordering: 'minimize'
-            },
-            {
-                name: 'leafs',
-                title: 'Тупиков',
-                ordering: 'minimize'
-            },
-            {
-                name: 'v',
-                title: 'Развилок',
-                ordering: 'minimize'
-            }/*,
-            {
-                name: 'components',
-                title: 'Частей',
-                ordering: 'minimize'
-            }*/
-        ];
+        let ok = {
+            name: 'ok',
+            title: 'Дорога корректна',
+            ordering: 'maximize',
+            view: v => {
+                if (v)
+                    return 'да';
+                else
+                    return 'нет';
+            }
+        };
+        let int = {
+            name: 'intersections',
+            title: 'Пересечений',
+            ordering: 'minimize'
+        };
+
+        let st = {
+            name: 'station',
+            title: 'Станций соединено',
+            ordering: 'maximize'
+        };
+        let num = {
+            name: 'num',
+            title: 'Количество элементов',
+            ordering: 'minimize'
+        };
+        let leafs = {
+            name: 'leafs',
+            title: 'Тупиков',
+            ordering: 'minimize'
+        };
+        let v = {
+            name: 'v',
+            title: 'Развилок',
+            ordering: 'maximize'
+        };
+
+        /*
+        - станций соединено
+        - количество тупиков (минимизируем) это количество висящих концов дороги без соединения
+        - Количество элементов (минимизируем)
+        - развилок (минимизируем) - это количество элементов с развилкой
+         */
+        switch (this.level) {
+            case 0:
+            case 1:
+                return [ok, int, st, leafs, num, v];
+        }
+
+        return [ok, int, leafs, st,  num, v];
     }
 
     solution() {
@@ -163,6 +179,7 @@ export class Woodenrailway {
         tools.style.verticalAlign = 'top';
 
         let all_tools = [];
+
         function create_tool(img, action, type) {
             let tool = document.createElement('button');
             tool.style.background = 'white url(woodenrailway-resources/' + img + ') center no-repeat';
@@ -199,7 +216,7 @@ export class Woodenrailway {
 
         create_tool('nail.png', e => {
             this.selected_tool_miss = 'round';
-        },2);
+        }, 2);
 
         create_tool('nail.png', e => {
             this.selected_tool_miss = 'split';
