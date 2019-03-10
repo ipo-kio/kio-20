@@ -74,7 +74,17 @@ export class Woodenrailway {
                 name: 'num',
                 title: 'Количество элементов',
                 ordering: 'maximize'
-            }
+            },
+            {
+                name: 'leafs',
+                title: 'Тупиков',
+                ordering: 'minimize'
+            },
+            {
+                name: 'components',
+                title: 'Частей',
+                ordering: 'minimize'
+            },
         ];
     }
 
@@ -87,7 +97,7 @@ export class Woodenrailway {
         // но проверять их все равно необходимо.
         this.ver.composites[0].deserialize(solution);
 
-        this.ver.submit();
+        this.block.submit();
     }
 
     static preloadManifest() {

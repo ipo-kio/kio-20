@@ -108,8 +108,8 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
             let d_element = d_point.element;
             let other_nearest = this.nearestEntity(p => !d_element.contains_endpoint(p) && !p.is_center_point && p.connection === null);
             if (other_nearest) {
-                this.composites[0].add_connecton(new Connection(d_point, other_nearest));
-                this.submit();
+                this.block().add_connecton(new Connection(d_point, other_nearest));
+                this.block().submit();
             }
         }
 
@@ -120,7 +120,7 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
     this.canvas.ondblclick = e => {
         let ne = this.nearestEntity();
 
-        let block = this.composites[0];
+        let block = this.block();
 
         if (!ne) {
             //dbl click on an empty space
@@ -139,7 +139,7 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
             if (new_element !== null) {
                 new_element.move_to(this.mouse);
                 block.add_element(new_element);
-                this.submit();
+                block.submit();
             }
             return;
         }
@@ -148,7 +148,8 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
             if (this.kiotask.selected_tool_over !== 'nail') {
                 //then remove
                 let e = ne.element;
-                block.remove_element(e); //TODO is there a better way? May be, move this out to kio
+                block.remove_element(e);
+                block.submit();
             } else {
                 //then change pins
                 if (ne && ne.is_center_point) {
@@ -157,14 +158,14 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
                     let pins = e.pins + 1;
                     if (pins > 2) pins = 0;
                     e.set_pins(pins);
+                    this.block().submit();
                 }
             }
-            this.submit();
         }
 
         if (!ne.is_center_point && ne.connection !== null) {
             block.remove_connection(ne.connection);
-            this.submit();
+            block.submit();
         }
     };
 
@@ -207,7 +208,7 @@ Composite.prototype.pin = function (index, pos) {
 VerletJS.prototype.frame = function (step) {
     var i, j, c;
 
-    let all_constraints_are_satisfied = this.composites[0].is_satisfied();
+    let all_constraints_are_satisfied = this.block().is_satisfied();
 
     let total_velocity = 0;
     let total_particles = 0;
@@ -243,10 +244,10 @@ VerletJS.prototype.frame = function (step) {
 
     if (this.was_stable !== is_stable) {
         if (is_stable) {
-            this.last_stable_solution = this.composites[0].serialize();
+            this.last_stable_solution = this.block().serialize();
             this.kiotask.info.style.visibility = 'hidden';
 
-            this.submit();
+            this.block().submit();
         } else {
             this.kiotask.info.style.visibility = 'visible';
         }
@@ -274,20 +275,16 @@ VerletJS.prototype.frame = function (step) {
             this.bounds(particles[i]);
     }
 
-    this.composites[0].update_intersections();
+    this.block().update_intersections();
 
     // console.log('tv', total_velocity, total_velocity < 1e-1, is_stable, total_velocity < 1e-1 && !is_stable);
     let mean_velocity = total_velocity / total_particles;
     return mean_velocity < 0.1 && !is_stable;
 };
 
-VerletJS.prototype.submit = function() {
-    requestAnimationFrame(() => {
-        this.kiotask.kioapi.submitResult({
-            num : this.composites[0].elements.length
-        });
-    });
-};
+VerletJS.prototype.block = function() {
+    return this.composites[0];
+}
 
 VerletJS.prototype.draw = function () {
     var i, c;
@@ -357,7 +354,7 @@ VerletJS.prototype.draw = function () {
 
     //draw intersection outlines, uncomment to view intersection outlines
     /*let debug_ctx = this.ctx;
-    for (let e of this.composites[0].elements) {
+    for (let e of this.block().elements) {
         debug_ctx.save();
         debug_ctx.lineWidth = 1;
         debug_ctx.strokeStyle = 'black';

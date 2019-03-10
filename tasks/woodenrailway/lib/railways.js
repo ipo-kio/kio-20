@@ -4,6 +4,7 @@ import {RailwayElement} from "./elements";
 import {PinConstraint} from "./constraint";
 import {STRAIGHT_ELEMENT_LENGTH} from "./draw_consts";
 import {intersect_polys} from "./intersection";
+import {Graph} from "./graph";
 
 const MAX_CONNECTION_DISTANCE = 3;
 const MAX_ANGLE = 3; // in degrees
@@ -124,6 +125,8 @@ export class RailwayBlock extends Composite {
     elements = [];
     connections = [];
 
+    _graph = null;
+
     constructor(kioapi) {
         super();
         this.kioapi = kioapi;
@@ -133,6 +136,8 @@ export class RailwayBlock extends Composite {
         this.elements.push(element);
 
         element.fill_block();
+
+        this._invalidate_graph();
     }
 
     remove_element(element) {
@@ -143,6 +148,8 @@ export class RailwayBlock extends Composite {
         for (const c of this.connections.slice())
             if (element.contains_endpoint(c.endpoint1) || element.contains_endpoint(c.endpoint2))
                 this.remove_connection(c);
+
+        this._invalidate_graph();
     }
 
     add_connecton(connection) {
@@ -151,6 +158,8 @@ export class RailwayBlock extends Composite {
 
         connection.endpoint1.set_connection(connection);
         connection.endpoint2.set_connection(connection);
+
+        this._invalidate_graph();
     }
 
     remove_connection(connection) {
@@ -159,6 +168,8 @@ export class RailwayBlock extends Composite {
 
         connection.endpoint1.remove_connection();
         connection.endpoint2.remove_connection();
+
+        this._invalidate_graph();
     }
 
     drawConstraints(ctx) {
@@ -228,6 +239,8 @@ export class RailwayBlock extends Composite {
             this.particles = old_particles;
             this.constraints = old_constraints;
         }
+
+        this._invalidate_graph();
     }
 
     is_satisfied() {
@@ -263,6 +276,47 @@ export class RailwayBlock extends Composite {
                 }
             }
         }
+    }
+
+    _build_graph() {
+        let g = new Graph();
+
+        for (let e of this.elements)
+            g.add_vertex(e);
+
+        for (let c of this.connections)
+            g.add_edge(c.endpoint1.element, c.endpoint2.element, 1);
+
+        return g;
+    }
+
+    _invalidate_graph() {
+        this._graph = null;
+    }
+
+    get_graph() {
+        if (this._graph === null)
+            this._graph = this._build_graph();
+
+        return this._graph;
+    }
+
+    submit() {
+        requestAnimationFrame(() => {
+            let {components_count} = this.get_graph().kraskal();
+
+            let leafs = 0;
+            for (let e of this.elements)
+                for (let p of e.points)
+                    if (!p.connection)
+                        leafs++;
+
+            this.kioapi.submitResult({
+                num : this.elements.length,
+                components: components_count,
+                leafs
+            });
+        });
     }
 }
 

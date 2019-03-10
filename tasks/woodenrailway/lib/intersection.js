@@ -13,7 +13,7 @@ function line_side(x1, y1, x2, y2, x, y) {
         return Math.sign(v);
 }
 
-let shown = false;
+// let shown = false;
 export function intersect_polys(poly1, poly2) {
     return intersect_polys_oneside(poly1, poly2) && intersect_polys_oneside(poly2, poly1);
 }
@@ -22,11 +22,11 @@ function intersect_polys_oneside(poly1, poly2) { //if false => false, if true =>
     let n1_2 = poly1.length;
     let n2_2 = poly2.length;
 
-    let show = !shown;
-    shown = true;
+    // let show = !shown;
+    // shown = true;
 
     let side1 = line_side(poly1[0], poly1[1], poly1[2], poly1[3], poly1[4], poly1[5]);
-    if (show) console.log(side1, poly1, poly2);
+    // if (show) console.log(side1, poly1, poly2);
 
     for (let i = 0; i < n1_2; i += 2) {
         let j = i + 2;
