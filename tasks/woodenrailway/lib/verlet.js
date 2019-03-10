@@ -64,6 +64,7 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
     this.highlightColorParticle = "rgba(0, 200, 0, 0.7)";
     this.kiotask = kiotask;
     this.bg_drawer = bg_drawer;
+    this.all_constraints_are_satisfied = false;
 
     this.bounds = function (particle) {
         if (particle.pos.y < 0)
@@ -206,9 +207,12 @@ Composite.prototype.pin = function (index, pos) {
 };
 
 VerletJS.prototype.frame = function (step) {
-    var i, j, c;
+    if (this.all_constraints_are_satisfied && !this.draggedEntity)
+        return;
 
-    let all_constraints_are_satisfied = this.block().is_satisfied();
+    this.block().frame_index++;
+
+    var i, j, c;
 
     let total_velocity = 0;
     let total_particles = 0;
@@ -240,14 +244,13 @@ VerletJS.prototype.frame = function (step) {
         }
     }
 
+    let all_constraints_are_satisfied = this.block().is_satisfied();
     let is_stable = all_constraints_are_satisfied;
 
     if (this.was_stable !== is_stable) {
         if (is_stable) {
             this.last_stable_solution = this.block().serialize();
             this.kiotask.info.style.visibility = 'hidden';
-
-            this.block().submit();
         } else {
             this.kiotask.info.style.visibility = 'visible';
         }
@@ -279,6 +282,11 @@ VerletJS.prototype.frame = function (step) {
 
     // console.log('tv', total_velocity, total_velocity < 1e-1, is_stable, total_velocity < 1e-1 && !is_stable);
     let mean_velocity = total_velocity / total_particles;
+
+    this.all_constraints_are_satisfied = all_constraints_are_satisfied;
+
+    this.block().submit();
+
     return mean_velocity < 0.1 && !is_stable;
 };
 

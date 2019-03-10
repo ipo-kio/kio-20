@@ -127,6 +127,8 @@ export class RailwayBlock extends Composite {
 
     _graph = null;
 
+    frame_index = 0; //allows optimize intersections evaluation
+
     constructor(kioapi) {
         super();
         this.kioapi = kioapi;
@@ -302,7 +304,7 @@ export class RailwayBlock extends Composite {
     }
 
     submit() {
-        requestAnimationFrame(() => {
+        // requestAnimationFrame(() => {
             let {components_count} = this.get_graph().kraskal();
 
             let leafs = 0;
@@ -312,11 +314,12 @@ export class RailwayBlock extends Composite {
                         leafs++;
 
             this.kioapi.submitResult({
+                ok: this.ver.all_constraints_are_satisfied,
                 num : this.elements.length,
                 components: components_count,
                 leafs
             });
-        });
+        // });
     }
 }
 

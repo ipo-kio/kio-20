@@ -24,6 +24,8 @@ export class RailwayElement {
     initial_angle;
 
     intersected = false;
+    intersection_evaluated_for_frame = -1;
+    _intersection_outline = null;
 
     constructor(block, positions, directions) {
         this.block = block;
@@ -113,10 +115,17 @@ export class RailwayElement {
     }
 
     intersection_outline() {
+        if (this._intersection_outline !== null && this.block.frame_index === this.intersection_evaluated_for_frame)
+            return this._intersection_outline;
+
         let ctx = new OutlineContext();
         this.transform_context(ctx);
         this.outline_path(ctx);
-        return ctx.get_path();
+
+        this._intersection_outline = ctx.get_path();
+        this.intersection_evaluated_for_frame = this.block.frame_index;
+
+        return this._intersection_outline;
     }
 
     draw_outline(ctx) {

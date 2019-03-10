@@ -51,6 +51,7 @@ export class Woodenrailway {
         let block = new RailwayBlock(kioapi);
         this.ver.composites.push(block);
         this.block = block;
+        this.block.ver = this.ver;
 
         fill_elements(block);
 
@@ -58,7 +59,7 @@ export class Woodenrailway {
             let need_repeat = this.ver.frame(16);
             if (need_repeat && !this.ver.mouseDown) {
                 for (let i = 0; i < 20; i++)
-                    this.ver.frame(16);
+                    need_repeat = this.ver.frame(16);
             }
 
             this.ver.draw();
@@ -71,9 +72,25 @@ export class Woodenrailway {
     parameters() {
         return [
             {
+                name: 'ok',
+                title: 'Дорога корректна',
+                ordering: 'maximize',
+                view: v => {
+                    if (v)
+                        return 'да';
+                    else
+                        return 'нет';
+                }
+            },
+            {
+                name: 'station',
+                title: 'Станций соединено',
+                ordering: 'maximize'
+            },
+            {
                 name: 'num',
                 title: 'Количество элементов',
-                ordering: 'maximize'
+                ordering: 'minimize'
             },
             {
                 name: 'leafs',
@@ -81,10 +98,15 @@ export class Woodenrailway {
                 ordering: 'minimize'
             },
             {
+                name: 'v',
+                title: 'Развилок',
+                ordering: 'minimize'
+            }/*,
+            {
                 name: 'components',
                 title: 'Частей',
                 ordering: 'minimize'
-            },
+            }*/
         ];
     }
 
@@ -95,7 +117,8 @@ export class Woodenrailway {
     loadSolution(solution) {
         // Все объекты, которые сюда передаются, были ранее возвращены методом solution,
         // но проверять их все равно необходимо.
-        this.ver.composites[0].deserialize(solution);
+        this.ver.block().deserialize(solution);
+        this.ver.all_constraints_are_satisfied = false;
 
         this.block.submit();
     }
