@@ -207,8 +207,8 @@ Composite.prototype.pin = function (index, pos) {
 };
 
 VerletJS.prototype.frame = function (step) {
-    if (this.all_constraints_are_satisfied && !this.draggedEntity)
-        return;
+    // if (this.all_constraints_are_satisfied && !this.draggedEntity)
+    //     return;
 
     this.block().frame_index++;
 
@@ -262,24 +262,27 @@ VerletJS.prototype.frame = function (step) {
     if (this.draggedEntity)
         this.draggedEntity.pos.mutableSet(this.mouse.add(this.draggingDisplacement));
 
-    // relax
-    var stepCoef = 1 / step;
-    for (c in this.composites) {
-        var constraints = this.composites[c].constraints;
-        for (i = 0; i < step; ++i)
-            for (j in constraints)
-                constraints[j].relax(stepCoef);
-    }
+    // if (!all_constraints_are_satisfied || this.draggedEntity) {
+    if (true) {
+        // relax
+        var stepCoef = 1 / step;
+        for (c in this.composites) {
+            var constraints = this.composites[c].constraints;
+            for (i = 0; i < step; ++i)
+                for (j in constraints)
+                    constraints[j].relax(stepCoef);
+        }
 
-    // bounds checking
-    for (c in this.composites) {
-        let particles = this.composites[c].particles;
-        for (i in particles)
-            this.bounds(particles[i]);
-    }
+        // bounds checking
+        for (c in this.composites) {
+            let particles = this.composites[c].particles;
+            for (i in particles)
+                this.bounds(particles[i]);
+        }
 
-    this.block().update_intersections();
-    this.block().update_cities();
+        this.block().update_intersections();
+        this.block().update_cities();
+    }
 
     // console.log('tv', total_velocity, total_velocity < 1e-1, is_stable, total_velocity < 1e-1 && !is_stable);
     let mean_velocity = total_velocity / total_particles;

@@ -311,33 +311,49 @@ export class RailwayBlock extends Composite {
         return this._graph;
     }
 
+    previous_res = null;
     submit() {
-        // requestAnimationFrame(() => {
-            let {components_count} = this.get_graph().kraskal();
+        let {components_count} = this.get_graph().kraskal();
 
-            let leafs = 0;
-            let intersections = 0;
-            let v = 0;
-            for (let e of this.elements) {
-                if (e.intersected)
-                    intersections++;
-                if (e.TYPE === 'v')
-                    v++;
-                for (let p of e.points)
-                    if (!p.connection)
-                        leafs++;
-            }
+        let leafs = 0;
+        let intersections = 0;
+        let v = 0;
+        for (let e of this.elements) {
+            if (e.intersected)
+                intersections++;
+            if (e.TYPE === 'v')
+                v++;
+            for (let p of e.points)
+                if (!p.connection)
+                    leafs++;
+        }
 
-            this.kioapi.submitResult({
-                ok: this.ver.all_constraints_are_satisfied,
-                num : this.elements.length,
-                components: components_count,
-                leafs,
-                intersections,
-                station: this.max_cities_on_a_path,
-                v
-            });
-        // });
+        let res = {
+            ok: this.ver.all_constraints_are_satisfied,
+            num: this.elements.length,
+            components: components_count,
+            leafs,
+            intersections,
+            station: this.max_cities_on_a_path,
+            v
+        };
+
+        let pr = this.previous_res;
+        if (
+            pr !== null &&
+            pr.ok === res.ok &&
+            pr.num === res.num &&
+            pr.components === res.components &&
+            pr.leafs === res.leafs &&
+            pr.intersections === res.intersections &&
+            pr.station === res.station &&
+            pr.v === res.v
+        )
+            return;
+
+        this.previous_res = res;
+
+        this.kioapi.submitResult(res);
     }
 
     // cities
