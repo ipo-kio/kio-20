@@ -303,6 +303,10 @@ export class RailwayElement {
 
         return false;
     }
+
+    locate_train(p1, p2, t) {
+        //to be overriden
+    }
 }
 
 export class StraightElement extends RailwayElement {
@@ -342,6 +346,16 @@ export class StraightElement extends RailwayElement {
         ctx.lineTo(STRAIGHT_ELEMENT_LENGTH / 2, -DRAW_ELEMENT_WIDTH / 2);
         ctx.lineTo(-STRAIGHT_ELEMENT_LENGTH / 2, -DRAW_ELEMENT_WIDTH / 2);
         ctx.closePath();
+    }
+
+    locate_train(p1, p2, t) {
+        let vec_x = p2.pos.x - p1.pos.x;
+        let vec_y = p2.pos.y - p1.pos.y;
+        let x = p1.pos.x + t * vec_x;
+        let y = p1.pos.y + t * vec_y;
+        let vx = -vec_y;
+        let vy = vec_x;
+        return {x, y, vx, vy};
     }
 }
 
@@ -443,6 +457,34 @@ export class RoundElement extends RailwayElement {
         let angleLeft = Math.PI * (1 / 2 + 2 / RoundElement.N / 2);
         let curve_center = RoundElement.polar2vec(0, 0, false);
         return {angleRight, angleLeft, curve_center};
+    }
+
+    locate_train(p1, p2, t) {
+        let mul = 1;
+        if (p1 === this.points[1]) {
+            t = 1 - t;
+            mul = -1;
+        }
+
+        let vec_x = this.points[1].pos.x - this.points[0].pos.x;
+        let vec_y = this.points[1].pos.y - this.points[0].pos.y;
+        let d_vec_x = vec_y;
+        let d_vec_y = -vec_x;
+
+        let phi = 2 * Math.PI / RoundElement.N / 2;
+        let cx = this.points[0].pos.x + vec_x / 2 + d_vec_x / 2 / Math.tan(phi);
+        let cy = this.points[0].pos.y + vec_y / 2 + d_vec_y / 2 / Math.tan(phi);
+
+        let gx = this.points[0].pos.x - cx;
+        let gy = this.points[0].pos.y - cy;
+
+        let alpha = 2 * Math.PI / RoundElement.N * t;
+
+        let rot_gx = Math.cos(alpha) * gx + Math.sin(alpha) * gy;
+        let rot_gy = -Math.sin(alpha) * gx + Math.cos(alpha) * gy;
+
+        return {x: rot_gx + cx, y: rot_gy + cy, vx: mul * rot_gx, vy: mul * rot_gy};
+        // return {x: cx, y: cy, vx: rot_gx, vy: rot_gy};
     }
 }
 
@@ -550,5 +592,15 @@ export class SplitElement extends RailwayElement {
         );
 
         ctx.closePath();
+    }
+
+    locate_train(p1, p2, t) {
+        let vec_x = p2.pos.x - p1.pos.x;
+        let vec_y = p2.pos.y - p1.pos.y;
+        let x = p1.pos.x + t * vec_x;
+        let y = p1.pos.y + t * vec_y;
+        let vx = -vec_y;
+        let vy = vec_x;
+        return {x, y, vx, vy};
     }
 }

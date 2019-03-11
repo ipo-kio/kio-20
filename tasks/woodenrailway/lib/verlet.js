@@ -291,6 +291,8 @@ VerletJS.prototype.frame = function (step) {
 
     this.block().submit();
 
+    this.block().train.forward();
+
     return mean_velocity < 0.1 && !is_stable;
 };
 

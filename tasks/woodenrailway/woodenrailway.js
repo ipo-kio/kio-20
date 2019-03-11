@@ -175,7 +175,9 @@ export class Woodenrailway {
             {id: "bt-nail-123", src: "woodenrailway-resources/bt-nail-123.png"},
             {id: "bt-s-123", src: "woodenrailway-resources/bt-s-123.png"},
             {id: "bt-r-123", src: "woodenrailway-resources/bt-r-123.png"},
-            {id: "bt-v-123", src: "woodenrailway-resources/bt-v-123.png"}
+            {id: "bt-v-123", src: "woodenrailway-resources/bt-v-123.png"},
+
+            {id: "train1", src: "woodenrailway-resources/train1.png"}
         ];
     }
 

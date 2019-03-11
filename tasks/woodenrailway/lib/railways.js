@@ -5,6 +5,7 @@ import {PinConstraint} from "./constraint";
 import {STRAIGHT_ELEMENT_LENGTH} from "./draw_consts";
 import {intersect_polys} from "./intersection";
 import {Graph} from "./graph";
+import {Train} from "./train";
 
 const MAX_CONNECTION_DISTANCE = 3;
 const MAX_ANGLE = 3; // in degrees
@@ -43,6 +44,10 @@ export class Endpoint extends Particle {
 
     remove_connection() {
         this.connection = null;
+    }
+
+    is_input() {
+        return this.element_ind === 0;
     }
 }
 
@@ -132,10 +137,13 @@ export class RailwayBlock extends Composite {
 
     cities;
 
+    train;
+
     constructor(kioapi, cities) {
         super();
         this.kioapi = kioapi;
         this.cities = cities;
+        this.train = new Train(this, kioapi.getResource('train1'));
     }
 
     add_element(element) {
@@ -231,6 +239,8 @@ export class RailwayBlock extends Composite {
 
             e.draw(ctx);
         }
+
+        this.train.draw(ctx);
     }
 
     serialize() {
@@ -327,6 +337,7 @@ export class RailwayBlock extends Composite {
 
     _invalidate_graph() {
         this._graph = null;
+        this.train.reposition();
     }
 
     get_graph() {
