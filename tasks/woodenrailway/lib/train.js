@@ -12,7 +12,7 @@ export class Train {
         this.img = img;
     }
 
-    get_new_element() {
+    get_new_element(old_element) {
         let g = this.block.get_graph();
         let {vertices, colors} = g.kraskal();
 
@@ -33,6 +33,10 @@ export class Train {
                 max_color = i;
             }
 
+        let old_ind = vertices.indexOf(old_element);
+        if (old_element && old_ind >= 0 && colors[old_ind] === max_color)
+            return old_element;
+
         let j = Math.floor(max_color_value * Math.random());
 
         for (let i = 0; i < n; i++)
@@ -46,7 +50,7 @@ export class Train {
     }
 
     reposition() {
-        if (this.element && this.block.elements.indexOf(this.element) >= 0) {
+        /*if (this.element && this.block.elements.indexOf(this.element) >= 0) {
             //test how many elements are there, jump if too small
             let {vertices, colors} = this.block.get_graph().kraskal();
             let indexOf = vertices.indexOf(this.element);
@@ -59,9 +63,9 @@ export class Train {
                     cnt++;
             if (cnt >= 4)
                 return;
-        }
+        }*/
 
-        let e = this.get_new_element();
+        let e = this.get_new_element(this.element);
 
         if (e === null) {
             this.no_position = true;
@@ -69,6 +73,9 @@ export class Train {
         }
 
         this.no_position = false;
+
+        if (this.element === e)
+            return;
 
         let n = e.points.length;
         let j = Math.floor(n * Math.random());
