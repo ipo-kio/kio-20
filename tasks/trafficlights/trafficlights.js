@@ -215,21 +215,21 @@ export class Trafficlights {
   }
 
   static preloadManifest () {
-    console.log('preloadManifest()')
+    //console.log('preloadManifest()')
     return [
         { id: 'slider_p', src: 'trafficlights-resources/slider_p.png' },
         { id: 'cross', src: 'trafficlights-resources/cross.png' },
         { id: 'background', src: 'trafficlights-resources/background.png' },
+        { id: 'a_0', src: 'trafficlights-resources/a_0.png' },
+        { id: 'a_1', src: 'trafficlights-resources/a_1.png' },
+        { id: 'a_2', src: 'trafficlights-resources/a_2.png' },
+        { id: 'a_3', src: 'trafficlights-resources/a_3.png' },
+        { id: 'a_4', src: 'trafficlights-resources/a_4.png' },
+        { id: 'a_5', src: 'trafficlights-resources/a_5.png' },
+        { id: 'a_6', src: 'trafficlights-resources/a_6.png' },
+        { id: 'a_7', src: 'trafficlights-resources/a_7.png' },
         { id: 'point_0', src: 'trafficlights-resources/point_0.png' },
         { id: 'point_1', src: 'trafficlights-resources/point_1.png' },
-        { id: 'point_2', src: 'trafficlights-resources/point_2.png' },
-        { id: 'point_3', src: 'trafficlights-resources/point_3.png' },
-        { id: 'point_4', src: 'trafficlights-resources/point_4.png' },
-        { id: 'point_5', src: 'trafficlights-resources/point_5.png' },
-        { id: 'point_6', src: 'trafficlights-resources/point_6.png' },
-        { id: 'point_7', src: 'trafficlights-resources/point_7.png' },
-        { id: 'point_8', src: 'trafficlights-resources/point_8.png' },
-        { id: 'point_9', src: 'trafficlights-resources/point_9.png' },
         { id: 'road_h', src: 'trafficlights-resources/road_h.png' },
         { id: 'road_v', src: 'trafficlights-resources/road_v.png' },
         { id: 'car', src: 'trafficlights-resources/car.png' }
@@ -1061,11 +1061,15 @@ export class Trafficlights {
     x = roadWidth / 2
     let imgPoint;
     let px, py;
-
-    let fullX = ((roadCountX + 1) * roadWidth) + (roadCountX * roadLen);
-    let fullY = ((roadCountY + 1)* roadWidth) + (roadCountY * roadLen);
+    let ax, ay;
+    let ax1, ay1;
+    let ax2, ay2;
 
     i=0;
+
+    //var m = new createjs.Matrix2D();
+    //m.translate(x, y);
+    //m.scale(0.9, 0.9);
 
     for (var crossId1 in this._crossDic) 
     {
@@ -1097,12 +1101,16 @@ export class Trafficlights {
 
       point = this.getPointByCrossId(crossId1)
 
+      ax = -999;
+      ax1 = -999;
+      ax2 = -999;
+
       if (point != null) 
       {
         pointShape = new createjs.Shape()
-        pointShape.graphics.beginFill('gray')
-        //pointShape.graphics.beginStroke('blue')
-        // pointShape.graphics.moveTo(roadWidth/4, roadWidth/4 * 3).lineTo(roadWidth/4 * 2, roadWidth/4).lineTo(roadWidth/4 * 3, roadWidth/4 * 3).lineTo(roadWidth/4, roadWidth/4 * 3);
+        //pointShape.graphics.beginFill('yellow')
+        pointShape.graphics.beginStroke('yellow')
+        pointShape.graphics.setStrokeStyle(2);
        
         px = 0;
         py = 0;
@@ -1113,64 +1121,86 @@ export class Trafficlights {
           // -- крайний правый ряд
           if (cross.y == 0) {
             // -- правый верхний угол
-
             px = -roadWidth;
             py = roadWidth;
+            ax = -999;
 
           } else if (cross.y == this._levelSettings.roadCountY) {
             // -- правый нижний угол
             px = -roadWidth;
             py = -roadWidth;
+            ax = -999;
 
           } else {
             px = -roadWidth;
             py = -roadWidth;
+            ax = -roadWidth
+            ay = roadWidth;
           }
-        } else if (cross.x == 0) {
+        } 
+        else if (cross.x == 0) 
+        {
           // -- крайний левый ряд
-          if (cross.y == this._levelSettings.roadCountY) {
+          
+          if (cross.y == this._levelSettings.roadCountY ) 
+          {
             // -- левый нижний угол
             px = roadWidth;
             py = -roadWidth;
-
-          } else if (cross.y == 0) {
+            //ax = roadWidth
+            ay = -roadWidth;
+          } 
+          else if (cross.y == 0) 
+          {
             // -- верхний левый угол
             px = roadWidth;
             py = roadWidth;
           } else {
             px = roadWidth;
             py = -roadWidth;
+            ax = roadWidth
+            ay = roadWidth;
           }
-        } else if (cross.y == 0) {
+        } 
+        else if (cross.y == 0) 
+        {
           // -- верхний ряд
           px = roadWidth;
           py = roadWidth;
+          ax = -roadWidth
+          ay = roadWidth;
 
         } else if (cross.y == this._levelSettings.roadCountY) {
           // -- нижний ряд
           px = roadWidth;
           py = -roadWidth;
+          ax = -roadWidth
+          ay = -roadWidth;
 
         } else {
             px = roadWidth;
             py = -roadWidth;
+            ax = -roadWidth
+            ay = -roadWidth;
 
+            ax1 = roadWidth
+            ay1 = roadWidth;
+            ax2 = -roadWidth
+            ay2 = roadWidth;
         }
        
-        n = i % 10;
+        n = i % 2;
         s = '_' + n;
 
         imgPoint = this.kioapi.getResource('point' + s);
-
         pointShape.graphics.beginBitmapFill(imgPoint, "no-repeat");
-
-        pointShape.graphics.drawRect(0, 0, roadWidth + 1, roadWidth + 1)
+        pointShape.graphics.drawRect(2, 2, roadWidth - 5, roadWidth - 5)
         pointShape.x = px;
         pointShape.y = py;
-
-        //pointShape.graphics.endStroke()
-        //pointShape.graphics.endFill()
+        pointShape.graphics.endStroke()
         svetoCont.addChild(pointShape);
+
+
       }
 
       // -- перекресток верхнего уровня для клика и прорисовки
@@ -1196,6 +1226,63 @@ export class Trafficlights {
           _thisProblem.clickCross(this.id)
         })
       }
+      
+
+      //-- Заполняем пустоту
+
+      if(ax != -999)
+      {
+        pointShape = new createjs.Shape()
+        //pointShape.graphics.beginStroke('red')
+        //pointShape.graphics.setStrokeStyle(2);
+
+        n = i % 7;
+        s = '_' + n;
+
+        imgPoint = this.kioapi.getResource('a' + s);
+        pointShape.graphics.beginBitmapFill(imgPoint, "no-repeat");
+        pointShape.graphics.drawRect(2, 2, roadWidth - 5, roadWidth - 5)
+        pointShape.x = ax;
+        pointShape.y = ay;
+        svetoCont.addChild(pointShape);
+      }
+      if (ax1 != -999) 
+      {
+        n = (i + 1)% 7;
+        s = '_' + n;
+        pointShape = new createjs.Shape()
+        imgPoint = this.kioapi.getResource('a' + s);
+        pointShape.graphics.beginBitmapFill(imgPoint, "no-repeat");
+        pointShape.graphics.drawRect(2, 2, roadWidth - 5, roadWidth - 5)
+        pointShape.x = ax1;
+        pointShape.y = ay1;
+        svetoCont.addChild(pointShape);
+      }
+      if (ax2 != -999) {
+        n = (i + 2) % 7;
+        s = '_' + n;
+        pointShape = new createjs.Shape()
+        imgPoint = this.kioapi.getResource('a' + s);
+        pointShape.graphics.beginBitmapFill(imgPoint, "no-repeat");
+        pointShape.graphics.drawRect(2, 2, roadWidth - 5, roadWidth - 5)
+        pointShape.x = ax2;
+        pointShape.y = ay2;
+        svetoCont.addChild(pointShape);
+      }
+      if (crossId1 == '0:0')
+      {
+        n = (i + 3) % 7;
+        s = '_' + n;
+        pointShape = new createjs.Shape()
+        imgPoint = this.kioapi.getResource('a' + s);
+        pointShape.graphics.beginBitmapFill(imgPoint, "no-repeat");
+        pointShape.graphics.drawRect(2, 2, roadWidth - 5, roadWidth - 5)
+        pointShape.x = roadWidth;
+        pointShape.y = -roadWidth;
+        svetoCont.addChild(pointShape);
+      }
+
+
       i++;
     }
 
@@ -1434,6 +1521,7 @@ export class Trafficlights {
     let bgColor
     let roadWidth = this._levelSettings.roadWidth
     let roadLen = this._levelSettings.roadLen
+    let n, s;
 
     let img ;
 
@@ -1493,6 +1581,14 @@ export class Trafficlights {
     {      
         roadShape.graphics.beginBitmapFill(img, "no-repeat");
         roadShape.graphics.drawRect(0, 0, x1, y1);
+    }
+    else{
+      n = (3) % 7;
+      s = '_' + n;
+     // roadShape = new createjs.Shape()
+      let imgPoint = this.kioapi.getResource('a' + s);
+      roadShape.graphics.beginBitmapFill(imgPoint, "repeat");
+      roadShape.graphics.drawRect(0, 0, x1, y1);
     }
     roadShape.graphics.endStroke();
    // roadShape.graphics.endFill();
@@ -2010,7 +2106,6 @@ export class Trafficlights {
 
     let bgColorSelected = createjs.Graphics.getRGB(3, 192, 255, 0.7)
     let bgColorTrack = createjs.Graphics.getRGB(101, 255, 102, 0.7)
-    //let bgColorTrackStrelka = createjs.Graphics.getRGB(99, 193, 73, 0.8)
     let bgColorTrackStrelka = createjs.Graphics.getRGB(31, 191, 22, 0.8)
 
     let trackNode, roadNext
@@ -2341,9 +2436,10 @@ export class Trafficlights {
         'cross_' + this._selectedCrossId
       )
       crossShape.graphics.clear()
-
+      
       crossShape.graphics.beginFill(
-        createjs.Graphics.getRGB(239, 239, 127, 0.7)
+        //createjs.Graphics.getRGB(239, 239, 127, 0.7)
+        createjs.Graphics.getRGB(242, 255, 8, 0.9)
       )
       crossShape.graphics.drawRect(1, 1, roadWidth - 2, roadWidth - 2)
       crossShape.graphics.endFill()
