@@ -18,7 +18,7 @@ export class Trafficlights {
   _levelSettings
   CANVAS_DOP_W = 500
   CANVAS_DOP_H = 0
-  BGCOLOR_KARTA = 'lightgray'
+  BGCOLOR_KARTA = 'gray'
   _stageBottom
   _stageTop
   _crossDic = {}
@@ -65,6 +65,7 @@ export class Trafficlights {
     var i, j
     this.settings = settings
     let sveto
+
 
     // console.log('this.settings=');
     // console.log(this.settings);
@@ -215,7 +216,24 @@ export class Trafficlights {
 
   static preloadManifest () {
     console.log('preloadManifest()')
-    return [{ id: 'slider_p', src: 'trafficlights-resources/slider_p.png' }] // TODO перечислить загружаемые ресурсы. Они находятся в каталоге taskid-resources
+    return [
+        { id: 'slider_p', src: 'trafficlights-resources/slider_p.png' },
+        { id: 'cross', src: 'trafficlights-resources/cross.png' },
+        { id: 'background', src: 'trafficlights-resources/background.png' },
+        { id: 'point_0', src: 'trafficlights-resources/point_0.png' },
+        { id: 'point_1', src: 'trafficlights-resources/point_1.png' },
+        { id: 'point_2', src: 'trafficlights-resources/point_2.png' },
+        { id: 'point_3', src: 'trafficlights-resources/point_3.png' },
+        { id: 'point_4', src: 'trafficlights-resources/point_4.png' },
+        { id: 'point_5', src: 'trafficlights-resources/point_5.png' },
+        { id: 'point_6', src: 'trafficlights-resources/point_6.png' },
+        { id: 'point_7', src: 'trafficlights-resources/point_7.png' },
+        { id: 'point_8', src: 'trafficlights-resources/point_8.png' },
+        { id: 'point_9', src: 'trafficlights-resources/point_9.png' },
+        { id: 'road_h', src: 'trafficlights-resources/road_h.png' },
+        { id: 'road_v', src: 'trafficlights-resources/road_v.png' },
+        { id: 'car', src: 'trafficlights-resources/car.png' }
+    ] // TODO перечислить загружаемые ресурсы. Они находятся в каталоге taskid-resources
   }
 
   parameters () {
@@ -226,8 +244,8 @@ export class Trafficlights {
         ];
         */
 
-    return [
-      {
+    
+      let _isTrackFull = {
         name: '_isTrackFull',
         title: 'Маршрут закончен:',
         ordering: 'maximize',
@@ -238,23 +256,37 @@ export class Trafficlights {
             return 'Нет'
           }
         }
-      },
-      {
+      }
+      let _pointCount = {
         name: '_pointCount',
         title: 'Пройдено достопримечательностей:',
         ordering: 'maximize'
-      },
-      {
+      }
+      let _roadCount = {
         name: '_roadCount',
         title: 'Пройденный путь:',
         ordering: 'minimize'
-      },
-      {
+      }
+
+      let _tikCount = {
         name: '_tikCount',
         title: 'Время в пути:',
         ordering: 'minimize'
       }
-    ]
+
+      if(this._currentSolution._level == 2)
+      {
+          return[_isTrackFull, _pointCount, _tikCount, _roadCount ];
+      }
+      else  if(this._currentSolution._level == 1)
+      {
+          return[_isTrackFull, _pointCount, _roadCount , _tikCount];
+      }
+      else
+      {
+        return[ _pointCount, _roadCount, _tikCount];
+      }
+    
   }
 
   solution () {
@@ -477,6 +509,7 @@ export class Trafficlights {
   _goSvetsArr = []
   _goSliderNoValue2 = false
   _goArr = []
+  _carW;
 
   goShowTik (newTik) {
     this._tikDiv.innerHTML = this._globalTik //  newTik;
@@ -638,7 +671,7 @@ export class Trafficlights {
           goStep.x = roadShape.x + roadLen - tt * j + roadWidth
           goStep.y = roadShape.y + (roadWidth - this._carW / 2) - 2
         } else if (direct == 'T') {
-          goStep.x = roadShape.x + (roadWidth / 2 + this._carW / 2 - 2)
+          goStep.x = roadShape.x + (roadWidth / 2 + this._carW / 2 - 2 - 10)
           goStep.y = roadShape.y + roadLen - tt * j + this._carW / 2
         } else if (direct == 'B') {
           goStep.x = roadShape.x + roadWidth / 2 - 5
@@ -752,7 +785,7 @@ export class Trafficlights {
           if (goStep._direct != this._goLastDirect) {
             if (this._goLastDirect == 'R') {
               if (goStep._direct == 'T') {
-                this._goShape.rotation = 90
+                this._goShape.rotation = -90
               } else if (goStep._direct == 'B') {
                 this._goShape.rotation = -90
               }
@@ -862,13 +895,9 @@ export class Trafficlights {
     }
 
     this.goSetTik(this._currentResult._tikCount)
-
-    // this.goContinue();
-
-    // this.goPause();
   }
 
-  _carW
+  
 
   addPoint (crossId) {
     if (!this._pointsExclDic.hasOwnProperty(crossId)) {
@@ -887,7 +916,7 @@ export class Trafficlights {
     this._stageTop.nextStage = this._stageBottom
 
     this._stageGo = new createjs.Stage(this._canvasGo)
-
+    let i;
     let X, Y
     let crossId, crossIdNext, x, y, roadId
 
@@ -900,13 +929,17 @@ export class Trafficlights {
 
     let backGroundShape = new createjs.Shape()
     backGroundShape.graphics.beginFill(this.BGCOLOR_KARTA)
+
+    let img = this.kioapi.getResource('background');
+    backGroundShape.graphics.beginBitmapFill(img, "repeat");
+
     backGroundShape.graphics.drawRect(
       10,
       10,
       roadLen * (roadCountX - 1) + (roadWidth * (roadCountX - 1) + roadWidth),
       roadLen * roadCountY + roadWidth * roadCountY + roadWidth
     )
-    backGroundShape.graphics.endFill()
+    //backGroundShape.graphics.endFill()
 
     this._stageBottom.addChild(backGroundShape)
 
@@ -1023,11 +1056,19 @@ export class Trafficlights {
     let svetoShape, pointShape
     let hit
     let sveto, point
-
+    let n, s;
     let r = roadWidth / 8
     x = roadWidth / 2
+    let imgPoint;
+    let px, py;
 
-    for (var crossId1 in this._crossDic) {
+    let fullX = ((roadCountX + 1) * roadWidth) + (roadCountX * roadLen);
+    let fullY = ((roadCountY + 1)* roadWidth) + (roadCountY * roadLen);
+
+    i=0;
+
+    for (var crossId1 in this._crossDic) 
+    {
       cross = this._crossDic[crossId1]
 
       svetoCont = new createjs.Container()
@@ -1039,209 +1080,97 @@ export class Trafficlights {
 
       crossShape = new createjs.Shape()
       if (cross._crossId == this._finishCrossId) {
-        crossShape.graphics.beginFill('red')
+        crossShape.graphics.beginFill('gray')
       } else if (cross._crossId == this._startCrossId) {
         crossShape.graphics.beginFill('limegreen')
       } else {
         crossShape.graphics.beginFill('white')
       }
+
+      img = this.kioapi.getResource('cross');
+
+      crossShape.graphics.beginBitmapFill(img, "no-repeat");
+
       crossShape.graphics.drawRect(0, 0, roadWidth + 1, roadWidth + 1)
       crossShape.graphics.endFill()
       svetoCont.addChild(crossShape)
 
       point = this.getPointByCrossId(crossId1)
 
-      if (point != null) {
+      if (point != null) 
+      {
         pointShape = new createjs.Shape()
-        pointShape.graphics.beginFill('blue')
-        pointShape.graphics.beginStroke('blue')
+        pointShape.graphics.beginFill('gray')
+        //pointShape.graphics.beginStroke('blue')
         // pointShape.graphics.moveTo(roadWidth/4, roadWidth/4 * 3).lineTo(roadWidth/4 * 2, roadWidth/4).lineTo(roadWidth/4 * 3, roadWidth/4 * 3).lineTo(roadWidth/4, roadWidth/4 * 3);
+       
+        px = 0;
+        py = 0;
 
-        if (cross.x == this._levelSettings.roadCountX - 1) {
+
+        if (cross.x == this._levelSettings.roadCountX - 1) 
+        {
           // -- крайний правый ряд
           if (cross.y == 0) {
             // -- правый верхний угол
-            pointShape.graphics
-              .moveTo(
-                roadWidth / 4 - roadWidth,
-                (roadWidth / 4) * 3 + roadWidth
-              )
-              .lineTo(
-                (roadWidth / 4) * 2 - roadWidth,
-                roadWidth / 4 + roadWidth
-              )
-              .lineTo(
-                (roadWidth / 4) * 3 - roadWidth,
-                (roadWidth / 4) * 3 + roadWidth
-              )
-              .lineTo(
-                roadWidth / 4 - roadWidth,
-                (roadWidth / 4) * 3 + roadWidth
-              )
+
+            px = -roadWidth;
+            py = roadWidth;
+
           } else if (cross.y == this._levelSettings.roadCountY) {
             // -- правый нижний угол
-            pointShape.graphics
-              .moveTo(
-                roadWidth / 4 - roadWidth,
-                (roadWidth / 4) * 3 - roadWidth
-              )
-              .lineTo(
-                (roadWidth / 4) * 2 - roadWidth,
-                roadWidth / 4 - roadWidth
-              )
-              .lineTo(
-                (roadWidth / 4) * 3 - roadWidth,
-                (roadWidth / 4) * 3 - roadWidth
-              )
-              .lineTo(
-                roadWidth / 4 - roadWidth,
-                (roadWidth / 4) * 3 - roadWidth
-              )
+            px = -roadWidth;
+            py = -roadWidth;
+
           } else {
-            pointShape.graphics
-              .moveTo(
-                roadWidth / 4 - roadWidth,
-                (roadWidth / 4) * 3 - roadWidth
-              )
-              .lineTo(
-                (roadWidth / 4) * 2 - roadWidth,
-                roadWidth / 4 - roadWidth
-              )
-              .lineTo(
-                (roadWidth / 4) * 3 - roadWidth,
-                (roadWidth / 4) * 3 - roadWidth
-              )
-              .lineTo(
-                roadWidth / 4 - roadWidth,
-                (roadWidth / 4) * 3 - roadWidth
-              )
+            px = -roadWidth;
+            py = -roadWidth;
           }
         } else if (cross.x == 0) {
           // -- крайний левый ряд
           if (cross.y == this._levelSettings.roadCountY) {
             // -- левый нижний угол
-            pointShape.graphics
-              .moveTo(
-                roadWidth / 4 + roadWidth,
-                (roadWidth / 4) * 3 - roadWidth
-              )
-              .lineTo(
-                (roadWidth / 4) * 2 + roadWidth,
-                roadWidth / 4 - roadWidth
-              )
-              .lineTo(
-                (roadWidth / 4) * 3 + roadWidth,
-                (roadWidth / 4) * 3 - roadWidth
-              )
-              .lineTo(
-                roadWidth / 4 + roadWidth,
-                (roadWidth / 4) * 3 - roadWidth
-              )
+            px = roadWidth;
+            py = -roadWidth;
+
           } else if (cross.y == 0) {
             // -- верхний левый угол
-            pointShape.graphics
-              .moveTo(
-                roadWidth / 4 + roadWidth,
-                (roadWidth / 4) * 3 + roadWidth
-              )
-              .lineTo(
-                (roadWidth / 4) * 2 + roadWidth,
-                roadWidth / 4 + roadWidth
-              )
-              .lineTo(
-                (roadWidth / 4) * 3 + roadWidth,
-                (roadWidth / 4) * 3 + roadWidth
-              )
-              .lineTo(
-                roadWidth / 4 + roadWidth,
-                (roadWidth / 4) * 3 + roadWidth
-              )
+            px = roadWidth;
+            py = roadWidth;
           } else {
-            pointShape.graphics
-              .moveTo(
-                roadWidth / 4 + roadWidth,
-                (roadWidth / 4) * 3 - roadWidth
-              )
-              .lineTo(
-                (roadWidth / 4) * 2 + roadWidth,
-                roadWidth / 4 - roadWidth
-              )
-              .lineTo(
-                (roadWidth / 4) * 3 + roadWidth,
-                (roadWidth / 4) * 3 - roadWidth
-              )
-              .lineTo(
-                roadWidth / 4 + roadWidth,
-                (roadWidth / 4) * 3 - roadWidth
-              )
+            px = roadWidth;
+            py = -roadWidth;
           }
         } else if (cross.y == 0) {
           // -- верхний ряд
-          pointShape.graphics
-            .moveTo(roadWidth / 4 + roadWidth, (roadWidth / 4) * 3 + roadWidth)
-            .lineTo((roadWidth / 4) * 2 + roadWidth, roadWidth / 4 + roadWidth)
-            .lineTo(
-              (roadWidth / 4) * 3 + roadWidth,
-              (roadWidth / 4) * 3 + roadWidth
-            )
-            .lineTo(roadWidth / 4 + roadWidth, (roadWidth / 4) * 3 + roadWidth)
+          px = roadWidth;
+          py = roadWidth;
+
         } else if (cross.y == this._levelSettings.roadCountY) {
           // -- нижний ряд
-          pointShape.graphics
-            .moveTo(roadWidth / 4 + roadWidth, (roadWidth / 4) * 3 - roadWidth)
-            .lineTo((roadWidth / 4) * 2 + roadWidth, roadWidth / 4 - roadWidth)
-            .lineTo(
-              (roadWidth / 4) * 3 + roadWidth,
-              (roadWidth / 4) * 3 - roadWidth
-            )
-            .lineTo(roadWidth / 4 + roadWidth, (roadWidth / 4) * 3 - roadWidth)
+          px = roadWidth;
+          py = -roadWidth;
+
         } else {
-          pointShape.graphics
-            .moveTo(roadWidth / 4 + roadWidth, (roadWidth / 4) * 3 - roadWidth)
-            .lineTo((roadWidth / 4) * 2 + roadWidth, roadWidth / 4 - roadWidth)
-            .lineTo(
-              (roadWidth / 4) * 3 + roadWidth,
-              (roadWidth / 4) * 3 - roadWidth
-            )
-            .lineTo(roadWidth / 4 + roadWidth, (roadWidth / 4) * 3 - roadWidth)
+            px = roadWidth;
+            py = -roadWidth;
+
         }
+       
+        n = i % 10;
+        s = '_' + n;
 
-        pointShape.graphics.endStroke()
-        pointShape.graphics.endFill()
-        svetoCont.addChild(pointShape)
-      }
-      // else
-      {
-        /*
-                sveto = this.getSvetoByCrossId(crossId1);
+        imgPoint = this.kioapi.getResource('point' + s);
 
-                if(sveto != null && cross._crossId != this._finishCrossId && cross._crossId != '0:0')
-                {
-                    y =  (roadWidth/4);
+        pointShape.graphics.beginBitmapFill(imgPoint, "no-repeat");
 
-                    svetoShape = new createjs.Shape();
-                    svetoShape.graphics.beginFill('red');
-                    svetoShape.graphics.drawCircle(x, y, r);
-                    svetoShape.graphics.endFill();
-                    svetoCont.addChild(svetoShape);
+        pointShape.graphics.drawRect(0, 0, roadWidth + 1, roadWidth + 1)
+        pointShape.x = px;
+        pointShape.y = py;
 
-                    y = y + r*2;
-
-                    svetoShape = new createjs.Shape();
-                    svetoShape.graphics.beginFill('#f6cd38');
-                    svetoShape.graphics.drawCircle(x, y, r);
-                    svetoShape.graphics.endFill();
-                    svetoCont.addChild(svetoShape);
-
-                    y = y + r*2;
-
-                    svetoShape = new createjs.Shape();
-                    svetoShape.graphics.beginFill('green');
-                    svetoShape.graphics.drawCircle(x, y, r);
-                    svetoShape.graphics.endFill();
-                    svetoCont.addChild(svetoShape);
-                }
-                */
+        //pointShape.graphics.endStroke()
+        //pointShape.graphics.endFill()
+        svetoCont.addChild(pointShape);
       }
 
       // -- перекресток верхнего уровня для клика и прорисовки
@@ -1267,6 +1196,7 @@ export class Trafficlights {
           _thisProblem.clickCross(this.id)
         })
       }
+      i++;
     }
 
     let R
@@ -1311,13 +1241,18 @@ export class Trafficlights {
 
     // -- машинка
 
+    let imgCar = this.kioapi.getResource('car');
+
     this._carW = roadWidth / 2
 
     this._goShape = new createjs.Shape()
     this._goShape.x = -10
     this._goShape.y = -10
-    this._goShape.graphics.beginFill('red')
-    this._goShape.graphics.beginStroke('red')
+    //this._goShape.graphics.beginFill('101, 255, 102')
+    //this._goShape.graphics.beginStroke(createjs.Graphics.getRGB('101, 255, 102'));
+
+    this._goShape.graphics.beginBitmapFill(imgCar, "no-repeat");
+/*
     this._goShape.graphics.drawRoundRectComplex(
       0,
       0,
@@ -1328,9 +1263,10 @@ export class Trafficlights {
       4,
       4
     )
-    // this._goShape.graphics.drawRect(0,0, this._carW, 10);
+    */
+     this._goShape.graphics.drawRect(0,0, this._carW, 10);
     this._goShape.graphics.endStroke()
-    this._goShape.graphics.endFill()
+    //this._goShape.graphics.endFill()
     this._stageTop.addChild(this._goShape)
 
     this._ggg = 1
@@ -1499,7 +1435,20 @@ export class Trafficlights {
     let roadWidth = this._levelSettings.roadWidth
     let roadLen = this._levelSettings.roadLen
 
-    if (this.isRoadBlocked(roadId)) {
+    let img ;
+
+    if(vh == 'v')
+    {
+        img = this.kioapi.getResource('road_v');
+    }
+    else{
+        img = this.kioapi.getResource('road_h');
+    }
+    
+    
+
+    if (this.isRoadBlocked(roadId)) 
+    {
       bgColor = this.BGCOLOR_KARTA
       isBlocked = true
     } else {
@@ -1508,14 +1457,15 @@ export class Trafficlights {
     }
 
     let roadShape = new createjs.Shape()
-    roadShape.graphics.beginFill(bgColor)
-    // roadShape.graphics.beginStroke('red');
+    //roadShape.graphics.beginFill(bgColor)
+    roadShape.graphics.beginStroke('gray');
     roadShape.graphics.setStrokeStyle(1)
     roadShape.vh = vh
-    // roadShape.id = roadId;
     roadShape.name = 'roadB_' + roadId
     roadShape.absX = x
-    roadShape.absY = y
+    roadShape.absY = y;
+
+
 
     let x1, y1
 
@@ -1536,9 +1486,16 @@ export class Trafficlights {
       y1 = roadWidth
     }
 
-    roadShape.graphics.drawRect(0, 0, x1, y1)
+   // roadShape.graphics.drawRect(0, 0, x1, y1)
 
-    roadShape.graphics.endFill()
+
+    if(!isBlocked)
+    {      
+        roadShape.graphics.beginBitmapFill(img, "no-repeat");
+        roadShape.graphics.drawRect(0, 0, x1, y1);
+    }
+    roadShape.graphics.endStroke();
+   // roadShape.graphics.endFill();
 
     this._stageBottom.addChild(roadShape)
 
@@ -1546,7 +1503,7 @@ export class Trafficlights {
 
     let roadShapeBot = new createjs.Shape()
     // roadShapeBot.graphics.beginFill('green');
-    roadShapeBot.graphics.beginStroke('red')
+    roadShapeBot.graphics.beginStroke('gray')
     roadShapeBot.graphics.setStrokeStyle(2)
     // roadShapeBot.graphics.drawRect(0, 0, x1, y1);
     // roadShapeBot.graphics.endFill();
@@ -1555,7 +1512,7 @@ export class Trafficlights {
     roadShapeBot.absX = roadShape.absX
     roadShapeBot.absY = roadShape.absY
 
-    if (this.isRoadBlocked(roadId)) {
+    if (isBlocked) {
       // -- дорога найдена в списке запрещенных
       if (roadShape.vh == 'v') {
         roadShapeBot.graphics.moveTo(0, 0)
@@ -2051,9 +2008,10 @@ export class Trafficlights {
       this._goArr = []
     }
 
-    let bgColorSelected = createjs.Graphics.getRGB(160, 196, 239, 0.7)
-    let bgColorTrack = createjs.Graphics.getRGB(101, 237, 124, 0.7)
-    let bgColorTrackStrelka = createjs.Graphics.getRGB(99, 193, 73, 0.8)
+    let bgColorSelected = createjs.Graphics.getRGB(3, 192, 255, 0.7)
+    let bgColorTrack = createjs.Graphics.getRGB(101, 255, 102, 0.7)
+    //let bgColorTrackStrelka = createjs.Graphics.getRGB(99, 193, 73, 0.8)
+    let bgColorTrackStrelka = createjs.Graphics.getRGB(31, 191, 22, 0.8)
 
     let trackNode, roadNext
     let road, roadShape, croaaId1, crossId2
@@ -2110,6 +2068,7 @@ export class Trafficlights {
     let crossIdDic = {}
     let isRoadInTrack
     this._stageTop.clear()
+    let isRoadSelected;
 
     for (var crossIdkey in this._crossDic) {
       crossShape = this._stageTop.getChildByName('cross_' + crossIdkey)
@@ -2128,7 +2087,10 @@ export class Trafficlights {
 
       roadShape = this._stageTop.getChildByName('road_' + road._id)
 
-      if (this.isRoadSelected(road._id)) {
+      isRoadSelected = this.isRoadSelected(road._id);
+
+      if (isRoadSelected) 
+      {
         if (this.isRoadInTrack(road._id)) {
           isRoadInTrack = true
           bgColor = bgColorTrack
@@ -2157,18 +2119,25 @@ export class Trafficlights {
           crossShape.graphics.drawRect(1, 1, roadWidth - 2, roadWidth - 2)
           crossShape.graphics.endFill()
         }
-      } else {
-        bgColor = 'white'
+      } 
+      else {
+        bgColor = 'white' 
       }
 
-      if (!this.isRoadBlocked(road._id)) {
+      if (!this.isRoadBlocked(road._id)) 
+      {
         roadShape.graphics.clear()
 
-        roadShape.graphics.beginFill(bgColor)
-        if (roadShape.vh == 'h') {
-          roadShape.graphics.drawRect(-1, 1, roadShape.w + 1, roadShape.h - 2)
-        } else {
-          roadShape.graphics.drawRect(1, -1, roadShape.w - 2, roadShape.h + 1)
+        if(isRoadSelected)
+        {
+            roadShape.graphics.beginFill(bgColor)
+            if (roadShape.vh == 'h') {
+              roadShape.graphics.drawRect(-1, 1, roadShape.w + 1, roadShape.h - 2)
+            } else {
+              roadShape.graphics.drawRect(1, -1, roadShape.w - 2, roadShape.h + 1)
+            }
+            roadShape.graphics.endFill();
+    
         }
 
         if (isRoadInTrack) {
@@ -2353,7 +2322,7 @@ export class Trafficlights {
           roadShape.graphics.endStroke()
         }
 
-        roadShape.graphics.endFill()
+       // roadShape.graphics.endFill()
       }
     }
 
@@ -2615,7 +2584,8 @@ export class Trafficlights {
     }
   }
 
-  createCurrentSolution () {
+  createCurrentSolution () 
+  {
     // console.log('createCurrentSolution()');
 
     this._currentSolution._roadSelectedDic = this._roadSelectedDic
@@ -2623,10 +2593,8 @@ export class Trafficlights {
     this._currentSolution._firstTrackRoadId = this._firstTrackRoadId
     this._currentSolution._isTrackFull = this._isTrackFull
 
-    if (
-      this._currentSolution._isTrackFull ||
-      this._currentSolution.level == 0
-    ) {
+    //if ( this._currentSolution._isTrackFull || this._currentSolution.level == 0) 
+    {
       this._currentSolution._tikCount = this._currentResult._tikCount
       this._currentSolution._waitCount = this._currentResult._waitCount
       this._currentSolution._roadCount = Helper.dicLen(this._fullTrackDic)
@@ -2648,13 +2616,16 @@ export class Trafficlights {
       }
 
       this._currentSolution._pointCount = cnt
-    } else {
+    } 
+    /*
+    else {
       this._currentSolution._tikCount = 0
       this._currentSolution._waitCount = 0
       this._currentSolution._roadCount = 0
       this._currentSolution._stopCount = 0
       this._currentSolution._pointCount = 0
     }
+    */
   }
 
   saveCurrentSolution () {
