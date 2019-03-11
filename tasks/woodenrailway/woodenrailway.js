@@ -14,6 +14,8 @@ export class Woodenrailway {
      */
     constructor(settings) {
         this.settings = settings;
+        this.level = this.settings.level;
+
     }
 
     /**
@@ -33,7 +35,6 @@ export class Woodenrailway {
      */
     initialize(domNode, kioapi, preferred_width) {
         this.kioapi = kioapi;
-        this.level = this.settings.level;
 
         let tools = this.create_tools_div();
         this.info = this.create_info_div();
