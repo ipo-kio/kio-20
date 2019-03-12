@@ -16,7 +16,7 @@ var _thisProblem
 export class Trafficlights {
   _currentSolution
   _levelSettings
-  CANVAS_DOP_W = 500
+  CANVAS_DOP_W = 110
   CANVAS_DOP_H = 0
   BGCOLOR_KARTA = 'gray'
   _stageBottom
@@ -1321,8 +1321,8 @@ export class Trafficlights {
     this._infoBoxConteiner = new createjs.Container()
     this._infoBoxConteiner.name = 'infoBoxConteiner'
     this._infoBoxConteiner.x =
-      roadCountX * roadLen + roadCountX * roadWidth - 40
-    this._infoBoxConteiner.y = 10
+      roadCountX * roadLen + roadCountX * roadWidth - 30
+    this._infoBoxConteiner.y = 12
     // this._infoBoxConteiner .setBounds(0, 0, 210, 100);
     this._stageTop.addChild(this._infoBoxConteiner)
 
@@ -2450,6 +2450,7 @@ export class Trafficlights {
         let svShape1, svShape, svetoCont
         let r = 5
         let w = 80
+        let h = 80
         let pr, sidePr
         let canF, canL, canR
         let trackProgInx
@@ -2469,8 +2470,8 @@ export class Trafficlights {
           svetoCont = new createjs.Container()
           svetoCont.name = 'infoBoxConteiner'
           svetoCont.id = 'svetocont_' + i
-          svetoCont.x = w * i + 20 * i
-          svetoCont.y = 0
+          svetoCont.x = 0
+          svetoCont.y = w * i + 20 * i
           this._infoBoxConteiner.addChild(svetoCont)
 
           svetoCont.on('click', function (evt) {
