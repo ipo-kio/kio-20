@@ -2466,7 +2466,7 @@ export class Trafficlights {
 
         this._infoBoxConteiner.removeAllChildren()
 
-        for (i = 0; i < sveto._programma.length; i++) {
+        for (let i = 0; i < sveto._programma.length; i++) {
           svetoCont = new createjs.Container()
           svetoCont.name = 'infoBoxConteiner'
           svetoCont.id = 'svetocont_' + i
