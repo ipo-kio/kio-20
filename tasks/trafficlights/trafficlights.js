@@ -346,13 +346,11 @@ export class Trafficlights {
     let roadLen = this._levelSettings.roadLen
     let div
 
-    let w = preferred_width - 16;
-    /*
+    let w =
       20 +
       (this._levelSettings.roadCountX - 1) * roadLen +
       this._levelSettings.roadCountX * roadWidth +
-      this.CANVAS_DOP_W // 900;
-      */
+      this.CANVAS_DOP_W;
     let h =
       20 +
       this._levelSettings.roadCountY * roadLen +
