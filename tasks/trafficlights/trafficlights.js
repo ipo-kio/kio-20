@@ -276,15 +276,15 @@ export class Trafficlights {
 
       if(this._currentSolution._level == 2)
       {
-          return[_isTrackFull, _pointCount, _tikCount, _roadCount ];
+          return[_isTrackFull, _pointCount, _tikCount, _roadCount];
       }
       else  if(this._currentSolution._level == 1)
       {
-          return[_isTrackFull, _pointCount , _tikCount, _roadCount];
+          return[_isTrackFull, _pointCount, _roadCount, _tikCount];
       }
       else
       {
-        return[ _pointCount, _tikCount, _roadCount];
+        return[_pointCount, _roadCount, _tikCount];
       }
     
   }
