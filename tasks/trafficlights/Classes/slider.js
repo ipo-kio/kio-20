@@ -114,12 +114,12 @@ export class Slider {
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         // bar
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 4;
         ctx.lineCap = 'round';
         ctx.beginPath();
         ctx.moveTo(0, this.canvas.height / 2);
         ctx.lineTo(this.canvas.width, this.canvas.height / 2);
-        ctx.strokeStyle = 'black'; //--#f7f700
+        ctx.strokeStyle = '#085e7d'; //--#f7f700
         ctx.stroke();
 
         let xx = this.value_2_pos(this._visible_max_value) + this.img.width / 2;
@@ -175,7 +175,7 @@ export class Slider {
         ctx.beginPath();
         ctx.moveTo(0, this.canvas.height / 2 + 5);
         ctx.lineTo(tikPos + imgW2, this.canvas.height / 2 + 5);
-        ctx.strokeStyle = 'green'; //--#f7f700
+        ctx.strokeStyle = '#37d538'; //--#f7f700
         ctx.stroke();
 
 

@@ -56,6 +56,7 @@ export class Trafficlights {
   _fullTrackDic = {}
   _currentResult = new Result()
   _lastTrackRoadId = ''
+  _trackPointsDic = {};
   /**
    *
    * @param settings Объект с настройками задачи. В данный момент, внутри объекта settings ожидается только поле level,
@@ -218,6 +219,7 @@ export class Trafficlights {
     //console.log('preloadManifest()')
     return [
         { id: 'slider_p', src: 'trafficlights-resources/slider_p.png' },
+        { id: 'start', src: 'trafficlights-resources/start.png' },
         { id: 'cross', src: 'trafficlights-resources/cross.png' },
         { id: 'background', src: 'trafficlights-resources/background.png' },
         { id: 'a_0', src: 'trafficlights-resources/a_0.png' },
@@ -344,11 +346,13 @@ export class Trafficlights {
     let roadLen = this._levelSettings.roadLen
     let div
 
-    let w =
+    let w = preferred_width - 16;
+    /*
       20 +
       (this._levelSettings.roadCountX - 1) * roadLen +
       this._levelSettings.roadCountX * roadWidth +
       this.CANVAS_DOP_W // 900;
+      */
     let h =
       20 +
       this._levelSettings.roadCountY * roadLen +
@@ -410,9 +414,11 @@ export class Trafficlights {
     controlDiv.appendChild(btn)
 
     btn = document.createElement('button')
-    btn.innerHTML = '&#8214;' // -- ||
+    btn.innerHTML = '&#108;&#108;' // -- ||&#8214;
     btn.id = 'go_btn_pause'
     btn.title = 'Пауза'
+    btn.style.fontSize = '16px'
+    btn.style.paddingTop = '5px'
     btn.className = 'go_btn1'
     btn.addEventListener('click', function (evt) {
       _thisProblem.goPause()
@@ -430,7 +436,7 @@ export class Trafficlights {
     controlDiv.appendChild(btn)
 
     btn = document.createElement('button')
-    btn.innerHTML = '&#8678;'
+    btn.innerHTML = '&#8722;'; //'&#8678;'
     btn.id = 'go_btn_plus'
     btn.title = 'Шаг назад'
     btn.className = 'go_btn1'
@@ -447,7 +453,7 @@ export class Trafficlights {
     controlDiv.appendChild(this._tikDiv)
 
     btn = document.createElement('button')
-    btn.innerHTML = '&#8680;'
+    btn.innerHTML = '&#43;';//'&#8680;'
     btn.id = 'go_btn_plus'
     btn.title = 'Шаг вперед'
     btn.className = 'go_btn1'
@@ -595,13 +601,13 @@ export class Trafficlights {
     this._globalTik = tik
 
     if (this._globalTik > this._currentResult._tikCount) {
-      this.sliderSetValue()
-
-      this.drawSveto()
+      this.sliderSetValue() 
+      this.drawSveto()  
       this.updateTop()
     } else {
       this.goSetTik(this._globalTik)
     }
+    this.updateTracks();
   }
 
   goCreate () {
@@ -632,7 +638,7 @@ export class Trafficlights {
     let roadLen = this._levelSettings.roadLen
     let svetoCross, cross1
 
-    let len = roadLen + roadWidth
+    let len = roadLen + roadWidth - 10
     let nextTik = -1
     let ttD = Math.round(len / 3) // -- количество шажков, за которое проедем участок
     let tt = Math.round(len / ttD) // -- количество точек в одном шажке
@@ -641,14 +647,9 @@ export class Trafficlights {
 
     let prevx = 0
 
-    for (
-      i = 0;
-      i < this._fullTrackRoadIds.length;
-      i++
-    ) // for(let srossIdKey in this._svetoDic)
+    for (i = 0; i < this._fullTrackRoadIds.length; i++) 
     {
       // sveto = this._svetoDic[srossIdKey];
-
       // trackNode = this.getTrackNodeByCrossId2(sveto._crossId);
 
       roadId = this._fullTrackRoadIds[i]
@@ -659,31 +660,42 @@ export class Trafficlights {
       direct = trackNode._direct
 
 
+
       for (j = 0; j < ttD; j++) {
         goStep = new Object()
         goStep._tik = nextTik // trackNode._fullTikCount;
         goStep._waitCount = 0
+        goStep._direct = direct
+        goStep._tik = nextTik
 
-        if (direct == 'R') {
+        this._goArr.push(goStep)
+
+        if (direct == 'R') 
+        {
           goStep.x = roadShape.x + tt * j - roadWidth / 2 - this._carW
           goStep.y = roadShape.y + (roadWidth / 2 - this._carW / 2 + 2)
-        } else if (direct == 'L') {
+        } 
+        else if (direct == 'L') {
           goStep.x = roadShape.x + roadLen - tt * j + roadWidth
           goStep.y = roadShape.y + (roadWidth - this._carW / 2) - 2
-        } else if (direct == 'T') {
+        } 
+        else if (direct == 'T') 
+        {
           goStep.x = roadShape.x + (roadWidth / 2 + this._carW / 2 - 2 - 10)
-          goStep.y = roadShape.y + roadLen - tt * j + this._carW / 2
+          goStep.y = roadShape.y + roadLen - tt * j + this._carW / 2 + 15
         } else if (direct == 'B') {
           goStep.x = roadShape.x + roadWidth / 2 - 5
           goStep.y = roadShape.y + tt * j - roadWidth / 2
         }
 
-        if (j == Math.round(ttD - 12)) {
+        if (j == Math.round(ttD - 5)) 
+        {
           // -- предпоследний такт (почти)
 
           let nextNode = this.getNextTrackNode(trackNode._road._id)
 
-          if (nextNode != null) {
+          if (nextNode != null) 
+          {
             goStep._waitTik = 0
 
             if (nextNode._thisTikCount > 1) {
@@ -719,25 +731,34 @@ export class Trafficlights {
               }
             }
 
-            goStep._tik = nextTik
+            
+
+            if(direct != nextNode._direct)
+            {
+              //j = j + 5
+            }
+
           } else {
             goStep._waitTik = 0
           }
+
+
+
         } else {
           goStep._waitTik = 0
         }
 
-        goStep._direct = direct
+        
 
         if (j > ttD - 5) {
           goStep._tik = goStep._tik + 1
         }
 
-        this._goArr.push(goStep)
+        //this._goArr.push(goStep)
       }
     }
 
-    // console.log(this._goArr);
+    //console.log(this._goArr);
     // console.log(this._goSvetsArr);
 
     this._goStepIndex = ttD - 10
@@ -753,20 +774,16 @@ export class Trafficlights {
 
   goNext2 () {
     // console.log('goNext2() this._goStepIndex=' + this._goStepIndex + ' this._goArr.length=' + this._goArr.length)
-    if (!this._goStopFlag) {
+    if (!this._goStopFlag) 
+    {
       let i
-      let crossShape
-      let colorRed, colorGreen, colorYellow
-      let y, w
-      let div, divScale
-      let svetoSide, canLR, canTB
 
-      let roadWidth = this._levelSettings.roadWidth
+      //let roadWidth = this._levelSettings.roadWidth
+      //let r = roadWidth / 8
+      //let x = roadWidth / 2
 
-      let r = roadWidth / 8
-      let x = roadWidth / 2
-
-      if (this._goStepIndex < this._goArr.length) {
+      if (this._goStepIndex < this._goArr.length) 
+      {
         let goStep = this._goArr[this._goStepIndex]
 
         // -- мигаем светофором
@@ -803,7 +820,7 @@ export class Trafficlights {
                 this._goShape.rotation = -90
               }
               if (goStep._direct == 'T') {
-                this._goShape.rotation = 90
+                this._goShape.rotation = -90
               }
             } else if (this._goLastDirect == 'B') {
               if (goStep._direct == 'R') {
@@ -814,23 +831,22 @@ export class Trafficlights {
               }
               if (goStep._direct == 'L') {
                 this._goShape.rotation = 180
+                goStep.y = goStep.y
               }
             }
 
             this._goLastDirect = goStep._direct
           }
 
-          this._goShape.x = goStep.x
-          this._goShape.y = goStep.y
+          this._goShape.x = goStep.x;
+          this._goShape.y = goStep.y;
         }
 
         this._stageTop.update()
 
         this._goStepIndex++
 
-        let t
-
-        t = 40
+        let t = 40
 
         setTimeout(_thisProblem.goNextStep, t)
       } else {
@@ -1080,7 +1096,7 @@ export class Trafficlights {
       svetoCont.id = 'svet_' + crossId1
       svetoCont.x = 10 + (roadLen * cross.x + roadWidth * cross.x)
       svetoCont.y = 10 + (roadLen * cross.y + roadWidth * cross.y)
-      this._stageBottom.addChild(svetoCont)
+      this._stageTop.addChild(svetoCont)
 
       crossShape = new createjs.Shape()
       if (cross._crossId == this._finishCrossId) {
@@ -1091,7 +1107,15 @@ export class Trafficlights {
         crossShape.graphics.beginFill('white')
       }
 
-      img = this.kioapi.getResource('cross');
+      if(crossId1 == this._startCrossId)
+      {
+        img = this.kioapi.getResource('start');
+      }
+      else{
+        img = this.kioapi.getResource('cross');
+      }
+
+      
 
       crossShape.graphics.beginBitmapFill(img, "no-repeat");
 
@@ -1194,6 +1218,7 @@ export class Trafficlights {
 
         imgPoint = this.kioapi.getResource('point' + s);
         pointShape.graphics.beginBitmapFill(imgPoint, "no-repeat");
+        pointShape.name = 'point_' + crossId1;
         pointShape.graphics.drawRect(2, 2, roadWidth - 5, roadWidth - 5)
         pointShape.x = px;
         pointShape.y = py;
@@ -1859,7 +1884,7 @@ export class Trafficlights {
 
     if (currentTrakNode._crossId2 == this._finishCrossId) {
       this._isTrackFull = true
-      console.log('TRACK FULL - ' + currentTrakNode._crossId2)
+      //console.log('TRACK FULL - ' + currentTrakNode._crossId2)
       this._fullTrackDic = currentTrakNode._trackDic
       this._fullTrackRoadIds = currentTrakNode._roadIds
       this._lastTrackRoadId = currentRoad._id
@@ -2103,12 +2128,12 @@ export class Trafficlights {
       this.goToStart()
       this._goArr = []
     }
-
+    let color;
     let bgColorSelected = createjs.Graphics.getRGB(3, 192, 255, 0.7)
     let bgColorTrack = createjs.Graphics.getRGB(101, 255, 102, 0.7)
-    let bgColorTrackStrelka = createjs.Graphics.getRGB(31, 191, 22, 0.8)
+    let bgColorTrackStrelka = createjs.Graphics.getRGB(16, 159, 16);   //(31, 191, 22, 0.8)
 
-    let trackNode, roadNext
+    let trackNode, node;
     let road, roadShape, croaaId1, crossId2
     let bgColor, bgColorCross
     let crossShape
@@ -2155,6 +2180,21 @@ export class Trafficlights {
     // console.log(this._fullTrackDic);
 
     this.createCurrentSolution()
+
+    
+    //-- собираем список пройденных достопримов
+    let dic = {}
+    for (let roadIdKey in this._fullTrackDic) {
+      node = this._fullTrackDic[roadIdKey]
+
+      if (!dic.hasOwnProperty(node._crossId2)) {
+        if (this.getPointByCrossId(node._crossId2) != null) {
+          dic[node._crossId2] = 1
+        }
+      }
+    }
+
+    this._trackPointsDic = dic;
 
     // -- отрисовка
 
@@ -2430,147 +2470,12 @@ export class Trafficlights {
       this._selectedCrossId != this._finishCrossId
     ) {
       // -- отрисовка отмеченного светофора
-      let color
-
-      crossShape = this._stageTop.getChildByName(
-        'cross_' + this._selectedCrossId
-      )
-      crossShape.graphics.clear()
-      
-      crossShape.graphics.beginFill(
-        //createjs.Graphics.getRGB(239, 239, 127, 0.7)
-        createjs.Graphics.getRGB(242, 255, 8, 0.9)
-      )
-      crossShape.graphics.drawRect(1, 1, roadWidth - 2, roadWidth - 2)
-      crossShape.graphics.endFill()
-
-      sveto = this.getSvetoByCrossId(this._selectedCrossId)
-
-      if (sveto != null) {
-        let svShape1, svShape, svetoCont
-        let r = 5
-        let w = 80
-        let h = 80
-        let pr, sidePr
-        let canF, canL, canR
-        let trackProgInx
-        let roadsArr
-
-        let node = this.getTrackNodeByCrossId2(this._selectedCrossId)
-
-        if (node != null) {
-          trackProgInx = sveto.getProgIndexByTik(node._fullTikCount)
-        } else {
-          trackProgInx = -1
-        }
-
-        this._infoBoxConteiner.removeAllChildren()
-
-        for (let i = 0; i < sveto._programma.length; i++) {
-          svetoCont = new createjs.Container()
-          svetoCont.name = 'infoBoxConteiner'
-          svetoCont.id = 'svetocont_' + i
-          svetoCont.x = 0
-          svetoCont.y = w * i + 20 * i
-          this._infoBoxConteiner.addChild(svetoCont)
-
-          svetoCont.on('click', function (evt) {
-            console.log('svetoCont click id=' + this.id)
-          })
-
-          // -- контур
-
-          svShape = new createjs.Shape()
-          svShape.id = 'svk' + i
-          svShape.name = svShape.id
-          svShape.x = 0
-          svShape.y = 0
-
-          color = 'silver'
-
-          svShape.graphics.beginStroke(color)
-          svShape.graphics.setStrokeStyle(2)
-          svShape.graphics.drawRect(-2, -2, w + 2, w + 2)
-          /*
-                    svShape.graphics.moveTo(0, w/4).lineTo(w/4, w/4).lineTo(w/4, 0);
-                    svShape.graphics.moveTo(w/4 * 3, 0).lineTo(w/4 * 3, w/4).lineTo(w, w/4);
-                    svShape.graphics.moveTo(0, w/4 * 3).lineTo(w/4, w/4 * 3).lineTo(w/4 , w);
-                    svShape.graphics.moveTo(w/4 * 3, w).lineTo(w/4 * 3, w/4 * 3).lineTo(w , w/4 * 3);
-*/
-          svShape.graphics.endStroke()
-
-          svetoCont.addChild(svShape)
-
-          pr = sveto._programma[i]
-
-          canF = false
-          canR = false
-          canL = false
-
-          // -- верхний
-
-          if (this.hasRoadDir(sveto._crossId, 'T')) {
-            sidePr = sveto.getProgForSide('T', pr)
-            // -- LBR
-            canF = sidePr.indexOf('B') >= 0
-            canL = sidePr.indexOf('R') >= 0
-            canR = sidePr.indexOf('L') >= 0
-            x = w / 2
-            y = 0
-
-            canL = canF
-            canR = canF
-
-            SvetoHelper.drawSvetOne(svetoCont, w, 'T', canF, canL, canR)
-          }
-
-          // -- нижний
-          if (this.hasRoadDir(sveto._crossId, 'B')) {
-            sidePr = sveto.getProgForSide('B', pr)
-            // -- LBR
-            canF = sidePr.indexOf('T') >= 0
-            canL = sidePr.indexOf('L') >= 0
-            canR = sidePr.indexOf('R') >= 0
-            y = w - r * 4
-
-            canL = canF
-            canR = canF
-
-            SvetoHelper.drawSvetOne(svetoCont, w, 'B', canF, canL, canR)
-          }
-
-          if (this.hasRoadDir(sveto._crossId, 'L')) {
-            sidePr = sveto.getProgForSide('L', pr)
-            canF = sidePr.indexOf('R') >= 0
-            canL = sidePr.indexOf('T') >= 0
-            canR = sidePr.indexOf('B') >= 0
-            x = 0
-            y = w / 2 - r
-
-            canL = canF
-            canR = canF
-
-            SvetoHelper.drawSvetOne(svetoCont, w, 'L', canF, canL, canR)
-          }
-
-          if (this.hasRoadDir(sveto._crossId, 'R')) {
-            sidePr = sveto.getProgForSide('R', pr)
-            canF = sidePr.indexOf('L') >= 0
-            canR = sidePr.indexOf('T') >= 0
-            canL = sidePr.indexOf('B') >= 0
-            x = w - r * 2 + r
-            y = w / 2 - r
-
-            canL = canF
-            canR = canF
-
-            SvetoHelper.drawSvetOne(svetoCont, w, 'R', canF, canL, canR)
-          }
-        }
-      }
+    
+      this.drawSvetInfoPanel();
     }
 
-    for (let crossIdKey in this._svetoDic) {
+    for (let crossIdKey in this._svetoDic) 
+    {
       sveto = this._svetoDic[crossIdKey]
 
       canF = false
@@ -2600,9 +2505,176 @@ export class Trafficlights {
       }
     }
 
-    this.updateTop()
+    let pointShape, svetoCont;
 
-    // this.createCurrentSolution();
+    for (let crossIdKey in this._crossDic)
+    {
+          
+      svetoCont = this._stageTop.getChildByName('svet_' + crossIdKey);
+
+      if(svetoCont)
+      {
+        pointShape = svetoCont.getChildByName('point_' + crossIdKey);
+
+        if(pointShape)
+        {
+          if(this._trackPointsDic.hasOwnProperty(crossIdKey))
+          {
+            color = 'blue';
+          }
+          else{
+            color = 'yellow';
+          }
+          pointShape.graphics.beginStroke(color);
+          pointShape.graphics.setStrokeStyle(2);
+          pointShape.graphics.drawRect(2, 2, roadWidth - 5, roadWidth - 5);
+          pointShape.graphics.endStroke();
+        }
+      }
+    }
+
+    this.updateTop();
+  }
+
+  drawSvetInfoPanel()
+  {
+    if(this._selectedCrossId == '')
+    {
+      return;
+    }
+    let roadWidth = this._levelSettings.roadWidth
+    let roadLen = this._levelSettings.roadLen
+    let color
+    let crossShape = this._stageTop.getChildByName( 'cross_' + this._selectedCrossId )
+    crossShape.graphics.clear()
+    
+    crossShape.graphics.beginFill(
+      //createjs.Graphics.getRGB(239, 239, 127, 0.7)
+      createjs.Graphics.getRGB(242, 255, 8, 0.9)
+    )
+    crossShape.graphics.drawRect(1, 1, roadWidth - 2, roadWidth - 2)
+    crossShape.graphics.endFill()
+
+    let sveto = this.getSvetoByCrossId(this._selectedCrossId)
+
+    if (sveto != null) {
+      let svShape1, svShape, svetoCont
+      let r = 5
+      let w = 80
+      let h = 80
+      let pr, sidePr
+      let canF, canL, canR
+      let trackProgInx
+      let roadsArr
+
+      let node = this.getTrackNodeByCrossId2(this._selectedCrossId)
+
+      if (node != null) {
+        trackProgInx = sveto.getProgIndexByTik(node._fullTikCount)
+      } else {
+        trackProgInx = -1
+      }
+
+      trackProgInx = sveto.getProgIndexByTik(this._globalTik);
+
+      this._infoBoxConteiner.removeAllChildren()
+
+      for (let i = 0; i < sveto._programma.length; i++) {
+        svetoCont = new createjs.Container()
+        svetoCont.name = 'infoBoxConteiner'
+        svetoCont.id = 'svetocont_' + i
+        svetoCont.x = 0
+        svetoCont.y = w * i + 20 * i
+        this._infoBoxConteiner.addChild(svetoCont)
+
+        svetoCont.on('click', function (evt) {
+          console.log('svetoCont click id=' + this.id)
+        })
+
+        // -- контур
+
+        svShape = new createjs.Shape()
+        svShape.id = 'svk' + i
+        svShape.name = svShape.id
+        svShape.x = 0
+        svShape.y = 0
+
+        if(i == trackProgInx)
+        {
+          color = 'black'
+        }
+        else{
+          color = 'silver'
+        }
+        
+
+        svShape.graphics.beginStroke(color)
+        svShape.graphics.setStrokeStyle(2)
+        svShape.graphics.drawRect(-2, -2, w + 2, w + 2)
+        svShape.graphics.endStroke()
+
+        svetoCont.addChild(svShape)
+
+        pr = sveto._programma[i]
+
+        canF = false
+        canR = false
+        canL = false
+
+        // -- верхний
+
+        if (this.hasRoadDir(sveto._crossId, 'T')) {
+          sidePr = sveto.getProgForSide('T', pr)
+          // -- LBR
+          canF = sidePr.indexOf('B') >= 0
+          canL = sidePr.indexOf('R') >= 0
+          canR = sidePr.indexOf('L') >= 0
+          canL = canF
+          canR = canF
+
+          SvetoHelper.drawSvetOne(svetoCont, w, 'T', canF, canL, canR)
+        }
+
+        // -- нижний
+        if (this.hasRoadDir(sveto._crossId, 'B')) {
+          sidePr = sveto.getProgForSide('B', pr)
+          // -- LBR
+          canF = sidePr.indexOf('T') >= 0
+          canL = sidePr.indexOf('L') >= 0
+          canR = sidePr.indexOf('R') >= 0
+
+          canL = canF
+          canR = canF
+
+          SvetoHelper.drawSvetOne(svetoCont, w, 'B', canF, canL, canR)
+        }
+
+        if (this.hasRoadDir(sveto._crossId, 'L')) {
+          sidePr = sveto.getProgForSide('L', pr)
+          canF = sidePr.indexOf('R') >= 0
+          canL = sidePr.indexOf('T') >= 0
+          canR = sidePr.indexOf('B') >= 0
+
+          canL = canF
+          canR = canF
+
+          SvetoHelper.drawSvetOne(svetoCont, w, 'L', canF, canL, canR)
+        }
+
+        if (this.hasRoadDir(sveto._crossId, 'R')) {
+          sidePr = sveto.getProgForSide('R', pr)
+          canF = sidePr.indexOf('L') >= 0
+          canR = sidePr.indexOf('T') >= 0
+          canL = sidePr.indexOf('B') >= 0
+
+          canL = canF
+          canR = canF
+
+          SvetoHelper.drawSvetOne(svetoCont, w, 'R', canF, canL, canR)
+        }
+      }
+    }
+  
   }
 
   hasRoadDir (crossId, roadSide) {
@@ -2689,40 +2761,28 @@ export class Trafficlights {
     this._currentSolution._trackRoadCrossDic = this._trackRoadCrossDic
     this._currentSolution._firstTrackRoadId = this._firstTrackRoadId
     this._currentSolution._isTrackFull = this._isTrackFull
+    this._currentSolution._tikCount = this._currentResult._tikCount
+    this._currentSolution._waitCount = this._currentResult._waitCount
+    this._currentSolution._roadCount = Helper.dicLen(this._fullTrackDic)
+    this._currentSolution._stopCount = this._currentResult._stopCount
 
-    //if ( this._currentSolution._isTrackFull || this._currentSolution.level == 0) 
-    {
-      this._currentSolution._tikCount = this._currentResult._tikCount
-      this._currentSolution._waitCount = this._currentResult._waitCount
-      this._currentSolution._roadCount = Helper.dicLen(this._fullTrackDic)
-      this._currentSolution._stopCount = this._currentResult._stopCount
+    let node
+    let cnt = 0
+    let dic = {}
 
-      let node
-      let cnt = 0
-      let dic = {}
+    for (let roadIdKey in this._fullTrackDic) {
+      node = this._fullTrackDic[roadIdKey]
 
-      for (let roadIdKey in this._fullTrackDic) {
-        node = this._fullTrackDic[roadIdKey]
-
-        if (!dic.hasOwnProperty(node._crossId2)) {
-          if (this.getPointByCrossId(node._crossId2) != null) {
-            cnt++
-            dic[node._crossId2] = 1
-          }
+      if (!dic.hasOwnProperty(node._crossId2)) {
+        if (this.getPointByCrossId(node._crossId2) != null) {
+          cnt++
+          dic[node._crossId2] = 1
         }
       }
+    }
 
       this._currentSolution._pointCount = cnt
-    } 
-    /*
-    else {
-      this._currentSolution._tikCount = 0
-      this._currentSolution._waitCount = 0
-      this._currentSolution._roadCount = 0
-      this._currentSolution._stopCount = 0
-      this._currentSolution._pointCount = 0
-    }
-    */
+  
   }
 
   saveCurrentSolution () {
@@ -2778,6 +2838,8 @@ export class Trafficlights {
     let sveto, crossShape
     let canF, pr, sidePr
 
+    this.drawSvetInfoPanel();
+
     for (let crossIdKey in this._svetoDic) {
       sveto = this._svetoDic[crossIdKey]
 
@@ -2807,6 +2869,8 @@ export class Trafficlights {
         SvetoHelper.drawSvetOne2(crossShape, 30, 'R', canF)
       }
     }
+
+    
 
     this.updateTop()
   }

@@ -1,8 +1,16 @@
+div.kio-base-box{
+    background-color: #eaebd2 !important;
+}
+
+.kio-base-controls-container{
+    background-color: #eaebd2 !important;
+}
+
 div.canvas_cont_div{
     position: relative;
 }
 .canvas_bottom{
-    background-color: white;
+    background-color: #eaebd2;
     position: absolute;
     left: 0px;
     top: 0px;
@@ -16,6 +24,8 @@ div.canvas_cont_div{
     z-index: 101;
 }
 
+
+
 .param_input{
     width: 50px;
 }
@@ -23,7 +33,7 @@ div.canvas_cont_div{
 div.control_div
 {
     display: block;
-    background-color: #cccccc;
+    background-color: #eaebd2;
     padding-top: 10px;
     padding-bottom: 10px;
 }
@@ -48,22 +58,26 @@ div.control_div
     font-size: 18px;
 }
 
-div.tik_div
+.tik_div
 {
     display: inline-block;
+    background-color: silver;
+    min-width: 20px;
+    text-align: center;
 }
 
 .go_btn1{
     font-weight: bold;
     font-size: 24px;
-    width: 50px;
+    width: 40px;
     height: 35px;
     vertical-align: top;
     color: black;
+    background-color: #b4c8c0;
 }
 .go_btn1:disabled
 {
-    color: silver;
+    color: #edeae3;
 }
 
 .tik_div
