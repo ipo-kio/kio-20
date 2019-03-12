@@ -323,7 +323,7 @@ export class Trafficlights {
             */
     }
 
-    if (loadOK && sol != null && Helper.dicLen(sol._roadSelectedDic) > 0) {
+    if (loadOK && sol != null) {
       this._firstTrackRoadId = sol._firstTrackRoadId
 
       this.prepareAll()
