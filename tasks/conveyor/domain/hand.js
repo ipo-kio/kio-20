@@ -26,7 +26,7 @@ export class Hand {
     }
 
     //max extrusion in terms of a detail
-    set_out(max_extrusion, percent) {
+    set_out(max_extrusion, percent, detail, r0, r1) {
         let total_length = LEN0 + DR * (this.t - 1); // 0.5
         let max_length = LEN0 + DR * (this.t - max_extrusion);
         let need_length = LEN0 + DR * (this.t - this.extrusion);
@@ -41,5 +41,12 @@ export class Hand {
             this.length = (2 * time_to_real_length - percent) * 2 * total_length;
         else
             this.length = 0;
+
+        let time_rotation = max_length/ (2 * total_length);
+        if (time_to_real_length <= percent && percent <= time_to_real_length + time_rotation) {
+            let phi0 = 2 * Math.PI / detail.n * r0;
+            let phi1 = 2 * Math.PI / detail.n * r1;
+            detail.rotation = phi0 + (phi1 - phi0) * (percent - time_to_real_length) / time_rotation;
+        }
     }
 }

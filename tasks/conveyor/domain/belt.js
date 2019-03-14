@@ -18,6 +18,7 @@ export class Belt {
     step;
     step_index;
     hands;
+    rotations; //array of int (0 = no rotation)
 
     constructor(initial_rays) {
         this.initial_rays = initial_rays;
@@ -26,11 +27,13 @@ export class Belt {
 
         this._program = [];
         this._update_hands();
+        this._update_rotations();
     }
 
     set program(value) {
         this._program = value;
         this._update_hands();
+        this._update_rotations();
     }
 
     _update_time() {
@@ -47,7 +50,13 @@ export class Belt {
         this.step = 'hand down';
         this.detail.x = DIST_MOVE * this.step_index;
         this._reset_all_hands();
-        this.hands[this.step_index].set_out(1, step_time / (2 * TIME_HAND_DOWN_UP));
+        this.hands[this.step_index].set_out(
+            1,
+            step_time / (2 * TIME_HAND_DOWN_UP),
+            this.detail,
+            this.rotations[this.step_index],
+            this.rotations[this.step_index + 1],
+        );
     }
 
     _update_time_move(step_time) {
@@ -58,7 +67,7 @@ export class Belt {
 
     _reset_all_hands() {
         for (let hand of this.hands)
-            hand.set_out(1,0);
+            hand.set_out(1, 0);
     }
 
     get time() {
@@ -95,6 +104,24 @@ export class Belt {
             h.extrusion = this._program[i];
             // h.dir //TODO implement direction
             this.hands[i] = h;
+        }
+    }
+
+    _update_rotations() {
+        this.rotations = new Array(this._program.length + 1);
+        this.rotations[0] = 0;
+        for (let i = 0; i < this._program.length; i++) {
+            let r = this.rotations[i];
+            let p = this._program[i];
+
+            let ray = this.initial_rays[r];
+            if (ray >= p) {
+                let r1 = r + 1;
+                if (r1 >= this.initial_rays.length)
+                    r1 = 0;
+                this.rotations[i + 1] = r1;
+            } else
+                this.rotations[i + 1] = r;
         }
     }
 }
