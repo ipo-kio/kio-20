@@ -1,6 +1,6 @@
 const SLICE_PERCENTS = 20;
 const R_INNER = 10;
-const R0 = 30;
+export const R0 = 30;
 export const DR = 20;
 const SLICE_DR = 4;
 

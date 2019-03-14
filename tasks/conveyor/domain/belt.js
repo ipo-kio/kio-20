@@ -1,5 +1,5 @@
 import {Hand, LEN0} from "./hand";
-import {Detail, DR} from "./detail";
+import {Detail, DR, R0} from "./detail";
 
 const TIME_HAND_DOWN_UP = 1;
 const TIME_MOVE = 2;
@@ -13,7 +13,7 @@ export class Belt {
     x = 0;
     y = 0;
     _time = 0;
-    program; //array of numbers from 1 to t
+    _program; //array of numbers from 1 to t
     detail;
     step;
     step_index;
@@ -24,37 +24,30 @@ export class Belt {
         this.t = Math.max(...this.initial_rays);
         this.detail = new Detail(initial_rays);
 
-        this.hands = new Array(30); //TODO allow adding hands
-        let hand_y = -DR * (this.t - 1) - LEN0;
-        console.log(hand_y);
-        for (let i = 0; i < this.hands.length; i++)
-            this.hands[i] = new Hand(i * DIST_MOVE, hand_y);
+        this._program = [];
+        this._update_hands();
+    }
+
+    set program(value) {
+        this._program = value;
+        this._update_hands();
     }
 
     _update_time() {
         this.step_index = Math.floor(this._time / TIME_PERIOD);
         let step_time = this._time - this.step_index * TIME_PERIOD;
 
-        if (step_time < TIME_HAND_DOWN_UP)
-            this._update_time_hand_down(step_time);
-        else if (step_time < 2 * TIME_HAND_DOWN_UP)
-            this._update_time_hand_up(step_time - TIME_HAND_DOWN_UP);
+        if (step_time < 2 * TIME_HAND_DOWN_UP)
+            this._update_time_hand(step_time);
         else
             this._update_time_move(step_time - 2 * TIME_HAND_DOWN_UP);
     }
 
-    _update_time_hand_down(step_time) {
+    _update_time_hand(step_time) {
         this.step = 'hand down';
         this.detail.x = DIST_MOVE * this.step_index;
         this._reset_all_hands();
-        this.hands[this.step_index].set_out(1, step_time / TIME_HAND_DOWN_UP);
-    }
-
-    _update_time_hand_up(step_time) {
-        this.step = 'hand up';
-        this.detail.x = DIST_MOVE * this.step_index;
-        this._reset_all_hands();
-        this.hands[this.step_index].set_out(1, 1 - step_time / TIME_HAND_DOWN_UP);
+        this.hands[this.step_index].set_out(1, step_time / (2 * TIME_HAND_DOWN_UP));
     }
 
     _update_time_move(step_time) {
@@ -73,7 +66,11 @@ export class Belt {
     }
 
     set time(_time) {
-        this._time = _time;
+        let max_time = this._program.length * (2 * TIME_HAND_DOWN_UP + TIME_MOVE) - TIME_MOVE;
+        if (max_time < 0)
+            max_time = 0;
+
+        this._time = Math.min(_time, max_time);
         this._update_time();
     }
 
@@ -82,10 +79,22 @@ export class Belt {
 
         ctx.translate(this.x, this.y);
 
+        this.detail.draw(ctx);
+
         for (let hand of this.hands)
             hand.draw(ctx);
 
-        this.detail.draw(ctx);
         ctx.restore();
+    }
+
+    _update_hands() {
+        this.hands = new Array(this._program.length);
+        let hand_y = -DR * (this.t - 1) - LEN0 - R0;
+        for (let i = 0; i < this._program.length; i++) {
+            let h = new Hand(i * DIST_MOVE, hand_y);
+            h.extrusion = this._program[i];
+            // h.dir //TODO implement direction
+            this.hands[i] = h;
+        }
     }
 }

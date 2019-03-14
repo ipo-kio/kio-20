@@ -75,6 +75,7 @@ export class Conveyor {
         }*/
 
         let belt = new Belt([1, 2, 3, 1, 1, 2, 1, 1, 1, 1]);
+        belt.program = [1, 2, 3];
         belt.x = 100;
         belt.y = 200;
 

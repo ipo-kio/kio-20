@@ -27,15 +27,19 @@ export class Hand {
 
     //max extrusion in terms of a detail
     set_out(max_extrusion, percent) {
-        // 3    2    1
-        //          ext
-        //   max_ext
+        let total_length = LEN0 + DR * (this.t - 1); // 0.5
+        let max_length = LEN0 + DR * (this.t - max_extrusion);
+        let need_length = LEN0 + DR * (this.t - this.extrusion);
 
-        let full_len = (this.t - this.extrusion) * DR + LEN0;
-        let max_len = (this.t - max_extrusion) * DR + LEN0;
+        let real_length = Math.min(need_length, max_length);
 
-        this.length = Math.min(full_len * percent, max_len);
-        // if (isNaN(this.length))
-        //     console.log('nan', max_extrusion, percent);
+        let time_to_real_length = real_length / (2 * total_length); // 0.5 -> real_length
+
+        if (percent < time_to_real_length)
+            this.length = percent * 2 * total_length;
+        else if (percent < 2 * time_to_real_length)
+            this.length = (2 * time_to_real_length - percent) * 2 * total_length;
+        else
+            this.length = 0;
     }
 }
