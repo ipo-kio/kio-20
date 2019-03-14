@@ -1,6 +1,7 @@
 import './conveyor.scss';
 import {Experiments} from "./experiments";
-import {Detail} from "./detail";
+import {Detail} from "./domain/detail";
+import {Belt} from "./domain/belt";
 
 export class Conveyor {
 
@@ -65,13 +66,34 @@ export class Conveyor {
 
         domNode.append(this.canvas);
 
-        for (let i = 0; i < 10; i++) {
+        /*for (let i = 0; i < 10; i++) {
             let d = new Detail([1, 2, 3, 1, 1, 2, 1, 1, 1, 1]);
             d.x = 100;
             d.y = 50 + i * 120;
             d.rotation = 2 * Math.PI / d.n * i;
             d.draw(this.ctx);
-        }
+        }*/
+
+        let belt = new Belt([1, 2, 3, 1, 1, 2, 1, 1, 1, 1]);
+        belt.x = 100;
+        belt.y = 200;
+
+        let current_time = new Date().getTime();
+
+        let loop = () => {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+            requestAnimationFrame(loop);
+
+            let now = new Date().getTime();
+            let elapsed_time = now - current_time;
+            current_time = now;
+
+            belt.time += elapsed_time / 1000;
+            belt.draw(this.ctx);
+        };
+
+        loop();
     }
 
     /*static preloadManifest() {
