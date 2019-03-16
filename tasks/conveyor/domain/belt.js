@@ -4,7 +4,7 @@ import {Detail, DR, R0} from "./detail";
 const TIME_HAND_DOWN_UP = 1;
 const TIME_MOVE = 2;
 const TIME_PERIOD = 2 * TIME_HAND_DOWN_UP + TIME_MOVE;
-const DIST_MOVE = 200;
+const DIST_MOVE = 40;
 
 export class Belt {
 
@@ -50,11 +50,12 @@ export class Belt {
         this.step = 'hand down';
         this.detail.x = DIST_MOVE * this.step_index;
         this._reset_all_hands();
+        let current_rotation = this.rotations[this.step_index];
         this.hands[this.step_index].set_out(
-            1,
+            this.detail.rays[current_rotation],
             step_time / (2 * TIME_HAND_DOWN_UP),
             this.detail,
-            this.rotations[this.step_index],
+            current_rotation,
             this.rotations[this.step_index + 1],
         );
     }
@@ -88,10 +89,44 @@ export class Belt {
 
         ctx.translate(this.x, this.y);
 
+        ctx.fillStyle = 'white';
+        ctx.strokeStyle = '#9d490c';
+        ctx.lineWidth = 2;
+        let y0 = -3 * DR - R0 - LEN0;
+        let x0 = -3 * DR - R0;
+        let skips = this._program.length - 1;
+        if (skips < 0)
+            skips = 0;
+        let width0 = DIST_MOVE * skips + 5;
+        ctx.fillRect(
+            x0,
+            y0 - DR * 3 + 6,
+            width0 + 6 * DR + 2 * R0,
+            2 * R0 + 6 * DR + LEN0 + 3 * DR - 12
+        );
+        ctx.strokeRect(
+            x0,
+            y0 - DR * 3 + 6,
+            width0 + 6 * DR + 2 * R0,
+            2 * R0 + 6 * DR + LEN0 + 3 * DR - 12
+        );
+
         this.detail.draw(ctx);
 
         for (let hand of this.hands)
             hand.draw(ctx);
+
+        //draw lines
+        ctx.lineWidth = 0.5;
+        ctx.strokeStyle = 'green';
+        ctx.setLineDash([2, 3]);
+        for (let i = 0; i < 3; i++) {
+            ctx.beginPath();
+            ctx.moveTo(-5, y0 - DR * i - 0.5);
+
+            ctx.lineTo(width0, y0 - DR * i - 0.5);
+            ctx.stroke();
+        }
 
         ctx.restore();
     }
@@ -118,10 +153,13 @@ export class Belt {
             if (ray >= p) {
                 let r1 = r + 1;
                 if (r1 >= this.initial_rays.length)
-                    r1 = 0;
+                    r1 -= this.initial_rays.length;
+                if (r1 < 0)
+                    r1 += this.initial_rays.length;
                 this.rotations[i + 1] = r1;
             } else
                 this.rotations[i + 1] = r;
         }
+        console.log('updated rotations', this.rotations);
     }
 }

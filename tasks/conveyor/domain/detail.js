@@ -1,7 +1,7 @@
 const SLICE_PERCENTS = 20;
 const R_INNER = 10;
 export const R0 = 30;
-export const DR = 20;
+export const DR = 10;
 const SLICE_DR = 4;
 
 export class Detail {
@@ -30,7 +30,7 @@ export class Detail {
         this.draw_as_segments(ctx);
 
         ctx.strokeStyle = 'black';
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 3;
         ctx.stroke();
 
         ctx.fillStyle = '#ff9e3f';
@@ -39,6 +39,7 @@ export class Detail {
         //draw circles
         ctx.strokeStyle = "green";
         ctx.lineWidth = 0.5;
+        ctx.setLineDash([2, 3]);
         for (let i = 1; i <= 3; i++) {
             ctx.beginPath();
             ctx.arc(0, 0, R0 + (i - 1) * DR, 0, 2 * Math.PI);
@@ -84,13 +85,14 @@ export class Detail {
             phi += a - slice_a;
             ctx.lineTo((r0 - SLICE_DR) * Math.cos(phi), (r0 - SLICE_DR) * Math.sin(phi));
         }
+        ctx.closePath();
     }
 
     draw_as_rays(ctx) {
         let a = Math.PI * 2 / this.n;
         let a1 = 4 * a / 5; //ray
         let a2 = a / 5; //skip
-        let a0 = -a1 / 2 - Math.PI / 2;
+        let a0 = -a1 / 2 + Math.PI / 2;
 
         ctx.beginPath();
         let phi = a0;

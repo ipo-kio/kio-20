@@ -1,6 +1,7 @@
 import {DR} from "./detail";
+export const LEN0 = 10;
 
-export const LEN0 = 20;
+const HAND_WIDTH = 14;
 
 export class Hand {
     x;
@@ -17,11 +18,13 @@ export class Hand {
     }
 
     draw(ctx) {
+        let full_length = LEN0 + DR * (this.t - this.extrusion);
+
         ctx.save();
         ctx.fillStyle = '#faf80a';
         ctx.strokeStyle = 'black';
-        ctx.fillRect(this.x - 5, this.y - 20, 10, this.length + 20);
-        ctx.strokeRect(this.x - 5, this.y - 20, 10, this.length + 20);
+        ctx.fillRect(this.x - HAND_WIDTH / 2, this.y - (full_length - this.length), HAND_WIDTH, full_length);
+        ctx.strokeRect(this.x - HAND_WIDTH / 2, this.y - (full_length - this.length), HAND_WIDTH, full_length);
         ctx.restore();
     }
 
@@ -44,8 +47,8 @@ export class Hand {
 
         let time_rotation = max_length/ (2 * total_length);
         if (time_to_real_length <= percent && percent <= time_to_real_length + time_rotation) {
-            let phi0 = 2 * Math.PI / detail.n * r0;
-            let phi1 = 2 * Math.PI / detail.n * r1;
+            let phi0 = -2 * Math.PI / detail.n * r0;
+            let phi1 = -2 * Math.PI / detail.n * r1;
             detail.rotation = phi0 + (phi1 - phi0) * (percent - time_to_real_length) / time_rotation;
         }
     }

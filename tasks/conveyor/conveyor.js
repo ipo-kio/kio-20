@@ -61,23 +61,13 @@ export class Conveyor {
 
         this.canvas = document.createElement('canvas');
         this.canvas.width = 900;
-        this.canvas.height = 600;
+        this.canvas.height = 620;
         this.ctx = this.canvas.getContext('2d');
 
         domNode.append(this.canvas);
 
-        /*for (let i = 0; i < 10; i++) {
-            let d = new Detail([1, 2, 3, 1, 1, 2, 1, 1, 1, 1]);
-            d.x = 100;
-            d.y = 50 + i * 120;
-            d.rotation = 2 * Math.PI / d.n * i;
-            d.draw(this.ctx);
-        }*/
-
-        let belt = new Belt([1, 2, 3, 1, 1, 2, 1, 1, 1, 1]);
-        belt.program = [1, 2, 3];
-        belt.x = 100;
-        belt.y = 200;
+        this.n = 10;
+        this._init_belts();
 
         let current_time = new Date().getTime();
 
@@ -90,11 +80,31 @@ export class Conveyor {
             let elapsed_time = now - current_time;
             current_time = now;
 
-            belt.time += elapsed_time / 1000;
-            belt.draw(this.ctx);
+            for (let belt of this.belts) {
+                belt.time += elapsed_time / 1000;
+                belt.draw(this.ctx);
+            }
         };
 
         loop();
+    }
+
+    _init_belts() {
+        this.belts = new Array(this.n);
+        let initial_rays = [1, 2, 3, 1, 1, 2, 1, 1, 1, 1];
+
+        for (let i = 0; i < this.n; i++) {
+            let belt = new Belt(initial_rays);
+            belt.program = [1, 2, 3, 3, 2, 1, 1];
+            belt.x = 62;
+            belt.y = 96 + i * 156;
+
+            let first_ray = initial_rays[0];
+            initial_rays = initial_rays.slice(1);
+            initial_rays.push(first_ray);
+
+            this.belts[i] = belt;
+        }
     }
 
     /*static preloadManifest() {
