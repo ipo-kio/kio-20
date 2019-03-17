@@ -1,7 +1,7 @@
 import {DR} from "./detail";
 export const LEN0 = 10;
 
-const HAND_WIDTH = 14;
+export const HAND_WIDTH = 14;
 
 const HIT_NOWHERE = 0;
 const HIT_INSIDE = 1;
@@ -11,7 +11,7 @@ export class Hand {
     x;
     y;
     t = 3;
-    length;
+    length = 0;
 
     dir = 1;
     extrusion = 1;
@@ -48,10 +48,11 @@ export class Hand {
             ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
             ctx.fillRect(this.x - HAND_WIDTH / 2, this.y - (full_length - this.length), HAND_WIDTH, full_length);
             ctx.fillStyle = '#00FF00';
-            ctx.fillRect(this.x - HAND_WIDTH / 2, this.y - (- this.length), HAND_WIDTH, DR + LEN0);
+            ctx.fillRect(this.x - HAND_WIDTH / 2, this.y - (-this.length), HAND_WIDTH, DR + LEN0);
             ctx.strokeRect(this.x - HAND_WIDTH / 2, this.y - (full_length - this.length), HAND_WIDTH, full_length + DR + LEN0);
 
             ctx.strokeStyle = 'red';
+            ctx.lineWidth = ht === HIT_CLOSE ? 3 : 1;
             ctx.beginPath();
             let cx = this.x;
             let cy = this.y + this.length + DR;
@@ -83,7 +84,7 @@ export class Hand {
             this.length = 0;
 
         if (detail) {
-            if (Math.abs(percent - time_to_real_length) < 0.1 && this.extrusion <= max_extrusion)
+            if (Math.abs(percent - time_to_real_length - 0.1) < 0.1 && this.extrusion <= max_extrusion)
                 detail.highlight_ray(r0);
             else
                 detail.unhighlight_ray(r0);
@@ -94,7 +95,13 @@ export class Hand {
             if (time_to_real_length <= percent && percent <= time_to_real_length + time_rotation) {
                 let phi0 = -2 * Math.PI / detail.n * r0;
                 let phi1 = -2 * Math.PI / detail.n * r1;
-                detail.rotation = phi0 + (phi1 - phi0) * (percent - time_to_real_length) / time_rotation;
+
+                let dphi = phi1 - phi0;
+                while (dphi > Math.PI)
+                    dphi -= 2 * Math.PI;
+                while (dphi < -Math.PI)
+                    dphi += 2 * Math.PI;
+                detail.rotation = phi0 + dphi * (percent - time_to_real_length) / time_rotation;
             }
         }
     }

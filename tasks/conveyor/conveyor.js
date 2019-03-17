@@ -1,10 +1,12 @@
 import './conveyor.scss';
 import {Experiments} from "./experiments";
-import {Detail} from "./domain/detail";
 import {Belt} from "./domain/belt";
 import {Mouse} from "./mouse";
+import {Slider} from "./slider";
 
 export class Conveyor {
+
+    time_goes = false;
 
     /**
      *
@@ -79,6 +81,7 @@ export class Conveyor {
         };
 
         domNode.append(this.canvas);
+        this._init_time_controls(domNode, preferred_width);
 
         this.n = 10;
         this._init_belts();
@@ -95,13 +98,68 @@ export class Conveyor {
             current_time = now;
 
             for (let belt of this.belts) {
-                belt.time += elapsed_time / 1000;
+                if (this.time_goes) {
+                    belt.time += elapsed_time / 1000;
+                    this._slider.value_no_fire = belt.time;
+                }
                 belt.draw(this.ctx);
             }
         };
 
         loop();
     }
+
+    _init_time_controls(domNode, preferred_width) {
+        let time_controls_container = document.createElement('div');
+        time_controls_container.className = 'time-controls-container';
+        domNode.appendChild(time_controls_container);
+
+        this._slider = new Slider(time_controls_container, 0, 100, 35/*fly1 height*/, this.kioapi.getResource('slider'), this.kioapi.getResource('slider_hover'));
+        this._slider.domNode.className = 'conveyor-slider';
+        this._slider.resize(preferred_width - 16);
+        time_controls_container.appendChild(this._slider.domNode);
+
+        function add_button(title, id, action) {
+            let button = document.createElement('button');
+            button.id = id;
+            button.innerHTML = title;
+            $(button).click(action);
+            time_controls_container.appendChild(button);
+        }
+
+        this._start_play = () => {
+            this.time_goes = true;
+            $('#slider-control-play').text('Остановить');
+        };
+
+        this._stop_play = () => {
+            this.time_goes = false;
+            $('#slider-control-play').text('Запустить');
+        };
+
+        add_button('В начало', 'slider-control-0', () => this._slider.value = 0);
+        add_button('-1', 'slider-control-p1', () => this._slider.value--);
+        add_button('+1', 'slider-control-m1', () => this._slider.value++);
+        add_button('В конец', 'slider-control-max', () => this._slider.value = this._slider.max_value);
+        add_button('Запустить', 'slider-control-play', () => {
+            if (!this.time_goes)
+                this._start_play();
+            else
+                this._stop_play();
+        });
+
+        this._time_shower = document.createElement('span');
+        this._time_shower.className = 'conveyor-time-shower';
+        time_controls_container.appendChild(this._time_shower);
+
+        this._slider.onvaluechange = () => {
+            for (let belt of this.belts) {
+                belt.time = this._slider.value;
+                belt.draw(this.ctx);
+            }
+        };
+    }
+
 
     _init_belts() {
         this.belts = new Array(this.n);
@@ -110,6 +168,7 @@ export class Conveyor {
         let program_change_handler = new_program => {
             for (let b of this.belts)
                 b.program = new_program;
+            this._slider.update_max_value(this.belts[0].max_time());
         };
 
         for (let i = 0; i < this.n; i++) {
@@ -122,13 +181,16 @@ export class Conveyor {
 
             this.belts[i] = belt;
         }
+
+        this._slider.update_max_value(this.belts[0].max_time());
     }
 
     static preloadManifest() {
         return [
             {id: "belt", src: "conveyor-resources/belt.png"},
-            // {id: "pic2", src: "taskid-resources/pic2.png"}
-        ]; //TODO перечислить загружаемые ресурсы. Они находятся в каталоге conveyor-resources
+            {id: "slider", src: "conveyor-resources/slider.png"},
+            {id: "slider_hover", src: "conveyor-resources/slider_hover.png"}
+        ];
     }
 
     parameters() {

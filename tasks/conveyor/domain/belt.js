@@ -1,4 +1,4 @@
-import {Hand, LEN0} from "./hand";
+import {Hand, HAND_WIDTH, LEN0} from "./hand";
 import {Detail, DR, R0} from "./detail";
 import {TranslatedMouse} from "../mouse";
 
@@ -89,12 +89,17 @@ export class Belt {
     }
 
     set time(_time) {
-        let max_time = this._program.length * (2 * TIME_HAND_DOWN_UP + TIME_MOVE) - TIME_MOVE;
-        if (max_time < 0)
-            max_time = 0;
+        let max_time = this.max_time();
 
         this._time = Math.min(_time, max_time);
         this._update_time();
+    }
+
+    max_time() {
+        let max_time = this._program.length * (2 * TIME_HAND_DOWN_UP + TIME_MOVE) - TIME_MOVE;
+        if (max_time < 0)
+            max_time = 0;
+        return max_time;
     }
 
     draw(ctx) {
@@ -147,12 +152,30 @@ export class Belt {
             ctx.stroke();
         }
 
+        //draw adding new hand
+        let added_element_index = this.added_element_index();
+        if (added_element_index !== -1) {
+            let {i, x, y} = added_element_index;
+            ctx.beginPath();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'green';
+            ctx.setLineDash([]);
+            ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
+            ctx.fillRect(x - 7, y - 7, 14, 14);
+            ctx.strokeRect(x - 7, y - 7, 14, 14);
+            ctx.moveTo(x - 4, y);
+            ctx.lineTo(x + 4, y);
+            ctx.moveTo(x, y - 4);
+            ctx.lineTo(x, y + 4);
+            ctx.stroke();
+        }
+
         ctx.restore();
     }
 
     _update_hands() {
         this.hands = new Array(this._program.length);
-        let hand_y = -DR * (this.t - 1) - LEN0 - R0;
+        let hand_y = this._hand_y();
         for (let i = 0; i < this._program.length; i++) {
             let click_handle = () => {
                 let p = this._program.slice();
@@ -173,6 +196,10 @@ export class Belt {
             // h.dir //TODO implement direction
             this.hands[i] = h;
         }
+    }
+
+    _hand_y() {
+        return -DR * (this.t - 1) - LEN0 - R0;
     }
 
     _update_rotations() {
@@ -198,5 +225,26 @@ export class Belt {
     mouse_click() {
         for (let h of this.hands)
             h.mouse_click();
+
+        let add_index = this.added_element_index();
+        if (add_index !== -1) {
+            let p = this._program.slice();
+            p.splice(add_index.i, 0, this.t);
+            this.program_changed_handler(p);
+        }
+    }
+
+    added_element_index() {
+        let hand_y = this._hand_y() - 1.5 * DR;
+        for (let i = 0; i <= this.hands.length; i++) {
+            let hand_x = -DIST_MOVE / 2 + i * DIST_MOVE;
+            if (
+                Math.abs(this.mouse.x - hand_x) < DIST_MOVE / 2 - HAND_WIDTH &&
+                Math.abs(this.mouse.y - hand_y) < 1.5 * DR
+            )
+                return {i, x: hand_x, y: hand_y};
+        }
+
+        return -1;
     }
 }

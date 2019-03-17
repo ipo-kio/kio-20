@@ -1,3 +1,6 @@
-.kio {
-  color: black;
+.kio-base-box {
+  user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
 }
