@@ -1,5 +1,6 @@
 import {Hand, LEN0} from "./hand";
 import {Detail, DR, R0} from "./detail";
+import {TranslatedMouse} from "../mouse";
 
 const TIME_HAND_DOWN_UP = 1;
 const TIME_MOVE = 2;
@@ -20,10 +21,21 @@ export class Belt {
     hands;
     rotations; //array of int (0 = no rotation)
 
-    constructor(initial_rays) {
+    mouse;
+    bg;
+    program_changed_handler;
+
+    constructor(initial_rays, x, y, mouse, kioapi, program_changed_handler) {
         this.initial_rays = initial_rays;
         this.t = Math.max(...this.initial_rays);
         this.detail = new Detail(initial_rays);
+        this.program_changed_handler = program_changed_handler;
+
+        this.x = x;
+        this.y = y;
+        this.mouse = new TranslatedMouse(mouse, x, y);
+
+        this.bg = kioapi.getResource('belt');
 
         this._program = [];
         this._update_hands();
@@ -51,13 +63,14 @@ export class Belt {
         this.detail.x = DIST_MOVE * this.step_index;
         this._reset_all_hands();
         let current_rotation = this.rotations[this.step_index];
-        this.hands[this.step_index].set_out(
-            this.detail.rays[current_rotation],
-            step_time / (2 * TIME_HAND_DOWN_UP),
-            this.detail,
-            current_rotation,
-            this.rotations[this.step_index + 1],
-        );
+        if (this.step_index < this.hands.length)
+            this.hands[this.step_index].set_out(
+                this.detail.rays[current_rotation],
+                step_time / (2 * TIME_HAND_DOWN_UP),
+                this.detail,
+                current_rotation,
+                this.rotations[this.step_index + 1],
+            );
     }
 
     _update_time_move(step_time) {
@@ -89,27 +102,33 @@ export class Belt {
 
         ctx.translate(this.x, this.y);
 
-        ctx.fillStyle = 'white';
-        ctx.strokeStyle = '#9d490c';
-        ctx.lineWidth = 2;
+        ctx.fillStyle = ctx.createPattern(this.bg, 'repeat');
+        // ctx.strokeStyle = '#9d490c';
+        // ctx.lineWidth = 2;
         let y0 = -3 * DR - R0 - LEN0;
         let x0 = -3 * DR - R0;
         let skips = this._program.length - 1;
         if (skips < 0)
             skips = 0;
         let width0 = DIST_MOVE * skips + 5;
+
+        ctx.save();
+        ctx.translate(this.detail.x, 0);
         ctx.fillRect(
+            x0 - this.detail.x,
+            // y0 - DR * 3 + 6,
+            y0 + 16,
+            width0 + 6 * DR + 2 * R0,
+            2 * R0 + 6 * DR + LEN0 - 22
+        );
+        ctx.restore();
+
+        /*ctx.strokeRect(
             x0,
             y0 - DR * 3 + 6,
             width0 + 6 * DR + 2 * R0,
             2 * R0 + 6 * DR + LEN0 + 3 * DR - 12
-        );
-        ctx.strokeRect(
-            x0,
-            y0 - DR * 3 + 6,
-            width0 + 6 * DR + 2 * R0,
-            2 * R0 + 6 * DR + LEN0 + 3 * DR - 12
-        );
+        );*/
 
         this.detail.draw(ctx);
 
@@ -135,7 +154,21 @@ export class Belt {
         this.hands = new Array(this._program.length);
         let hand_y = -DR * (this.t - 1) - LEN0 - R0;
         for (let i = 0; i < this._program.length; i++) {
-            let h = new Hand(i * DIST_MOVE, hand_y);
+            let click_handle = () => {
+                let p = this._program.slice();
+                p[i] -= 1;
+                if (p[i] <= 0)
+                    p[i] = this.t;
+                this.program_changed_handler(p);
+            };
+
+            let close_handle = () => {
+                let p = this._program.slice();
+                p.splice(i, 1);
+                this.program_changed_handler(p);
+            };
+
+            let h = new Hand(i * DIST_MOVE, hand_y, this.mouse, click_handle, close_handle);
             h.extrusion = this._program[i];
             // h.dir //TODO implement direction
             this.hands[i] = h;
@@ -160,6 +193,10 @@ export class Belt {
             } else
                 this.rotations[i + 1] = r;
         }
-        console.log('updated rotations', this.rotations);
+    }
+
+    mouse_click() {
+        for (let h of this.hands)
+            h.mouse_click();
     }
 }

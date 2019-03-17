@@ -14,10 +14,16 @@ export class Detail {
     y = 0;
     rotation = 0;
 
+    highlighted_rays;
+
     constructor(rays) {
         this.rays = rays;
         this.n = rays.length;
         this.t = Math.max(...this.rays);
+
+        this.highlighted_rays = new Array(this.n);
+        for (let i = 0; i < this.n; i++)
+            this.highlighted_rays[i] = false;
     }
 
     draw(ctx) {
@@ -46,16 +52,27 @@ export class Detail {
             ctx.stroke();
         }
 
+        let a = Math.PI * 2 / this.n; //TODO duplication
+        let a0 = -a / 2 - Math.PI / 2; //TODO duplication
+
         //draw radiuses
         for (let i = 0; i < this.n; i++) {
-            let a = Math.PI * 2 / this.n; //TODO duplication
-            let a0 = -a / 2 - Math.PI / 2; //TODO duplication
             ctx.beginPath();
             ctx.moveTo(0, 0);
             let r = R0 + (this.rays[i] - 1) * DR;
             ctx.lineTo(r * Math.cos(a0 + a * i), r * Math.sin(a0 + a * i));
             ctx.stroke();
         }
+
+        //highlight a ray
+        ctx.fillStyle = 'rgba(255, 0, 0, 0.4)';
+        for (let i = 0; i < this.n; i++)
+            if (this.highlighted_rays[i]) {
+                let r = R0 + (this.rays[i] - 1) * DR;
+                ctx.moveTo(0, 0);
+                ctx.arc(0, 0, r, a0 + a * i, a0 + a * (i + 1));
+                ctx.fill();
+            }
 
         ctx.restore();
     }
@@ -111,5 +128,13 @@ export class Detail {
             ctx.arc(0, 0, R_INNER, phi, phi + a2);
             phi += a2;
         }
+    }
+
+    highlight_ray(i) {
+        this.highlighted_rays[i] = true;
+    }
+
+    unhighlight_ray(i) {
+        this.highlighted_rays[i] = false;
     }
 }

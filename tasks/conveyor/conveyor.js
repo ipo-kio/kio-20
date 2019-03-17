@@ -2,6 +2,7 @@ import './conveyor.scss';
 import {Experiments} from "./experiments";
 import {Detail} from "./domain/detail";
 import {Belt} from "./domain/belt";
+import {Mouse} from "./mouse";
 
 export class Conveyor {
 
@@ -64,6 +65,19 @@ export class Conveyor {
         this.canvas.height = 620;
         this.ctx = this.canvas.getContext('2d');
 
+        this.mouse = new Mouse();
+
+        this.canvas.onmousemove = e => {
+            let rect = this.canvas.getBoundingClientRect();
+            this.mouse._x = e.clientX - rect.left;
+            this.mouse._y = e.clientY - rect.top;
+        };
+
+        this.canvas.onmousedown = e => {
+            for (let b of this.belts)
+                b.mouse_click();
+        };
+
         domNode.append(this.canvas);
 
         this.n = 10;
@@ -93,11 +107,14 @@ export class Conveyor {
         this.belts = new Array(this.n);
         let initial_rays = [1, 2, 3, 1, 1, 2, 1, 1, 1, 1];
 
+        let program_change_handler = new_program => {
+            for (let b of this.belts)
+                b.program = new_program;
+        };
+
         for (let i = 0; i < this.n; i++) {
-            let belt = new Belt(initial_rays);
+            let belt = new Belt(initial_rays, 62, 96 + i * 156, this.mouse, this.kioapi, program_change_handler);
             belt.program = [1, 2, 3, 3, 2, 1, 1];
-            belt.x = 62;
-            belt.y = 96 + i * 156;
 
             let first_ray = initial_rays[0];
             initial_rays = initial_rays.slice(1);
@@ -107,12 +124,12 @@ export class Conveyor {
         }
     }
 
-    /*static preloadManifest() {
+    static preloadManifest() {
         return [
-            // {id: "pic1", src: "taskid-resources/pic1.png"},
+            {id: "belt", src: "conveyor-resources/belt.png"},
             // {id: "pic2", src: "taskid-resources/pic2.png"}
         ]; //TODO перечислить загружаемые ресурсы. Они находятся в каталоге conveyor-resources
-    }*/
+    }
 
     parameters() {
         return [
