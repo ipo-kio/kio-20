@@ -212,7 +212,8 @@ export class Conveyor {
         };
 
         for (let i = 0; i < this.n; i++) {
-            let belt = new Belt(initial_rays, 62, 96 + i * 156, 440, this.mouse, this.kioapi, program_change_handler);
+            let j = 2 * i < this.n ? 0 : 1;
+            let belt = new Belt(initial_rays, 62 + j * 450, 96 + (i % (this.n / 2)) * 156, 440, this.mouse, this.kioapi, program_change_handler);
             belt.program = [1, 2, 3, 3, 2, 1, 1];
             belt.shift_x = 0;
 

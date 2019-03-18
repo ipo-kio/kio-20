@@ -133,8 +133,8 @@ export class Belt {
         ctx.translate(this._x, this._y);
 
         let outline_rect = this._outline_rect(true);
-        if (outline_rect[2] > 340) //TODO max width
-            outline_rect[2] = 340;
+        //if (outline_rect[2] > this.max_width)
+        outline_rect[2] = this.max_width;
         ctx.beginPath();
         ctx.rect(...outline_rect);
         ctx.save();
@@ -221,8 +221,7 @@ export class Belt {
 
         // border
         ctx.restore();
-        ctx.strokeStyle = 'black';
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(128, 128, 128, 0.5)';
         ctx.setLineDash([]);
 
         ctx.strokeRect(...outline_rect);
@@ -290,8 +289,8 @@ export class Belt {
         let h1 = use_top ? 2 * DR + LEN0 + 10 : 0;
 
         return [
-            x0,
-            y0 + 16 - h1,
+            0.5 + x0,
+            0.5 + y0 + 16 - h1,
             width0 + 6 * DR + 2 * R0,
             2 * R0 + 6 * DR + LEN0 - 22 + h1
         ];
