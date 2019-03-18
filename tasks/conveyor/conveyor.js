@@ -7,6 +7,10 @@ import {Slider} from "./slider";
 export class Conveyor {
 
     time_goes = false;
+    mouse;
+
+    shift_x = 0;
+    shift_y = 0;
 
     /**
      *
@@ -172,7 +176,7 @@ export class Conveyor {
         };
 
         for (let i = 0; i < this.n; i++) {
-            let belt = new Belt(initial_rays, 62, 96 + i * 156, this.mouse, this.kioapi, program_change_handler);
+            let belt = new Belt(initial_rays, 62, 96 + i * 156, 440, this.mouse, this.kioapi, program_change_handler);
             belt.program = [1, 2, 3, 3, 2, 1, 1];
 
             let first_ray = initial_rays[0];

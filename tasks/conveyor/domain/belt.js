@@ -13,6 +13,7 @@ export class Belt {
 
     x = 0;
     y = 0;
+    max_width;
     _time = 0;
     _program; //array of numbers from 1 to t
     detail;
@@ -25,11 +26,12 @@ export class Belt {
     bg;
     program_changed_handler;
 
-    constructor(initial_rays, x, y, mouse, kioapi, program_changed_handler) {
+    constructor(initial_rays, x, y, max_width, mouse, kioapi, program_changed_handler) {
         this.initial_rays = initial_rays;
         this.t = Math.max(...this.initial_rays);
         this.detail = new Detail(initial_rays);
         this.program_changed_handler = program_changed_handler;
+        this.max_width = max_width;
 
         this.x = x;
         this.y = y;
@@ -178,6 +180,18 @@ export class Belt {
             ctx.stroke();
         }
 
+        // border
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([]);
+        let h1 = 2 * DR + LEN0 + 10;
+        ctx.strokeRect(
+            x0,
+            y0 + 16 - h1,
+            width0 + 6 * DR + 2 * R0,
+            2 * R0 + 6 * DR + LEN0 - 22 + h1
+        );
+
         ctx.restore();
     }
 
@@ -230,15 +244,41 @@ export class Belt {
         }
     }
 
-    mouse_click() {
-        for (let h of this.hands)
-            h.mouse_click();
+    _outline_rect() {
+        let y0 = -3 * DR - R0 - LEN0;
+        let x0 = -3 * DR - R0;
+        let skips = this._program.length - 1;
+        if (skips < 0)
+            skips = 0;
+        let width0 = DIST_MOVE * skips + 5;
 
-        let add_index = this.added_element_index();
-        if (add_index !== -1) {
-            let p = this._program.slice();
-            p.splice(add_index.i, 0, this.t);
-            this.program_changed_handler(p);
+        let h1 = 2 * DR + LEN0 + 10;
+
+        return [
+            x0,
+            y0 + 16 - h1,
+            width0 + 6 * DR + 2 * R0,
+            2 * R0 + 6 * DR + LEN0 - 22 + h1
+        ];
+    }
+
+    mouse_click() {
+        let rect = this._outline_rect();
+        if (
+            rect[0] <= this.mouse.x && this.mouse.x <= rect[0] + rect[2] &&
+            rect[1] <= this.mouse.y && this.mouse.y <= rect[1] + rect[3]
+        ) {
+            console.log('click on belt');
+
+            for (let h of this.hands)
+                h.mouse_click();
+
+            let add_index = this.added_element_index();
+            if (add_index !== -1) {
+                let p = this._program.slice();
+                p.splice(add_index.i, 0, this.t);
+                this.program_changed_handler(p);
+            }
         }
     }
 

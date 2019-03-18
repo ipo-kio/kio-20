@@ -2,7 +2,7 @@ const SLICE_PERCENTS = 20;
 const R_INNER = 10;
 export const R0 = 30;
 export const DR = 10;
-const SLICE_DR = 4;
+const SLICE_DR = 3;
 
 export class Detail {
 
