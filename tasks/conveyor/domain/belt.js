@@ -11,8 +11,11 @@ export class Belt {
 
     initial_rays;
 
-    x = 0;
-    y = 0;
+    _x = 0;
+    _y = 0;
+    _shift_x = 0;
+    _shift_y = 0;
+    _y0 = 0;
     max_width;
     _time = 0;
     _program; //array of numbers from 1 to t
@@ -33,8 +36,9 @@ export class Belt {
         this.program_changed_handler = program_changed_handler;
         this.max_width = max_width;
 
-        this.x = x;
-        this.y = y;
+        this._x = x;
+        this._y = y;
+        this._y0 = y;
         this.mouse = new TranslatedMouse(mouse, x, y);
 
         this.bg = kioapi.getResource('belt');
@@ -42,6 +46,17 @@ export class Belt {
         this._program = [];
         this._update_hands();
         this._update_rotations();
+    }
+
+    set shift_x(value) {
+        this._shift_x = value;
+        this.mouse.tx = this._x - this._shift_x;
+    }
+
+    set shift_y(value) {
+        this._shift_y = value;
+        this._y = this._y0 + this._shift_y;
+        this.mouse.ty = this._y;
     }
 
     set program(value) {
@@ -115,7 +130,16 @@ export class Belt {
     draw(ctx) {
         ctx.save();
 
-        ctx.translate(this.x, this.y);
+        ctx.translate(this._x, this._y);
+
+        let outline_rect = this._outline_rect(true);
+        if (outline_rect[2] > 340) //TODO max width
+            outline_rect[2] = 340;
+        ctx.beginPath();
+        ctx.rect(...outline_rect);
+        ctx.save();
+        ctx.clip();
+        ctx.translate(-this._shift_x, 0);
 
         ctx.fillStyle = ctx.createPattern(this.bg, 'repeat');
         // ctx.strokeStyle = '#9d490c';
@@ -150,6 +174,21 @@ export class Belt {
         for (let hand of this.hands)
             hand.draw(ctx);
 
+        ctx.save();
+        ctx.fillStyle = 'white'; //'#22ff22';
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 0.4;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.font = 'bold 20px sans-serif';
+        for (let i = 0; i < this.hands.length; i++) {
+            let hand = this.hands[i];
+            let ind = i + 1;
+            ctx.fillText(ind, hand.x, hand.y);
+            ctx.strokeText(ind, hand.x, hand.y);
+        }
+        ctx.restore();
+
         //draw lines
         ctx.lineWidth = 0.5;
         ctx.strokeStyle = 'green';
@@ -181,16 +220,12 @@ export class Belt {
         }
 
         // border
+        ctx.restore();
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 1;
         ctx.setLineDash([]);
-        let h1 = 2 * DR + LEN0 + 10;
-        ctx.strokeRect(
-            x0,
-            y0 + 16 - h1,
-            width0 + 6 * DR + 2 * R0,
-            2 * R0 + 6 * DR + LEN0 - 22 + h1
-        );
+
+        ctx.strokeRect(...outline_rect);
 
         ctx.restore();
     }
@@ -244,7 +279,7 @@ export class Belt {
         }
     }
 
-    _outline_rect() {
+    _outline_rect(use_top) {
         let y0 = -3 * DR - R0 - LEN0;
         let x0 = -3 * DR - R0;
         let skips = this._program.length - 1;
@@ -252,7 +287,7 @@ export class Belt {
             skips = 0;
         let width0 = DIST_MOVE * skips + 5;
 
-        let h1 = 2 * DR + LEN0 + 10;
+        let h1 = use_top ? 2 * DR + LEN0 + 10 : 0;
 
         return [
             x0,
@@ -263,7 +298,7 @@ export class Belt {
     }
 
     mouse_click() {
-        let rect = this._outline_rect();
+        let rect = this._outline_rect(true);
         if (
             rect[0] <= this.mouse.x && this.mouse.x <= rect[0] + rect[2] &&
             rect[1] <= this.mouse.y && this.mouse.y <= rect[1] + rect[3]

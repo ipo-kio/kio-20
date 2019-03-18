@@ -34,6 +34,7 @@ export class Hand {
         let full_length = this.full_length();
 
         ctx.save();
+
         ctx.fillStyle = '#faf80a';
         ctx.strokeStyle = 'black';
         ctx.fillRect(this.x - HAND_WIDTH / 2, this.y - (full_length - this.length), HAND_WIDTH, full_length);

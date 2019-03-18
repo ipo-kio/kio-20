@@ -12,6 +12,12 @@ export class Conveyor {
     shift_x = 0;
     shift_y = 0;
 
+    down_x = -1;
+    down_y = -1;
+
+    down_shift_x = -1;
+    down_shift_y = -1;
+
     /**
      *
      * @param settings Объект с настройками задачи. В данный момент, внутри объекта settings ожидается только поле level,
@@ -77,11 +83,40 @@ export class Conveyor {
             let rect = this.canvas.getBoundingClientRect();
             this.mouse._x = e.clientX - rect.left;
             this.mouse._y = e.clientY - rect.top;
+
+            if (this.down_x >= 0) {
+                let dx = this.mouse._x - this.down_x;
+                let dy = this.mouse._y - this.down_y;
+
+                this.shift_x = this.down_shift_x - dx;
+                this.shift_y = this.down_shift_y + dy;
+                this._update_shifts();
+            }
+        };
+
+        let onmouseup = e => {
+            let x = this.mouse.x;
+            let y = this.mouse.y;
+
+            let dist = Math.abs(this.down_x - x) + Math.abs(this.down_y - y);
+
+            if (dist < 2) //click
+                for (let b of this.belts)
+                    b.mouse_click();
+
+            this.down_x = -1;
+            this.down_y = -1;
+
+            document.removeEventListener('mouseup', onmouseup)
         };
 
         this.canvas.onmousedown = e => {
-            for (let b of this.belts)
-                b.mouse_click();
+            this.down_x = this.mouse._x;
+            this.down_y = this.mouse._y;
+            this.down_shift_x = this.shift_x;
+            this.down_shift_y = this.shift_y;
+
+            document.addEventListener('mouseup', onmouseup);
         };
 
         domNode.append(this.canvas);
@@ -104,6 +139,8 @@ export class Conveyor {
             for (let belt of this.belts) {
                 if (this.time_goes) {
                     belt.time += elapsed_time / 1000;
+                    if (belt.time >= this._slider.max_value)
+                        this._stop_play();
                     this._slider.value_no_fire = belt.time;
                 }
                 belt.draw(this.ctx);
@@ -164,7 +201,6 @@ export class Conveyor {
         };
     }
 
-
     _init_belts() {
         this.belts = new Array(this.n);
         let initial_rays = [1, 2, 3, 1, 1, 2, 1, 1, 1, 1];
@@ -178,6 +214,7 @@ export class Conveyor {
         for (let i = 0; i < this.n; i++) {
             let belt = new Belt(initial_rays, 62, 96 + i * 156, 440, this.mouse, this.kioapi, program_change_handler);
             belt.program = [1, 2, 3, 3, 2, 1, 1];
+            belt.shift_x = 0;
 
             let first_ray = initial_rays[0];
             initial_rays = initial_rays.slice(1);
@@ -187,6 +224,13 @@ export class Conveyor {
         }
 
         this._slider.update_max_value(this.belts[0].max_time());
+    }
+
+    _update_shifts() {
+        for (let b of this.belts) {
+            b.shift_x = this.shift_x;
+            b.shift_y = this.shift_y;
+        }
     }
 
     static preloadManifest() {
