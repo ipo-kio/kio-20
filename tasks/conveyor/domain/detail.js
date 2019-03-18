@@ -14,16 +14,12 @@ export class Detail {
     y = 0;
     rotation = 0;
 
-    highlighted_rays;
+    highlighted_ray = -1;
 
     constructor(rays) {
         this.rays = rays;
         this.n = rays.length;
         this.t = Math.max(...this.rays);
-
-        this.highlighted_rays = new Array(this.n);
-        for (let i = 0; i < this.n; i++)
-            this.highlighted_rays[i] = false;
     }
 
     draw(ctx) {
@@ -65,14 +61,14 @@ export class Detail {
         }
 
         //highlight a ray
-        ctx.fillStyle = 'rgba(255, 0, 0, 0.4)';
-        for (let i = 0; i < this.n; i++)
-            if (this.highlighted_rays[i]) {
-                let r = R0 + (this.rays[i] - 1) * DR;
-                ctx.moveTo(0, 0);
-                ctx.arc(0, 0, r, a0 + a * i, a0 + a * (i + 1));
-                ctx.fill();
-            }
+        let hr = this.highlighted_ray;
+        if (hr >= 0) {
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.4)';
+            let r = R0 + (this.rays[hr] - 1) * DR;
+            ctx.moveTo(0, 0);
+            ctx.arc(0, 0, r, a0 + a * hr, a0 + a * (hr + 1));
+            ctx.fill();
+        }
 
         ctx.restore();
     }
@@ -131,10 +127,10 @@ export class Detail {
     }
 
     highlight_ray(i) {
-        this.highlighted_rays[i] = true;
+        this.highlighted_ray = i;
     }
 
-    unhighlight_ray(i) {
-        this.highlighted_rays[i] = false;
+    unhighlight_ray() {
+        this.highlighted_ray = -1;
     }
 }

@@ -92,17 +92,21 @@ export class Hand {
 
         if (detail && r0 !== r1) {
             let time_rotation = max_length / (2 * total_length);
-            if (time_to_real_length <= percent && percent <= time_to_real_length + time_rotation) {
-                let phi0 = -2 * Math.PI / detail.n * r0;
-                let phi1 = -2 * Math.PI / detail.n * r1;
 
+            let phi0 = -2 * Math.PI / detail.n * r0;
+            let phi1 = -2 * Math.PI / detail.n * r1;
+
+            if (time_to_real_length <= percent && percent <= time_to_real_length + time_rotation) {
                 let dphi = phi1 - phi0;
                 while (dphi > Math.PI)
                     dphi -= 2 * Math.PI;
                 while (dphi < -Math.PI)
                     dphi += 2 * Math.PI;
                 detail.rotation = phi0 + dphi * (percent - time_to_real_length) / time_rotation;
-            }
+            } else if (percent < time_to_real_length)
+                detail.rotation = phi0;
+            else
+                detail.rotation = phi1;
         }
     }
 

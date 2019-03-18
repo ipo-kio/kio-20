@@ -46,6 +46,7 @@ export class Belt {
         this._program = value;
         this._update_hands();
         this._update_rotations();
+        this._update_time();
     }
 
     _update_time() {
@@ -77,6 +78,13 @@ export class Belt {
         this.step = 'move';
         this.detail.x = DIST_MOVE * this.step_index + DIST_MOVE * step_time / TIME_MOVE;
         this._reset_all_hands();
+
+        //rotate detail
+        if (this.step_index + 1 < this.rotations.length) {
+            let r0 = this.rotations[this.step_index + 1];
+            this.detail.rotation = -2 * Math.PI / this.detail.n * r0; //TODO duplication with Hand.set_out
+            this.detail.unhighlight_ray();
+        }
     }
 
     _reset_all_hands() {
