@@ -9,6 +9,7 @@ export class Detail {
     rays;
     n;
     t;
+    r0;
 
     x = 0;
     y = 0;
@@ -16,12 +17,13 @@ export class Detail {
 
     highlighted_ray = -1;
 
-    constructor(rays, bg) {
+    constructor(rays, r0, bg) {
         this.rays = rays;
         this.n = rays.length;
         this.t = Math.max(...this.rays);
 
         this.bg = bg;
+        this.r0 = r0;
     }
 
     draw(ctx) {
@@ -77,6 +79,28 @@ export class Detail {
         }
 
         ctx.restore();
+
+        ctx.font = 'bold 18px sans-serif';
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        // ctx.strokeStyle = 'black';
+        // ctx.lineWidth = 0.5;
+        //-2 * Math.PI / detail.n * r0 = rotation
+        let r = this.get_rotation_index();
+
+        ctx.fillText(r, this.x, this.y);
+        // ctx.strokeText(42, this.detail.x, this.detail.y);
+    }
+
+    get_rotation_index() {
+        let r = -this.rotation * this.n / 2 / Math.PI;
+        r = Math.round(r) + this.r0;
+        while (r <= 0)
+            r += this.n;
+        while (r > this.n)
+            r -= this.n;
+        return r;
     }
 
     draw_as_segments(ctx) {

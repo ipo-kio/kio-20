@@ -29,10 +29,10 @@ export class Belt {
     bg;
     program_changed_handler;
 
-    constructor(initial_rays, x, y, max_width, mouse, kioapi, program_changed_handler) {
+    constructor(initial_rays, x, y, max_width, mouse, kioapi, program_changed_handler, detail_r0) {
         this.initial_rays = initial_rays;
         this.t = Math.max(...this.initial_rays);
-        this.detail = new Detail(initial_rays, kioapi.getResource('detail'));
+        this.detail = new Detail(initial_rays, detail_r0, kioapi.getResource('detail'));
         this.program_changed_handler = program_changed_handler;
         this.max_width = max_width;
 
@@ -190,15 +190,6 @@ export class Belt {
 
         this.detail.draw(ctx);
 
-        ctx.font = 'bold 18px sans-serif';
-        ctx.fillStyle = 'white';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        // ctx.strokeStyle = 'black';
-        // ctx.lineWidth = 0.5;
-        ctx.fillText(42, this.detail.x, this.detail.y);
-        // ctx.strokeText(42, this.detail.x, this.detail.y);
-
         for (let hand of this.hands)
             hand.draw(ctx);
 
@@ -238,6 +229,20 @@ export class Belt {
         ctx.setLineDash([]);
 
         ctx.strokeRect(...outline_rect);
+
+        ctx.fillStyle = 'rgba(100, 100, 100, 0.5)';
+        ctx.fillRect(outline_rect[0], outline_rect[1], 22, 22);
+        ctx.font = 'bold 18px sans-serif';
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        let txt = this.rotations[this.rotations.length - 1] + this.detail.r0;
+        while (txt <= 0)
+            txt += this.detail.n;
+        while (txt > this.detail.n)
+            txt -= this.detail.n;
+        ctx.fillText(txt, outline_rect[0] + 4, outline_rect[1] + 4);
+        // ctx.strokeText(txt, outline_rect[0] + 4, outline_rect[1] + 4);
 
         ctx.restore();
     }
