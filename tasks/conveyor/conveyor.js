@@ -1,6 +1,6 @@
 import './conveyor.scss';
 import {Experiments} from "./experiments";
-import {Belt} from "./domain/belt";
+import {Belt, DIST_MOVE} from "./domain/belt";
 import {Mouse} from "./mouse";
 import {Slider} from "./slider";
 
@@ -74,11 +74,13 @@ export class Conveyor {
 
         this.canvas = document.createElement('canvas');
         this.canvas.width = 900;
-        this.canvas.height = 620;
+        this.canvas.height = this.level === 0 ? 620 / 4 * 3 : 620;
         this.canvas.className = 'kio-conveyor-canvas';
         this.ctx = this.canvas.getContext('2d');
 
         this.mouse = new Mouse();
+
+        this.no_vertical_move = this.level <= 1;
 
         domNode.style.backgroundImage = `url(${kioapi.getResourceImageAsDataURL('bg')})`;
 
@@ -125,7 +127,7 @@ export class Conveyor {
         domNode.append(this.canvas);
         this._init_time_controls(domNode, preferred_width);
 
-        this.n = 10;
+        this.n = 6 + this.level * 2;
         this._init_belts();
 
         let current_time = new Date().getTime();
@@ -231,6 +233,22 @@ export class Conveyor {
     }
 
     _update_shifts() {
+
+        if (this.no_vertical_move)
+            this.shift_y = 0;
+        else {
+            if (this.shift_y < -160)
+                this.shift_y = -160;
+            if (this.shift_y > 0)
+                this.shift_y = 0;
+        }
+
+        if (this.shift_x < -60)
+            this.shift_x = -60;
+        let width0 = this.belts[0]._program.length * DIST_MOVE;
+        if (this.shift_x > width0)
+            this.shift_x = width0;
+
         for (let b of this.belts) {
             b.shift_x = this.shift_x;
             b.shift_y = this.shift_y;

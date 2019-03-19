@@ -5,7 +5,7 @@ import {TranslatedMouse} from "../mouse";
 const TIME_HAND_DOWN_UP = 1;
 const TIME_MOVE = 2;
 const TIME_PERIOD = 2 * TIME_HAND_DOWN_UP + TIME_MOVE;
-const DIST_MOVE = 40;
+export const DIST_MOVE = 40;
 
 export class Belt {
 
