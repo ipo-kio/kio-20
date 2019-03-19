@@ -10,7 +10,8 @@ const HIT_CLOSE = 2;
 export class Hand {
     x;
     y;
-    img;
+    img_left;
+    img_right;
     t = 3;
     length = 0;
 
@@ -19,10 +20,11 @@ export class Hand {
 
     mouse;
 
-    constructor(x, y, mouse, img, click_handle, close_handle) {
+    constructor(x, y, mouse, img_left, img_right, click_handle, close_handle) {
         this.x = x;
         this.y = y;
-        this.img = img;
+        this.img_left = img_left;
+        this.img_right = img_right;
         this.mouse = mouse;
         this.click_handle = click_handle;
         this.close_handle = close_handle;
@@ -39,12 +41,13 @@ export class Hand {
 
         ctx.fillStyle = '#faf80a';
         ctx.strokeStyle = 'black';
+        let img = this.dir === 1 ? this.img_left : this.img_right;
         ctx.drawImage(
-            this.img,
-            0, this.img.height - full_length,
-            this.img.width, full_length,
+            img,
+            0, img.height - full_length,
+            img.width, full_length,
             this.x - HAND_WIDTH / 2, this.y - (full_length - this.length),
-            this.img.width, full_length
+            img.width, full_length
         );
         // ctx.fillRect(this.x - HAND_WIDTH / 2, this.y - (full_length - this.length), HAND_WIDTH, full_length);
         // ctx.strokeRect(this.x - HAND_WIDTH / 2, this.y - (full_length - this.length), HAND_WIDTH, full_length);

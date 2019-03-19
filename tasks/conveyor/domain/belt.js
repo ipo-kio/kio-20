@@ -18,7 +18,7 @@ export class Belt {
     _y0 = 0;
     max_width;
     _time = 0;
-    _program; //array of numbers from 1 to t
+    _program; //array of [numbers from 1 to t, dir -1 1]
     detail;
     step;
     step_index;
@@ -45,7 +45,8 @@ export class Belt {
         this.bg_left = kioapi.getResource('belt-left');
         this.bg_right = kioapi.getResource('belt-right');
 
-        this.hand_img = kioapi.getResource('stick-left');
+        this.hand_img_left = kioapi.getResource('stick-left');
+        this.hand_img_right = kioapi.getResource('stick-right');
 
         this._program = [];
         this._update_hands();
@@ -236,15 +237,20 @@ export class Belt {
         ctx.fillStyle = 'white';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'top';
-        let txt = this.rotations[this.rotations.length - 1] + this.detail.r0;
-        while (txt <= 0)
-            txt += this.detail.n;
-        while (txt > this.detail.n)
-            txt -= this.detail.n;
+        let txt = this.belt_result();
         ctx.fillText(txt, outline_rect[0] + 4, outline_rect[1] + 4);
         // ctx.strokeText(txt, outline_rect[0] + 4, outline_rect[1] + 4);
 
         ctx.restore();
+    }
+
+    belt_result() {
+        let res = this.rotations[this.rotations.length - 1] + this.detail.r0;
+        while (res <= 0)
+            res += this.detail.n;
+        while (res > this.detail.n)
+            res -= this.detail.n;
+        return res;
     }
 
     _update_hands() {
@@ -253,9 +259,11 @@ export class Belt {
         for (let i = 0; i < this._program.length; i++) {
             let click_handle = () => {
                 let p = this._program.slice();
-                p[i] -= 1;
-                if (p[i] <= 0)
-                    p[i] = this.t;
+                p[i][0] -= 1;
+                if (p[i][0] <= 0) {
+                    p[i][0] = this.t;
+                    p[i][1] = -p[i][1];
+                }
                 this.program_changed_handler(p);
             };
 
@@ -265,8 +273,9 @@ export class Belt {
                 this.program_changed_handler(p);
             };
 
-            let h = new Hand(i * DIST_MOVE, hand_y, this.mouse, this.hand_img, click_handle, close_handle);
-            h.extrusion = this._program[i];
+            let h = new Hand(i * DIST_MOVE, hand_y, this.mouse, this.hand_img_left, this.hand_img_right, click_handle, close_handle);
+            h.extrusion = this._program[i][0];
+            h.dir = this._program[i][1];
             // h.dir //TODO implement direction
             this.hands[i] = h;
         }
@@ -284,8 +293,8 @@ export class Belt {
             let p = this._program[i];
 
             let ray = this.initial_rays[r];
-            if (ray >= p) {
-                let r1 = r + 1;
+            if (ray >= p[0]) {
+                let r1 = r + p[1];
                 if (r1 >= this.initial_rays.length)
                     r1 -= this.initial_rays.length;
                 if (r1 < 0)
@@ -328,7 +337,7 @@ export class Belt {
             let add_index = this.added_element_index();
             if (add_index !== -1) {
                 let p = this._program.slice();
-                p.splice(add_index.i, 0, this.t);
+                p.splice(add_index.i, [0, -1], this.t);
                 this.program_changed_handler(p);
             }
         }

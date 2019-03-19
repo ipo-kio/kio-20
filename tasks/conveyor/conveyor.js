@@ -42,7 +42,18 @@ export class Conveyor {
 
         for (let i = 1; i <= 1; i++) {
             console.log('-----------------------------------');
-            let rays = [1, 2, 3, 1, 2, 3, 1, 2];
+            let rays;
+            switch (this.level) {
+                case 0:
+                    rays = [1, 2, 3, 1, 3, 2];
+                    break;
+                case 1:
+                    rays = [1, 2, 3, 2, 3, 1, 1, 1];
+                    break;
+                case 2:
+                    rays = [1, 2, 3, 1, 2, 3, 1, 2];
+                    break;
+            }
             let t = 3;
             // for (let j = 0; j < 8; j++)
             //     rays.push(Math.floor(t * Math.random() + 1));
@@ -132,6 +143,7 @@ export class Conveyor {
 
         let current_time = new Date().getTime();
 
+        let first_loop = true;
         let loop = () => {
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -150,9 +162,16 @@ export class Conveyor {
                 }
                 belt.draw(this.ctx);
             }
+            /*if (first_loop) {
+                th._submit();
+            } else {
+                first_loop = false;
+            }*/
         };
 
         loop();
+
+        this._submit();
     }
 
     _init_time_controls(domNode, preferred_width) {
@@ -208,18 +227,31 @@ export class Conveyor {
 
     _init_belts() {
         this.belts = new Array(this.n);
-        let initial_rays = [1, 2, 3, 1, 1, 2, 1, 1, 1, 1];
+        let initial_rays;
+
+        switch (this.level) {
+            case 0:
+                initial_rays = [1, 2, 3, 1, 3, 2];
+                break;
+            case 1:
+                initial_rays = [1, 2, 3, 2, 3, 1, 1, 1];
+                break;
+            case 2:
+                initial_rays = [1, 2, 3, 1, 1, 2, 1, 1, 1, 1];
+                break;
+        }
 
         let program_change_handler = new_program => {
             for (let b of this.belts)
                 b.program = new_program;
             this._slider.update_max_value(this.belts[0].max_time());
+            this._submit();
         };
+        this.program_changed_handler = program_change_handler;
 
         for (let i = 0; i < this.n; i++) {
             let j = 2 * i < this.n ? 0 : 1;
             let belt = new Belt(initial_rays, 62 + j * 460, 96 + (i % (this.n / 2)) * 156, 430, this.mouse, this.kioapi, program_change_handler, i + 1);
-            belt.program = [1, 2, 3, 3, 2, 1, 1];
             belt.shift_x = 0;
 
             let first_ray = initial_rays[0];
@@ -229,7 +261,28 @@ export class Conveyor {
             this.belts[i] = belt;
         }
 
+        this.program_changed_handler([[1, 1], [2, 1]]);
         this._slider.update_max_value(this.belts[0].max_time());
+    }
+
+    _submit() {
+        //count different values
+        let b = new Array(this.n);
+        for (let bi = 0; bi < b.length; bi++)
+            b[bi] = 0;
+        for (let belt of this.belts)
+            b[belt.belt_result()] = 1;
+        let d = 0;
+        for (let bb of b)
+            d += bb;
+        console.log(b);
+
+        let result = {
+            d,
+            n: this.belts[0]._program.length
+        };
+
+        this.kioapi.submitResult(result);
     }
 
     _update_shifts() {
@@ -261,6 +314,7 @@ export class Conveyor {
             {id: "detail", src: "conveyor-resources/detail.png"},
 
             {id: "stick-left", src: "conveyor-resources/stick-left.png"},
+            {id: "stick-right", src: "conveyor-resources/stick-right.png"},
 
             {id: "belt", src: "conveyor-resources/belt.png"},
             {id: "belt-left", src: "conveyor-resources/belt-left.png"},
@@ -274,17 +328,28 @@ export class Conveyor {
 
     parameters() {
         return [
-            //TODO добавить список параметров
+            {
+                name: 'd',
+                title: 'Различных поворотов',
+                ordering: 'minimize'
+            },
+            {
+                name: 'n',
+                title: 'Длина программы',
+                ordering: 'minimize'
+            }
         ];
     }
 
     solution() {
-        //TODO вернуть объект с описанием решения участника
+        return this.belts[0].program;
     }
 
     loadSolution(solution) {
-        // Все объекты, которые сюда передаются, были ранее возвращены методом solution,
-        // но проверять их все равно необходимо.
-        //TODO загрузить объект с решением участника.
+        if (!solution)
+            return;
+
+        this.program_changed_handler(solution);
+        this._submit();
     }
 }
