@@ -329,15 +329,13 @@ export class Belt {
             rect[0] <= this.mouse.x && this.mouse.x <= rect[0] + rect[2] &&
             rect[1] <= this.mouse.y && this.mouse.y <= rect[1] + rect[3]
         ) {
-            console.log('click on belt');
-
             for (let h of this.hands)
                 h.mouse_click();
 
             let add_index = this.added_element_index();
             if (add_index !== -1) {
                 let p = this._program.slice();
-                p.splice(add_index.i, [0, -1], this.t);
+                p.splice(add_index.i, 0, [this.t, 1]);
                 this.program_changed_handler(p);
             }
         }

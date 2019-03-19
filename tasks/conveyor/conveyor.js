@@ -26,43 +26,31 @@ export class Conveyor {
     constructor(settings) {
         this.level = settings.level;
 
-        // console.log('--------');
-        // // new Experiments(4, [1, 1, 2, 2]);
-        // new Experiments([1, 1, 2, 3, 4, 5, 6, 7, 8, 9], true);
-        // new Experiments([1, 1, 2, 3, 4, 5, 6, 7, 8, 9], false);
+        /*console.log('--------');
+        new Experiments(4, [1, 1, 2, 2]);
+        new Experiments([1, 1, 2, 3, 4, 5, 6, 7, 8, 9], true);
+        new Experiments([1, 1, 2, 3, 4, 5, 6, 7, 8, 9], false);
+
+        new Experiments([1, 2, 1, 3, 1, 4, 1, 5, 1, 6], true);
+        new Experiments([1, 2, 1, 3, 1, 4, 1, 5, 1, 6], false);
+        new Experiments([1, 2, 1, 2, 1, 2, 1, 2, 1, 3], true);
+        new Experiments([1, 2, 1, 2, 1, 2, 1, 2, 1, 3], false);
+        new Experiments([1, 3, 3, 1, 2, 4, 1, 1], true);
+        new Experiments([1, 3, 3, 1, 2, 4, 1, 1], false);*/
         //
-        // new Experiments([1, 2, 1, 3, 1, 4, 1, 5, 1, 6], true);
-        // new Experiments([1, 2, 1, 3, 1, 4, 1, 5, 1, 6], false);
-        // new Experiments([1, 2, 1, 2, 1, 2, 1, 2, 1, 3], true);
-        // new Experiments([1, 2, 1, 2, 1, 2, 1, 2, 1, 3], false);
-        // new Experiments([1, 3, 3, 1, 2, 4, 1, 1], true);
-        // new Experiments([1, 3, 3, 1, 2, 4, 1, 1], false);
 
-        return;
-
-        for (let i = 1; i <= 1; i++) {
+        /*for (let i = 1; i <= 20; i++) {
             console.log('-----------------------------------');
-            let rays;
-            switch (this.level) {
-                case 0:
-                    rays = [1, 2, 3, 1, 3, 2];
-                    break;
-                case 1:
-                    rays = [1, 2, 3, 2, 3, 1, 1, 1];
-                    break;
-                case 2:
-                    rays = [1, 2, 3, 1, 2, 3, 1, 2];
-                    break;
-            }
+            let rays = [];
             let t = 3;
-            // for (let j = 0; j < 8; j++)
-            //     rays.push(Math.floor(t * Math.random() + 1));
+            for (let j = 0; j < 10; j++)
+                rays.push(Math.floor(t * Math.random() + 1));
 
             let e1 = new Experiments(rays, false);
             let e2 = new Experiments(rays, true);
 
             console.log(e1.length, e2.length, rays);
-        }
+        }*/
     }
 
     /**
@@ -229,12 +217,16 @@ export class Conveyor {
         this.belts = new Array(this.n);
         let initial_rays;
 
+        //0: [1, 3, 1, 1, 3, 2] [2, 1, 1, 2, 2, 1, 2, 1, 1, 3] [-3, -1, 2, 2, -1, -3, 2]
+        //1: [1, 2, 2, 3, 1, 2, 1, 1]  [-3, -2, -2, -1, -1, 2, 2, -1, 3, -2]
+        //2: [1, 2, 3, 1, 1, 2, 1, 1, 1, 1]  [-3, -2, -1, -1, 2, -1, 2, -1, 2, 2, -1, 3, -2, -1, 2]
+
         switch (this.level) {
             case 0:
-                initial_rays = [1, 2, 3, 1, 3, 2];
+                initial_rays = [1, 3, 1, 1, 3, 2];
                 break;
             case 1:
-                initial_rays = [1, 2, 3, 2, 3, 1, 1, 1];
+                initial_rays = [1, 2, 2, 3, 1, 2, 1, 1];
                 break;
             case 2:
                 initial_rays = [1, 2, 3, 1, 1, 2, 1, 1, 1, 1];
@@ -275,7 +267,6 @@ export class Conveyor {
         let d = 0;
         for (let bb of b)
             d += bb;
-        console.log(b);
 
         let result = {
             d,
@@ -342,10 +333,11 @@ export class Conveyor {
     }
 
     solution() {
-        return this.belts[0].program;
+        return this.belts[0]._program;
     }
 
     loadSolution(solution) {
+        console.log('loading', solution);
         if (!solution)
             return;
 

@@ -17,7 +17,7 @@ export class Experiments {
 
         let t = Math.max(...rays);
         let n = rays.length;
-        // console.log('start', n, t, rays);
+        console.log('start', n, t, rays);
 
         this.rays = rays;
         this.t = t;
@@ -50,7 +50,7 @@ export class Experiments {
                     if (!rotation_set_was_already_found(new_rot_set)) {
                         if (new_rot_set.is_singleton()) {
                             let h = new_rot_set.history;
-                            // console.log('found', h.length, h, new_rot_set.a[0]);
+                            console.log('found', h.length, h, new_rot_set.a[0]);
                             this.history = h;
                             this.length = h.length;
                             return;
