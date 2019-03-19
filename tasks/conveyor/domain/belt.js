@@ -32,7 +32,7 @@ export class Belt {
     constructor(initial_rays, x, y, max_width, mouse, kioapi, program_changed_handler) {
         this.initial_rays = initial_rays;
         this.t = Math.max(...this.initial_rays);
-        this.detail = new Detail(initial_rays);
+        this.detail = new Detail(initial_rays, kioapi.getResource('detail'));
         this.program_changed_handler = program_changed_handler;
         this.max_width = max_width;
 
@@ -42,6 +42,10 @@ export class Belt {
         this.mouse = new TranslatedMouse(mouse, x, y);
 
         this.bg = kioapi.getResource('belt');
+        this.bg_left = kioapi.getResource('belt-left');
+        this.bg_right = kioapi.getResource('belt-right');
+
+        this.hand_img = kioapi.getResource('stick-left');
 
         this._program = [];
         this._update_hands();
@@ -142,8 +146,6 @@ export class Belt {
         ctx.translate(-this._shift_x, 0);
 
         ctx.fillStyle = ctx.createPattern(this.bg, 'repeat');
-        // ctx.strokeStyle = '#9d490c';
-        // ctx.lineWidth = 2;
         let y0 = -3 * DR - R0 - LEN0;
         let x0 = -3 * DR - R0;
         let skips = this._program.length - 1;
@@ -155,12 +157,13 @@ export class Belt {
         ctx.translate(this.detail.x, 0);
         ctx.fillRect(
             x0 - this.detail.x,
-            // y0 - DR * 3 + 6,
             y0 + 16,
             width0 + 6 * DR + 2 * R0,
             2 * R0 + 6 * DR + LEN0 - 22
         );
         ctx.restore();
+        ctx.drawImage(this.bg_left, x0 - this.bg_left.width, y0 + 16);
+        ctx.drawImage(this.bg_right, x0 + width0 + 6 * DR + 2 * R0, y0 + 16);
 
         /*ctx.strokeRect(
             x0,
@@ -169,35 +172,45 @@ export class Belt {
             2 * R0 + 6 * DR + LEN0 + 3 * DR - 12
         );*/
 
+        //draw stick numbers
+        ctx.save();
+        ctx.fillStyle = 'white'; //'#22ff22';
+        // ctx.strokeStyle = 'black';
+        // ctx.lineWidth = 0.4;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.font = 'bold 16px sans-serif';
+        for (let i = 0; i < this.hands.length; i++) {
+            let hand = this.hands[i];
+            let ind = i + 1;
+            ctx.fillText(ind, hand.x, hand.y + 10);
+            // ctx.strokeText(ind, hand.x, hand.y + 6);
+        }
+        ctx.restore();
+
         this.detail.draw(ctx);
+
+        ctx.font = 'bold 18px sans-serif';
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        // ctx.strokeStyle = 'black';
+        // ctx.lineWidth = 0.5;
+        ctx.fillText(42, this.detail.x, this.detail.y);
+        // ctx.strokeText(42, this.detail.x, this.detail.y);
 
         for (let hand of this.hands)
             hand.draw(ctx);
 
-        ctx.save();
-        ctx.fillStyle = 'white'; //'#22ff22';
-        ctx.strokeStyle = 'black';
-        ctx.lineWidth = 0.4;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom';
-        ctx.font = 'bold 20px sans-serif';
-        for (let i = 0; i < this.hands.length; i++) {
-            let hand = this.hands[i];
-            let ind = i + 1;
-            ctx.fillText(ind, hand.x, hand.y);
-            ctx.strokeText(ind, hand.x, hand.y);
-        }
-        ctx.restore();
-
         //draw lines
-        ctx.lineWidth = 0.5;
-        ctx.strokeStyle = 'green';
-        ctx.setLineDash([2, 3]);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = '#194aee';
+        ctx.setLineDash([4, 4]);
         for (let i = 0; i < 3; i++) {
             ctx.beginPath();
-            ctx.moveTo(-5, y0 - DR * i - 0.5);
+            ctx.moveTo(-20, y0 - DR * i - 0.5);
 
-            ctx.lineTo(width0, y0 - DR * i - 0.5);
+            ctx.lineTo(width0 + 20, y0 - DR * i - 0.5);
             ctx.stroke();
         }
 
@@ -207,7 +220,7 @@ export class Belt {
             let {i, x, y} = added_element_index;
             ctx.beginPath();
             ctx.lineWidth = 2;
-            ctx.strokeStyle = 'green';
+            ctx.strokeStyle = '#194aee';
             ctx.setLineDash([]);
             ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
             ctx.fillRect(x - 7, y - 7, 14, 14);
@@ -221,7 +234,7 @@ export class Belt {
 
         // border
         ctx.restore();
-        ctx.strokeStyle = 'rgba(128, 128, 128, 0.5)';
+        ctx.strokeStyle = 'black';
         ctx.setLineDash([]);
 
         ctx.strokeRect(...outline_rect);
@@ -247,7 +260,7 @@ export class Belt {
                 this.program_changed_handler(p);
             };
 
-            let h = new Hand(i * DIST_MOVE, hand_y, this.mouse, click_handle, close_handle);
+            let h = new Hand(i * DIST_MOVE, hand_y, this.mouse, this.hand_img, click_handle, close_handle);
             h.extrusion = this._program[i];
             // h.dir //TODO implement direction
             this.hands[i] = h;

@@ -16,10 +16,12 @@ export class Detail {
 
     highlighted_ray = -1;
 
-    constructor(rays) {
+    constructor(rays, bg) {
         this.rays = rays;
         this.n = rays.length;
         this.t = Math.max(...this.rays);
+
+        this.bg = bg;
     }
 
     draw(ctx) {
@@ -35,11 +37,14 @@ export class Detail {
         ctx.lineWidth = 3;
         ctx.stroke();
 
-        ctx.fillStyle = '#ff9e3f';
+        ctx.fillStyle = ctx.createPattern(this.bg, 'no-repeat');
+        ctx.save();
+        ctx.translate(-this.bg.width / 2, -this.bg.height / 2);
         ctx.fill();
+        ctx.restore();
 
         //draw circles
-        ctx.strokeStyle = "green";
+        ctx.strokeStyle = "#194aee";
         ctx.lineWidth = 0.5;
         ctx.setLineDash([2, 3]);
         for (let i = 1; i <= 3; i++) {
@@ -63,7 +68,8 @@ export class Detail {
         //highlight a ray
         let hr = this.highlighted_ray;
         if (hr >= 0) {
-            ctx.fillStyle = 'rgba(255, 0, 0, 0.4)';
+            //#194aee
+            ctx.fillStyle = 'rgba(25, 54, 238, 0.75)';
             let r = R0 + (this.rays[hr] - 1) * DR;
             ctx.moveTo(0, 0);
             ctx.arc(0, 0, r, a0 + a * hr, a0 + a * (hr + 1));

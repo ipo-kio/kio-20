@@ -75,9 +75,12 @@ export class Conveyor {
         this.canvas = document.createElement('canvas');
         this.canvas.width = 900;
         this.canvas.height = 620;
+        this.canvas.className = 'kio-conveyor-canvas';
         this.ctx = this.canvas.getContext('2d');
 
         this.mouse = new Mouse();
+
+        domNode.style.backgroundImage = `url(${kioapi.getResourceImageAsDataURL('bg')})`;
 
         this.canvas.onmousemove = e => {
             let rect = this.canvas.getBoundingClientRect();
@@ -155,7 +158,7 @@ export class Conveyor {
         time_controls_container.className = 'time-controls-container';
         domNode.appendChild(time_controls_container);
 
-        this._slider = new Slider(time_controls_container, 0, 100, 35/*fly1 height*/, this.kioapi.getResource('slider'), this.kioapi.getResource('slider_hover'));
+        this._slider = new Slider(time_controls_container, 0, 100, 35/*fly1 height*/, this.kioapi.getResource('slider'), this.kioapi.getResource('slider-hover'), this.kioapi.getResource('slider-line'));
         this._slider.domNode.className = 'conveyor-slider';
         this._slider.resize(preferred_width - 16);
         time_controls_container.appendChild(this._slider.domNode);
@@ -213,7 +216,7 @@ export class Conveyor {
 
         for (let i = 0; i < this.n; i++) {
             let j = 2 * i < this.n ? 0 : 1;
-            let belt = new Belt(initial_rays, 62 + j * 450, 96 + (i % (this.n / 2)) * 156, 440, this.mouse, this.kioapi, program_change_handler);
+            let belt = new Belt(initial_rays, 62 + j * 460, 96 + (i % (this.n / 2)) * 156, 430, this.mouse, this.kioapi, program_change_handler);
             belt.program = [1, 2, 3, 3, 2, 1, 1];
             belt.shift_x = 0;
 
@@ -236,9 +239,18 @@ export class Conveyor {
 
     static preloadManifest() {
         return [
+            {id: "bg", src: "conveyor-resources/bg.png"},
+            {id: "detail", src: "conveyor-resources/detail.png"},
+
+            {id: "stick-left", src: "conveyor-resources/stick-left.png"},
+
             {id: "belt", src: "conveyor-resources/belt.png"},
+            {id: "belt-left", src: "conveyor-resources/belt-left.png"},
+            {id: "belt-right", src: "conveyor-resources/belt-right.png"},
+
             {id: "slider", src: "conveyor-resources/slider.png"},
-            {id: "slider_hover", src: "conveyor-resources/slider_hover.png"}
+            {id: "slider-hover", src: "conveyor-resources/slider-hover.png"},
+            {id: "slider-line", src: "conveyor-resources/slider-line.png"}
         ];
     }
 

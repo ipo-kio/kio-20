@@ -10,6 +10,7 @@ const HIT_CLOSE = 2;
 export class Hand {
     x;
     y;
+    img;
     t = 3;
     length = 0;
 
@@ -18,9 +19,10 @@ export class Hand {
 
     mouse;
 
-    constructor(x, y, mouse, click_handle, close_handle) {
+    constructor(x, y, mouse, img, click_handle, close_handle) {
         this.x = x;
         this.y = y;
+        this.img = img;
         this.mouse = mouse;
         this.click_handle = click_handle;
         this.close_handle = close_handle;
@@ -37,14 +39,21 @@ export class Hand {
 
         ctx.fillStyle = '#faf80a';
         ctx.strokeStyle = 'black';
-        ctx.fillRect(this.x - HAND_WIDTH / 2, this.y - (full_length - this.length), HAND_WIDTH, full_length);
-        ctx.strokeRect(this.x - HAND_WIDTH / 2, this.y - (full_length - this.length), HAND_WIDTH, full_length);
+        ctx.drawImage(
+            this.img,
+            0, this.img.height - full_length,
+            this.img.width, full_length,
+            this.x - HAND_WIDTH / 2, this.y - (full_length - this.length),
+            this.img.width, full_length
+        );
+        // ctx.fillRect(this.x - HAND_WIDTH / 2, this.y - (full_length - this.length), HAND_WIDTH, full_length);
+        // ctx.strokeRect(this.x - HAND_WIDTH / 2, this.y - (full_length - this.length), HAND_WIDTH, full_length);
 
         let ht = this.hit_test();
         if (ht !== HIT_NOWHERE) {
             // full_length = LEN0 + DR * (this.t - 1);
 
-            ctx.strokeStyle = 'green';
+            ctx.strokeStyle = '#194aee';
             ctx.lineWidth = 2;
             ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
             ctx.fillRect(this.x - HAND_WIDTH / 2, this.y - (full_length - this.length), HAND_WIDTH, full_length);

@@ -2,7 +2,7 @@ if (!window)
     window = {};
 
 export class Slider {
-    constructor(outer, min_value, max_value, height, img, hover_img/*, ticks, big_ticks*/) { //TODO draw ticks
+    constructor(outer, min_value, max_value, height, img, hover_img, line_img/*, ticks, big_ticks*/) { //TODO draw ticks
         this.min_value = min_value;
         this.max_value = max_value;
 
@@ -13,6 +13,7 @@ export class Slider {
         this.domNode = canvas;
         this.img = img;
         this.hover_img = hover_img;
+        this.line_img = line_img;
 
         this.canvas.height = height;
         $(window).on('resize', () => this.resize());
@@ -100,13 +101,12 @@ export class Slider {
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         // bar
-        ctx.lineWidth = 2;
-        ctx.lineCap = 'round';
-        ctx.beginPath();
-        ctx.moveTo(0, this.canvas.height / 2);
-        ctx.lineTo(this.canvas.width, this.canvas.height / 2);
-        ctx.strokeStyle = '#f7f700';
-        ctx.stroke();
+
+        ctx.fillStyle = ctx.createPattern(this.line_img, 'repeat-x');
+        ctx.save();
+        ctx.translate(0, Math.round(this.canvas.height / 2) - 3);
+        ctx.fillRect(0, 0, this.canvas.width, this.line_img.height);
+        ctx.restore();
 
         let xx = this.value_2_pos(this._visible_max_value) + this.img.width / 2;
         if (xx >= 0 && xx <= this.canvas.width) {
