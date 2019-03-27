@@ -106,7 +106,8 @@ export class Conveyor {
 
             if (dist < 2) //click
                 for (let b of this.belts)
-                    b.mouse_click();
+                    if (b._x <= x && x <= b._x + b.max_width)
+                        b.mouse_click();
 
             this.down_x = -1;
             this.down_y = -1;
