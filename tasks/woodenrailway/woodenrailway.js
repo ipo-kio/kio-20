@@ -159,9 +159,11 @@ export class Woodenrailway {
         // Все объекты, которые сюда передаются, были ранее возвращены методом solution,
         // но проверять их все равно необходимо.
         this.ver.block().deserialize(solution);
-        this.ver.all_constraints_are_satisfied = false;
 
-        this.block.submit();
+        //first time constraints are not relaxed, and thus are not satisfied
+        this.ver.frame(16);
+        this.ver.frame(16);
+        //frames submit solutions by themselves
     }
 
     static preloadManifest() {
