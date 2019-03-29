@@ -143,7 +143,7 @@ export class RailwayBlock extends Composite {
         super();
         this.kioapi = kioapi;
         this.cities = cities;
-        this.train = new Train(this, kioapi.getResource('train1'));
+        this.train = new Train(this, [kioapi.getResource('train1'), kioapi.getResource('train2')]);
     }
 
     add_element(element) {

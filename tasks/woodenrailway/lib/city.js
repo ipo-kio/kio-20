@@ -7,22 +7,27 @@ export class City {
     allowed_element_types;
     highlighted = false;
 
-    constructor(pos, r/*, allowed_element_types array ['v', 'r', 's']*/) {
+    city_yes;
+    city_no;
+
+    constructor(pos, r, city_yes, city_no) {
         this.pos = pos;
         this.r = r;
 
-        // this.allowed_element_types = {};
-        // for (let t of allowed_element_types)
-        //     this.allowed_element_types[t] = true;
+        this.city_yes = city_yes;
+        this.city_no = city_no;
     }
 
     draw(ctx) {
         ctx.save();
-        ctx.translate(this.pos.x + 0.5, this.pos.y + 0.5);
-        ctx.fillStyle = this.highlighted ? 'blue' : 'red';
-        ctx.fillRect(-4, -4, 8, 8);
-        ctx.strokeStyle = this.highlighted ? 'blue' : 'red';
-        ctx.setLineDash([2, 2]);
+        ctx.translate(this.pos.x, this.pos.y);
+
+        let img = this.highlighted ? this.city_yes : this.city_no;
+        ctx.drawImage(img, -img.width / 2, -img.height / 2);
+
+        ctx.strokeStyle = this.highlighted ? '#9A9A9A' : '#BC2D2F';
+        ctx.setLineDash([5, 3]);
+        ctx.lineWidth = 2;
         ctx.strokeRect(-this.r, -this.r, 2 * this.r, 2 * this.r);
         ctx.restore();
     }

@@ -61,8 +61,10 @@ export class Woodenrailway {
         let loop = () => {
             let need_repeat = this.ver.frame(16);
             if (need_repeat && !this.ver.mouseDown) {
+                this.ver.train_moves = false;
                 for (let i = 0; i < 20; i++)
                     need_repeat = this.ver.frame(16);
+                this.ver.train_moves = true;
             }
 
             this.ver.draw();
@@ -92,7 +94,7 @@ export class Woodenrailway {
 
         for (let x = x0; x < W; x += skip)
             for (let y = y0; y < H; y += skip)
-                cities.push(new City(new Vec2(x, y), r));
+                cities.push(new City(new Vec2(x, y), r, this.kioapi.getResource('station-yes'), this.kioapi.getResource('station-no')));
 
         return cities;
     }
@@ -179,7 +181,11 @@ export class Woodenrailway {
             {id: "bt-r-123", src: "woodenrailway-resources/bt-r-123.png"},
             {id: "bt-v-123", src: "woodenrailway-resources/bt-v-123.png"},
 
-            {id: "train1", src: "woodenrailway-resources/train1.png"}
+            {id: "train1", src: "woodenrailway-resources/train1.png"},
+            {id: "train2", src: "woodenrailway-resources/train1.png"}, //TODO train2 is not very beautiful here
+
+            {id: "station-yes", src: "woodenrailway-resources/station-yes.png"},
+            {id: "station-no", src: "woodenrailway-resources/station-no.png"}
         ];
     }
 

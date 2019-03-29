@@ -65,6 +65,7 @@ export function VerletJS(width, height, canvas, kiotask, bg_drawer) {
     this.kiotask = kiotask;
     this.bg_drawer = bg_drawer;
     this.all_constraints_are_satisfied = false;
+    this.train_moves = true;
 
     this.bounds = function (particle) {
         if (particle.pos.y < 0)
@@ -291,7 +292,8 @@ VerletJS.prototype.frame = function (step) {
 
     this.block().submit();
 
-    this.block().train.forward();
+    if (this.train_moves)
+        this.block().train.forward();
 
     return mean_velocity < 0.1 && !is_stable;
 };

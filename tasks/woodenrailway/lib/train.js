@@ -6,6 +6,7 @@ export class Train {
     t;
 
     no_position = true;
+    train_index = 0;
 
     constructor(block, img) {
         this.block = block;
@@ -72,6 +73,9 @@ export class Train {
             return;
         }
 
+        if (e !== this.element)
+            this.train_index = 1 - this.train_index;
+
         this.no_position = false;
 
         if (this.element === e)
@@ -133,9 +137,10 @@ export class Train {
         ctx.save();
 
         ctx.translate(x, y);
+        let img = this.img[this.train_index];
         ctx.rotate(Math.atan2(vy, vx) + Math.PI / 2);
-        ctx.translate(-this.img.width / 2, -this.img.height / 2);
-        ctx.drawImage(this.img, 0, -10);
+        ctx.translate(-img.width / 2, -img.height / 2);
+        ctx.drawImage(img, 0, -10);
 
         ctx.restore();
     }
