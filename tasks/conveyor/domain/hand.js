@@ -41,7 +41,10 @@ export class Hand {
 
         ctx.fillStyle = '#faf80a';
         ctx.strokeStyle = 'black';
-        let img = this.dir === 1 ? this.img_left : this.img_right;
+        let img2 = this.dir === 1 ? this.img_left : this.img_right;
+        let img = img2[0];
+        let img_side = img2[1];
+
         ctx.drawImage(
             img,
             0, img.height - full_length,
@@ -49,8 +52,10 @@ export class Hand {
             this.x - HAND_WIDTH / 2, this.y - (full_length - this.length),
             img.width, full_length
         );
-        // ctx.fillRect(this.x - HAND_WIDTH / 2, this.y - (full_length - this.length), HAND_WIDTH, full_length);
-        // ctx.strokeRect(this.x - HAND_WIDTH / 2, this.y - (full_length - this.length), HAND_WIDTH, full_length);
+        ctx.drawImage(
+            img_side,
+            this.x - HAND_WIDTH / 2 + (this.dir === 1 ? -img_side.width : img.width), this.y + this.length - img_side.height
+        );
 
         let ht = this.hit_test();
         if (ht !== HIT_NOWHERE) {

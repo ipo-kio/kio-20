@@ -80,17 +80,20 @@ export class Detail {
 
         ctx.restore();
 
+        //draw number in the center
+
+        ctx.fillStyle = '#d24100';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 10, 0, Math.PI * 2);
+        ctx.fill();
+
         ctx.font = 'bold 18px sans-serif';
-        ctx.fillStyle = 'white';
+        ctx.fillStyle = 'black';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        // ctx.strokeStyle = 'black';
-        // ctx.lineWidth = 0.5;
-        //-2 * Math.PI / detail.n * r0 = rotation
         let r = this.get_rotation_index();
 
-        ctx.fillText(r, this.x, this.y);
-        // ctx.strokeText(42, this.detail.x, this.detail.y);
+        ctx.fillText(r, this.x, this.y + 1);
     }
 
     get_rotation_index() {

@@ -307,6 +307,8 @@ export class Conveyor {
 
             {id: "stick-left", src: "conveyor-resources/stick-left.png"},
             {id: "stick-right", src: "conveyor-resources/stick-right.png"},
+            {id: "arr-left", src: "conveyor-resources/arr-left.png"},
+            {id: "arr-right", src: "conveyor-resources/arr-right.png"},
 
             {id: "belt", src: "conveyor-resources/belt.png"},
             {id: "belt-left", src: "conveyor-resources/belt-left.png"},

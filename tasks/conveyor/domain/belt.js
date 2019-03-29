@@ -45,8 +45,8 @@ export class Belt {
         this.bg_left = kioapi.getResource('belt-left');
         this.bg_right = kioapi.getResource('belt-right');
 
-        this.hand_img_left = kioapi.getResource('stick-left');
-        this.hand_img_right = kioapi.getResource('stick-right');
+        this.hand_img_left = [kioapi.getResource('stick-left'), kioapi.getResource('arr-left')];
+        this.hand_img_right = [kioapi.getResource('stick-right'), kioapi.getResource('arr-right')];
 
         this._program = [];
         this._update_hands();
@@ -138,6 +138,10 @@ export class Belt {
         ctx.translate(this._x, this._y);
 
         let outline_rect = this._outline_rect(true);
+
+        ctx.fillStyle = 'rgba(197, 176, 154, 0.5)';
+        ctx.fillRect(...outline_rect);
+
         //if (outline_rect[2] > this.max_width)
         outline_rect[2] = this.max_width;
         ctx.beginPath();
@@ -231,13 +235,16 @@ export class Belt {
 
         ctx.strokeRect(...outline_rect);
 
-        ctx.fillStyle = 'rgba(100, 100, 100, 0.5)';
-        ctx.fillRect(outline_rect[0], outline_rect[1], 22, 22);
+        let txt = this.belt_result();
         ctx.font = 'bold 18px sans-serif';
-        ctx.fillStyle = 'white';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'top';
-        let txt = this.belt_result();
+        let measure = ctx.measureText(txt);
+
+        ctx.fillStyle = '#353a42';
+        ctx.fillRect(outline_rect[0], outline_rect[1], measure.width + 8, 22);
+
+        ctx.fillStyle = '#d24100';
         ctx.fillText(txt, outline_rect[0] + 4, outline_rect[1] + 4);
         // ctx.strokeText(txt, outline_rect[0] + 4, outline_rect[1] + 4);
 
