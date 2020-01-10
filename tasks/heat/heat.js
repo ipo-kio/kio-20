@@ -1,4 +1,5 @@
 import './heat.scss'; //TODO заменить имя файла со стилями
+import 'core-js/stable';
 
 export class Heat { //TODO название класса должно совпадать с id задачи, но с заглавной буквы
     /**

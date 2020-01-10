@@ -9,7 +9,8 @@ const path = require('path');
 const fs = require('fs');
 
 const sourceFolders = [
-    path.join(__dirname, 'tasks')
+    path.join(__dirname, 'tasks'),
+    path.join(__dirname, 'node_modules')
 ];
 
 //envirnoment env.mode = 'prod'|'dev'
@@ -32,7 +33,7 @@ module.exports = function (env) {
             devtoolNamespace: 'devtool_namespace'
         },
         resolve: {
-            modules: sourceFolders
+            modules: sourceFolders,
         },
         module: {
             rules: [
@@ -128,7 +129,6 @@ function add_task_to_config(task_name, config, task_html_template, dist_folder) 
     let task_file_js = path.join(task_name, task_name + '.js');
     let task_file_ts = path.join(task_name, task_name + '.ts');
     config.entry[task_name] = fs.existsSync('tasks/' + task_file_ts) ? task_file_ts : task_file_js;
-    console.log('(!)config', config);
 
     //copy html
     let output_html = process_html_template(task_html_template, task_name);
