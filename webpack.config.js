@@ -1,9 +1,10 @@
 'use strict';
 
-const webpack = require('webpack');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const merge = require('deepmerge');
+const merge = require('webpack-merge');
 const path = require('path');
 const fs = require('fs');
 
@@ -14,15 +15,21 @@ const sourceFolders = [
 //envirnoment env.mode = 'prod'|'dev'
 
 module.exports = function (env) {
+    let production = env && env.mode === 'prod';
+
+    let dist_folder = production ? 'dist-prod' : 'dist';
+
     let config = {
         entry: {
             //added for all tasks in tasks folder
             //'taskname': 'taskname/taskname.js',
         },
         output: {
-            path: path.join(__dirname, '/dist'),
+            path: path.join(__dirname, dist_folder),
             filename: '[name].js',
-            library: '[name]'
+            library: '[name]',
+            // https://github.com/webpack/webpack/issues/1194#issuecomment-565960948
+            devtoolNamespace: 'devtool_namespace'
         },
         resolve: {
             modules: sourceFolders
@@ -31,44 +38,37 @@ module.exports = function (env) {
             rules: [
                 {
                     test: /\.js$/,
-                    loader: 'babel-loader', //Why loader instead of use?
+                    exclude: /node_modules/,
                     include: sourceFolders,
-                    options: {
-                        presets: [
-                            ['env', {"modules": false}], //this is 'env' preset with options
-                        ],
-                        plugins: [
-                            "transform-object-rest-spread",
-                            "transform-class-properties",
-                            "transform-export-default"
-                        ]
+                    use: {
+                        loader: 'babel-loader'
                     }
                 },
                 {
                     test: /\.scss$/,
-                    include: sourceFolders,
-                    use: ExtractTextPlugin.extract({
-                        fallback: "style-loader",
-                        use: [{
-                            loader: "css-loader",
-                            options: {
-                                url: false
-                            }
-                        }, "sass-loader"]
-                    })
-                }
+                    use: [
+                        MiniCssExtractPlugin.loader, //TODO remove empty main (with javascript)
+                        'css-loader',
+                        'sass-loader'
+                    ]
+                },
+                {
+                    test: /\.ts$/,
+                    // use: ['babel-loader', 'ts-loader'],
+                    use: 'ts-loader',
+                    exclude: /node_modules/
+                },
             ]
         },
         plugins: [
-            new ExtractTextPlugin("[name].css"),
-            // added for all tasks in tasks folder:
-            // new CopyWebpackPlugin([
-            //     {from: './tasks/taskname/img/*', to: './taskname-resources', flatten: true},
-            // ])
+            new MiniCssExtractPlugin({
+                filename: "[name].css",
+            })
         ]
     };
 
     let debugConfig = {
+        mode: 'development',
         devtool: 'source-map',
         output: {
             pathinfo: true
@@ -76,35 +76,33 @@ module.exports = function (env) {
     };
 
     let productionConfig = {
+        mode: "production",
+        optimization: {
+            minimizer: [new UglifyJsPlugin()],
+        },
         plugins: [
-            new webpack.optimize.UglifyJsPlugin({
-                comments: false
-            })
+            new OptimizeCssAssetsPlugin()
         ]
     };
 
-    let arrayMerge = function (destArray, sourceArray, options) {
-        return destArray.concat(sourceArray);
-    };
-
-    find_all_tasks_and_add_to_config(config);
+    find_all_tasks_and_add_to_config(config, dist_folder);
 
     if (env && env.mode === 'prod') {
-        return merge(config, productionConfig, {arrayMerge: arrayMerge});
+        return merge(config, productionConfig);
     } else
-        return merge(config, debugConfig, {arrayMerge: arrayMerge});
+        return merge(config, debugConfig);
 };
 
-function find_all_tasks_and_add_to_config(config) {
+function find_all_tasks_and_add_to_config(config, dist_folder) {
     config.entry = {};
 
     let task_html_template = fs.readFileSync('./tasks/task.html', {encoding: "utf8"});
 
-    if (!fs.existsSync('./dist'))
-        fs.mkdirSync('./dist');
+    if (!fs.existsSync(dist_folder))
+        fs.mkdirSync(dist_folder);
 
     fs.readdirSync('./tasks').forEach(file => {
-        add_task_to_config(file, config, task_html_template);
+        add_task_to_config(file, config, task_html_template, dist_folder);
     });
 }
 
@@ -122,16 +120,19 @@ function process_html_template(task_html_template, task_name) {
     return task_html_template;
 }
 
-function add_task_to_config(task_name, config, task_html_template) {
+function add_task_to_config(task_name, config, task_html_template, dist_folder) {
     if (task_name.indexOf('.') >= 0) // skip non directories
         return;
 
     //add entries
-    config.entry[task_name] = task_name + '/' + task_name + '.js';
+    let task_file_js = path.join(task_name, task_name + '.js');
+    let task_file_ts = path.join(task_name, task_name + '.ts');
+    config.entry[task_name] = fs.existsSync('tasks/' + task_file_ts) ? task_file_ts : task_file_js;
+    console.log('(!)config', config);
 
     //copy html
     let output_html = process_html_template(task_html_template, task_name);
-    fs.writeFileSync('./dist/' + task_name + '.html', output_html, {encoding: "utf8"});
+    fs.writeFileSync(path.join(dist_folder, task_name + '.html'), output_html, {encoding: "utf8"});
 
     //copy assets
     config.plugins.push(

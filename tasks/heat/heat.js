@@ -1,7 +1,6 @@
-import './taskid.scss'; //TODO заменить имя файла со стилями
+import './heat.scss'; //TODO заменить имя файла со стилями
 
-export class Task { //TODO название класса должно совпадать с id задачи, но с заглавной буквы
-
+export class Heat { //TODO название класса должно совпадать с id задачи, но с заглавной буквы
     /**
      *
      * @param settings Объект с настройками задачи. В данный момент, внутри объекта settings ожидается только поле level,
@@ -19,7 +18,7 @@ export class Task { //TODO название класса должно совпа
      * @returns {string} идентификатор задачи
      */
     id() {
-        return 'taskid' + this.settings.level; //TODO заменить task-id на реальный id задачи
+        return 'heat' + this.settings.level; //TODO заменить task-id на реальный id задачи
     }
 
     /**
@@ -34,20 +33,23 @@ export class Task { //TODO название класса должно совпа
         //TODO реализовать инициализацию
     }
 
+    /*
     static preloadManifest() {
         return [
-            // {id: "pic1", src: "taskid-resources/pic1.png"},
-            // {id: "pic2", src: "taskid-resources/pic2.png"}
-        ]; //TODO перечислить загружаемые ресурсы. Они находятся в каталоге taskid-resources
+            // {id: "pic1", src: "heat-resources/pic1.png"},
+            // {id: "pic2", src: "heat-resources/pic2.png"}
+        ]; //TODO перечислить загружаемые ресурсы. Они находятся в каталоге heat-resources
     }
+    */
 
     parameters() {
         return [
-            //TODO добавить список параметров
+            {name: 'num', title: 'num'}
         ];
     }
 
     solution() {
+        return "";
         //TODO вернуть объект с описанием решения участника
     }
 
