@@ -1,0 +1,261 @@
+div.super_div{
+    background-color: beige;
+    white-space: nowrap;
+}
+
+div.top_div{
+    background-color: beige;
+    white-space: nowrap;
+}
+
+table.top_table{
+    width: 100%;
+    table-layout: fixed;
+}
+
+td.cellTopLeft {
+    vertical-align: top;
+    overflow: auto;
+}
+
+td.cellTopRight {
+    vertical-align: top;
+}
+
+.stage1_div{
+    width1: 100%;
+    overflow1: auto;
+}
+
+.canvas_cont_div{
+	background-color: beige;
+}
+
+
+
+.controls_div{
+    background-color: beige;
+    max-height: 100px;
+}
+
+.go_btn1{
+    font-weight: bold;
+    font-size: 24px;
+    width: 40px;
+    height: 35px;
+    vertical-align: top;
+    color: black;
+    background-color: #b4c8c0;
+}
+.go_btn1:disabled
+{
+    color: #edeae3;
+}
+
+.stage_div{
+    background-color: beige;
+    position: relative;
+    height: 300px;
+    display: inline-block;
+}
+
+.tailors_div{
+    display: block;
+}
+
+.tailor_div{
+    display: inline-block;
+    padding: 10px;
+    position: relative;
+    margin-left: 30px;
+    margin-top: 30px;
+    border: beige solid 2px;
+}
+
+div.tailor_control_div{
+    position: absolute;
+    display: none;
+    padding: 8px;
+    background-color: antiquewhite;
+    border: black solid 1px;
+}
+
+input.tailor_control_maxlen{
+    width: 30px;
+    font-size: 14px;
+    text-align: center;
+}
+
+button.tailor_control_maxlen_btn
+{
+    background-color: lightblue;
+    border: #b4c8c0 1px solid;
+    border-radius: 2px;
+}
+
+.tailor_maxlen_div{
+    border: silver solid 1px;
+    padding: 2px;
+    font-size: 10px;
+    background-color: rgb(248, 210, 215);
+    border-radius: 2px;
+    position: absolute;
+    left: 45px;
+    top: 10px;
+}
+.tailor_lencurrent_div{
+    border: silver solid 1px;
+    padding: 2px;
+    font-size: 11px;
+    background-color: bisque;
+    border-radius: 2px;
+    position: absolute;
+    left: 45px;
+    top: 30px;
+}
+
+.tailor_total_div{
+    border: silver solid 1px;
+    padding: 2px;
+    font-size: 11px;
+    background-color: aquamarine;
+    border-radius: 2px;
+    position: absolute;
+    left: 0px;
+    top: 30px;
+    display: none;
+}
+
+.tailor_close_div{
+    left: 2px;
+    top: 0px;
+    font-size1: 18px;
+    position: absolute;
+    font-weight: bold;
+    cursor: pointer;
+    display: none;
+    color: red;
+}
+
+div.princess_div{
+    position: absolute;
+}
+
+.log_div{
+    position: absolute;
+    border: black solid 1px;
+    background-color: #edeae3;
+    display: block;
+    top: 20px;
+    right: 10px;
+    display: none;
+}
+
+.log_div_header{
+    background-color: blue;
+    color: white;
+    border: white 1px solid;
+    padding: 4px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.log_div_close{
+    float: right;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 24px;
+    margin-left: 10px;
+    margin-top: -4px;
+}
+
+button.btn_log_show{
+    background-color: blue;
+    color: white;
+    border: white 1px solid;
+    padding: 8px;
+    font-size: 28px;
+    border-radius: 8px;
+    vertical-align: top;
+    z-index: 1000000;
+    position: fixed;
+    right: 50px;
+}
+
+.log_div_left{
+    display: inline-block;
+    vertical-align: top;
+}
+.log_div_right{
+    display: inline-block;
+    vertical-align: top;
+
+}
+
+.log_div_table{
+    max-height: 300px;
+    overflow: auto;
+    margin-left: 10px;
+}
+
+table.log_table{
+    border: black solid 1px;
+    border-collapse: collapse;
+}
+
+table.log_table th{
+    border: black solid 1px;
+    font-weight: bold;
+}
+
+table.log_table td{
+    border: black solid 1px;
+}
+
+tr.log_row_selected{
+    color: red;
+    font-weight: bold;
+    background-color: #b4c8c0;
+}
+
+tr.log_row_tik{
+    color: black;
+}
+
+button.tailor_plusminus_btn
+{
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 28px;
+    width: 50px;
+    height: 45px;
+    vertical-align: top;
+    color: black;
+    background-color: azure;
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+div.canvas_bot_div{
+    display: block;
+    position1: absolute;
+    margin-left: 30px;
+    margin-top1: -10px;
+    z-index: 1000;
+}
+
+.canvas_bot{
+    background-color1: aquamarine;
+    z-index: 1000;
+}
+
+/*
+
+
+.canvas_top{
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    z-index: 101;
+}
+*/
