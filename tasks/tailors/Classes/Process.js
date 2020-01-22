@@ -1,5 +1,4 @@
 import { Tailors } from "../tailors.js"
-
 import { Global } from './Global.js'
 import { Tailor } from './Tailor.js'
 import { TailorHelper } from './TailorHelper.js'
@@ -19,6 +18,7 @@ export class Process
 	 _currentTik = 0
 	 _princessState = 'run'
 	 _princessLastPass
+//	 _maxTailorTotalResult = 0  //-- самый длинный результат
 
 	constructor()
 	{
@@ -36,8 +36,8 @@ export class Process
 		this._princessLastPass = false
 		this._currentTik = 0
 
-		if(Global._selectedTailor)
-		log('selected = ' + Global._selectedTailor._maxLen)
+		//if(Global._selectedTailor)
+		//log('selected = ' + Global._selectedTailor._maxLen)
 
 		for(i=0; i < Global._tailorsArr.length; i++)
 		{
@@ -60,6 +60,7 @@ export class Process
 		}
 
 
+
 		//-- пока простая очередь
 		for(i=0; i < this._tailorsArr.length; i++)
 		{
@@ -73,6 +74,7 @@ export class Process
 		this._reloadSecStep = 1;  //-- тут накапливаем тики для текущего релоада
 		this._reloadCurrentIndex = 0;  //-- текущий индекс портного в очереди на перезагрузку
 		this._reloadSec = Tailors._levelSettings.timeReloadInSec
+		//this._maxTailorTotalResult = 0
 	}
 
 	calcFullSolution()
@@ -100,8 +102,6 @@ export class Process
 		let totalReloads = 0;
 		let totalWaits = 0;
 
-
-
 		for(i=0; i < this._tailorsArr.length; i++)
 		{
 			tailor = this._tailorsArr[i]
@@ -109,6 +109,13 @@ export class Process
 			totalLenResult = totalLenResult + tailor._totalResult;
 			totalReloads = totalReloads + tailor._reloadCount;
 			totalWaits = totalWaits + tailor._totalWait;
+
+			/*
+			if(this._maxTailorTotalResult < tailor._totalResult)
+			{
+				this._maxTailorTotalResult = tailor._totalResult
+			}
+			*/
 		}
 
 		let solution = new Solution()
@@ -267,7 +274,6 @@ export class Process
 
 	setNextReloadId()
 	{
-
 		if(this._reloadCurrentIndex < this._qArr.length-1)
 		{
 			this._reloadCurrentIndex++;

@@ -14,10 +14,14 @@ export class Global
 	static _selectedTailor = null
 	static _drawProcess
 	static _canPlay = false
+	static _princessDiv
+	static _princessCtx
+	static _princessTimeOutId
+	static _princessState = ""
+	static _princessCanvas
 
 	static createResult()
 	{
-
 		let process = new Process()
 		LogHelper.clearLog(process._tailorsArr)
 		Tailors._currentSolution = process.calcFullSolution()
@@ -180,6 +184,7 @@ export class Global
 
 	static goStepPlus()
 	{
+		Global.setCanPlay(false);
 		if(Global._drawProcess._currentTik >= Tailors._levelSettings.timeInSec)
 		{
 			return
@@ -194,6 +199,7 @@ export class Global
 	static goStepMinus()
 	{
 		Global.tailorsUnselectAndControlHide()
+		Global.setCanPlay(false);
 
 		if(Global._drawProcess._currentTik <= 0)
 		{
@@ -266,6 +272,23 @@ export class Global
 		LogHelper.selectTik(Global._drawProcess._currentTik)
 	}
 
+	static goPlayStartStop()
+	{
+		if(Global._canPlay)
+		{
+			Global.goPlayStop()
+		}
+		else{
+			Global.goContinue()
+		}
+	}
+
+	static goPlayStop()
+	{
+		Global.tailorsUnselectAndControlHide()
+		Global.setCanPlay(false)
+	}
+
 	static goContinue()
 	{
 		Global.tailorsUnselectAndControlHide()
@@ -287,14 +310,31 @@ export class Global
 	{
 		Global._canPlay = canPlay
 
+		let s, tt
 
-		document.getElementById('go_btn_stop').disabled = !canPlay;
-		document.getElementById('go_btn_play').disabled = canPlay;
+		if(canPlay)
+		{
+			s = '&#108;&#108;' // ||
+			tt = 'Стоп'
+		}
+		else{
+			s = '&#9658;' //&#8250; >
+			tt = 'Поехали'
+		}
+
+
+		//document.getElementById('go_btn_stop').disabled = !canPlay;
+
+		//document.getElementById('go_btn_play').disabled = canPlay;
+		document.getElementById('go_btn_play').innerHTML = s
+		document.getElementById('go_btn_play').title = tt
 	}
 
 	static playNexTik()
 	{
 		if(!Global._canPlay) return
+
+
 
 		Global._drawProcess.calcNextTik()
 		InterfaceHelper.drawCurrentTik()
@@ -303,10 +343,25 @@ export class Global
 		if(Global._drawProcess._currentTik < Tailors._levelSettings.timeInSec && Global._canPlay)
 		{
 			setTimeout(Global.playNexTik, 500)
+			Global.movePrincess();
 		}
 		else{
 			Global.setCanPlay(false)
 		}
+	}
+
+	static movePrincess()
+	{
+		if(!Global._canPlay) return
+		if(Global._princessState == 'R') return;
+
+		let pLeft = Global._princessDiv.offsetLeft;
+
+		Global._princessDiv.style.left = (pLeft + 5) + 'px';
+
+		//log('p=' + pLeft)
+		clearTimeout(Global._princessTimeOutId)
+		Global._princessTimeOutId = setTimeout(Global.movePrincess, 100)
 	}
 
 	static goToEnd()
@@ -319,11 +374,7 @@ export class Global
 		LogHelper.selectTik(Global._drawProcess._currentTik)
 	}
 
-	static goPlayStop()
-	{
-		Global.tailorsUnselectAndControlHide()
-		Global.setCanPlay(false)
-	}
+
 
 	static clearAll()
 	{
