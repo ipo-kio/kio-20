@@ -236,7 +236,7 @@ export class Global
 
 			tailorDiv = document.getElementById('tailor_div_' + tailor._id)
 
-			tailorDiv.style.borderColor = 'beige';
+			tailorDiv.style.borderColor = 'transparent';// 'beige';
 
 			document.getElementById('tailor_close_' + tailor._id).style.display = 'none'
 
@@ -373,8 +373,6 @@ export class Global
 
 		LogHelper.selectTik(Global._drawProcess._currentTik)
 	}
-
-
 
 	static clearAll()
 	{

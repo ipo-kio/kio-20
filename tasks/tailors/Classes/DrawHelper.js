@@ -12,7 +12,7 @@ export class DrawHelper
 
 	static drawTik()
 	{
-		log('ddddddddd - ' + State._tik);
+		//log('ddddddddd - ' + State._tik);
 		let i;
 		let tailor;
 

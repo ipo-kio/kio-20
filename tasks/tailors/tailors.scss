@@ -1,10 +1,10 @@
 div.super_div{
-    background-color: beige;
+    background-color1: beige;
     white-space: nowrap;
 }
 
 div.top_div{
-    background-color: beige;
+    background-color1: beige;
     white-space: nowrap;
 }
 
@@ -28,13 +28,13 @@ td.cellTopRight {
 }
 
 .canvas_cont_div{
-	background-color: beige;
+	background-color1: beige;
 }
 
 
 
 .controls_div{
-    background-color: beige;
+    background-color1: beige;
     max-height: 100px;
 }
 
@@ -52,8 +52,9 @@ td.cellTopRight {
     color: #edeae3;
 }
 
+
 .stage_div{
-    background-color: beige;
+    background-color1: beige;
     position: relative;
     height: 300px;
     display: inline-block;
@@ -69,7 +70,7 @@ td.cellTopRight {
     position: relative;
     margin-left: 30px;
     margin-top: 30px;
-    border: beige solid 2px;
+    border: transparent solid 2px;
 }
 
 div.tailor_control_div{
@@ -139,6 +140,7 @@ button.tailor_control_maxlen_btn
 
 div.princess_div{
     position: absolute;
+    top: 100px;
 }
 
 .log_div{
@@ -234,18 +236,18 @@ button.tailor_plusminus_btn
     background-color: azure;
     margin-left: 10px;
     margin-top: 10px;
+    z-index: 11111111;
 }
 
 div.canvas_bot_div{
     display: block;
     position1: absolute;
-    margin-left: 30px;
-    margin-top1: -10px;
+    margin-left: 20px;
+    margin-top: -140px;
     z-index: 1000;
 }
 
 .canvas_bot{
-    background-color1: aquamarine;
     z-index: 1000;
 }
 

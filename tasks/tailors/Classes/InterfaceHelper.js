@@ -23,6 +23,7 @@ export class InterfaceHelper
 			superDiv = document.createElement('div')
 			superDiv.id = 'super_div'
 			superDiv.className = 'super_div'
+			superDiv.setAttribute('style', 'background-image: url("./tailors-resources/bg.png");')
 			domNode.appendChild(superDiv)
 
 			topDiv = document.createElement('div')
@@ -70,6 +71,23 @@ export class InterfaceHelper
 			div.onclick = function(){
 				Global.stageDivClick()
 			}
+
+
+			//-- tailor plus - minus
+			{
+
+				btn = document.createElement('button')
+				btn.innerHTML = '&#43;'
+				btn.id = 'btn_tailor_plus'
+				btn.title = 'Добавить'
+				btn.className = 'tailor_plusminus_btn'
+				btn.addEventListener('click', function (evt) {
+					Global.tailorPlus()
+				})
+				//Tailors._stageDiv.appendChild(btn)
+				div.appendChild(btn)
+
+			}
 		}
 
 		//-- stage div
@@ -84,32 +102,8 @@ export class InterfaceHelper
 				Global.stageDivClick()
 			}
 
-			//-- tailor plus - minus
-			{
-				/*
-				btn = document.createElement('button')
-				btn.innerHTML = '&#8722;'; //'&#8678;'
-				btn.id = 'btn_tailor_minus'
-				btn.title = 'Удалить выбранного'
-				btn.className = 'tailor_plusminus_btn'
-				btn.addEventListener('click', function (evt) {
-					Global.tailorMinus()
-				})
-				Tailors._stageDiv.appendChild(btn)
-				*/
-
-				btn = document.createElement('button')
-				btn.innerHTML = '&#43;'
-				btn.id = 'btn_tailor_plus'
-				btn.title = 'Добавить'
-				btn.className = 'tailor_plusminus_btn'
-				btn.addEventListener('click', function (evt) {
-					Global.tailorPlus()
-				})
-				Tailors._stageDiv.appendChild(btn)
 
 
-			}
 
 			//-- _tailorsDiv
 			{
@@ -298,23 +292,33 @@ export class InterfaceHelper
 			{
 
 				btn = document.createElement('button')
-				btn.innerHTML = '&#171;';// <<
+				btn.innerHTML = '' // '&#171;';// <<
 				btn.id = 'go_btn_tostart'
 				btn.title = 'В начало'
 				btn.className = 'go_btn1'
 				btn.addEventListener('click', function (evt) {
 					Global.goToStart()
 				})
+				btn.style.backgroundImage = 'url("./tailors-resources/btn_go_start.png")'
+				btn.style.backgroundRepeat = 'no-repeat'
+				btn.style.backgroundPosition = 'center'
+				btn.setAttribute('onmouseover', 'this.style.backgroundImage=\'url("./tailors-resources/btn_go_start_hover.png")\'')
+				btn.setAttribute('onmouseout', 'this.style.backgroundImage=\'url("./tailors-resources/btn_go_start.png")\'')
 				controlDiv.appendChild(btn)
 
 				btn = document.createElement('button')
-				btn.innerHTML = '&#187;';// >>
+				btn.innerHTML = ''//'&#187;';// >>
 				btn.id = 'go_btn_toend'
 				btn.title = 'В конец'
 				btn.className = 'go_btn1'
 				btn.addEventListener('click', function (evt) {
 					Global.goToEnd()
 				})
+				btn.style.backgroundImage = 'url("./tailors-resources/btn_go_end.png")'
+				btn.style.backgroundRepeat = 'no-repeat'
+				btn.style.backgroundPosition = 'center'
+				btn.setAttribute('onmouseover', 'this.style.backgroundImage=\'url("./tailors-resources/btn_go_end_hover.png")\'')
+				btn.setAttribute('onmouseout', 'this.style.backgroundImage=\'url("./tailors-resources/btn_go_end.png")\'')
 				controlDiv.appendChild(btn)
 
 				btn = document.createElement('button')
@@ -418,7 +422,7 @@ export class InterfaceHelper
 	static drawCurrentTik()
 	{
 		let p = Global._drawProcess;
-		let i, div, s, j, x, y, x1, n, h
+		let i, div, s, j, x, y, x1, n, h, y1
 		let tailor
 		let pLeft = 0
 		let img1
@@ -452,8 +456,7 @@ export class InterfaceHelper
 
 		InterfaceHelper.canvasBotClear()
 
-
-
+		let nitYstart = 100;
 
 		for(i = 0; i < p._tailorsArr.length; i++)
 		{
@@ -506,44 +509,34 @@ export class InterfaceHelper
 			div = document.getElementById('tailor_div_' + tailor._id);
 			pLeft = div.offsetLeft
 
-			totalResH = tailor._totalResult * 10 + 10
+			totalResH = tailor._totalResult * 10 //+ 50
 
 			ctxBot.beginPath();
-			ctxBot.lineWidth = 2;
+			ctxBot.lineWidth = 4;
 			ctxBot.strokeStyle = "silver";
 			//ctxBot.fillStyle = "red";
 
 			x = 25 + (i)* 95
 
-			ctxBot.moveTo(x, 10)
-			ctxBot.lineTo(x, totalResH)
-
-
-
-			/*
-			for (j = 1; j < totalResH; j++) {
-
-				x1 = x +  (Math.sin(10*j/180*Math.PI) * 10);
-
-				//log('x1=' + x1)
-
-				ctxBot.lineTo(x1, j);
-			  }
-			*/
-
+			ctxBot.moveTo(x, nitYstart)
+			ctxBot.lineTo(x, totalResH + nitYstart)
 
 			if(tailor._currentState == '-')
 			{
-				ctxBot.moveTo(x, 0)
+				ctxBot.moveTo(x, nitYstart-10)
 
-				x1 = x- ((tailor._lenCurrent-tailor._step)*10)
-				//log('l='+(tailor._lenCurrent)+ ' s=' + tailor._step)
+				n = ((tailor._lenCurrent-tailor._step+1)*5)
 
-				ctxBot.quadraticCurveTo(x1,5,x,10)
+				x1 = x-n
+
+
+				y1 = nitYstart- ((tailor._lenCurrent-tailor._step-1)*5)
+
+				//log('l='+(tailor._lenCurrent)+ ' s=' + tailor._step + ' y1=' + y1)
+
+				//ctxBot.quadraticCurveTo(x1,5,x,10)
+				ctxBot.quadraticCurveTo(x1,y1,x,nitYstart)
 			}
-
-
-
 
 			ctxBot.stroke();
 			ctxBot.closePath();
@@ -558,10 +551,12 @@ export class InterfaceHelper
 				{
 					n = totalResH / tailor._totalResult;
 
-					for (j = 1; j < tailor._totalResult; j++)
+					for (j = 0; j < tailor._totalResult; j++)
 					{
-						ctxBot.moveTo(x-1, (j*n))
-						ctxBot.lineTo(x+1, (j*n))
+						ctxBot.moveTo(x-2, (j*n) + nitYstart)
+						ctxBot.lineTo(x+2, (j*n) + nitYstart)
+
+						//log(j + ' ss=' + ((j*n) + nitYstart))
 					}
 				}
 
@@ -576,17 +571,14 @@ export class InterfaceHelper
 				ctxBot.lineWidth = 1;
 				ctxBot.fillStyle = 'blue';
 				ctxBot.font = 'bold 20px Arial';
-				ctxBot.fillText(tailor._totalResult, x + 15 , 15 )
+				ctxBot.fillText(tailor._totalResult, x + 15 , nitYstart + 40 )
 				ctxBot.stroke();
 				ctxBot.closePath();
 			}
 
-
-
-
-			if(InterfaceHelper._canvasBotHeight < totalResH)
+			if(InterfaceHelper._canvasBotHeight < totalResH + nitYstart + 50)
 			{
-				InterfaceHelper._canvasBotHeight = totalResH
+				InterfaceHelper._canvasBotHeight = totalResH + nitYstart + 50
 			}
 			else{
 				//InterfaceHelper._canvasBotHeight = 60
@@ -612,7 +604,6 @@ export class InterfaceHelper
 		pLeft = pLeft - 10;
 
 
-
 		if(!(pLeft < Global._princessDiv.offsetLeft && pLeft > 0))
 		{
 			//log('pp=' + Global._princessDiv.offsetLeft)
@@ -620,17 +611,10 @@ export class InterfaceHelper
 			//pLeft = Global._princessDiv.offsetLeft + 3
 
 			Global._princessDiv.style.left = (pLeft - 20) + 'px';
-			Global._princessDiv.style.top = '130px';
+			//Global._princessDiv.style.top = '130px';
 
 			//log('LLLLLL=' + (pLeft-20))
 		}
-		else{
-
-		}
-
-
-
-
 
 		if(princessState == 'R'){
 			s = 'princess'
@@ -647,7 +631,6 @@ export class InterfaceHelper
 
 
 		Tailors._slider.value2 = Global._drawProcess._currentTik
-
 
 	}
 }

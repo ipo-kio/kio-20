@@ -79,6 +79,8 @@ export class Tailors
 			{ id: 'tailor_2', src: 'tailors-resources/tailor_2.png' },
 			{ id: 'tailor_m1', src: 'tailors-resources/tailor_m1.png' },
 			{ id: 'tailor_m2', src: 'tailors-resources/tailor_m2.png' },
+			{ id: 'bg', src: 'tailors-resources/bg.png' },
+			{ id: 'btn_go_start', src: 'tailors-resources/btn_go_start.png' },
 		] // TODO перечислить загружаемые ресурсы. Они находятся в каталоге taskid-resources
 	}
 
@@ -155,10 +157,11 @@ export class Tailors
 				document.getElementById('tailor_maxlen_' + tailor._id).innerHTML = tailor._maxLen
 
 			}
-
+			log('start11()')
 			//Global.createResult()
 			TailorHelper.redrawTailors()
 			Global.goToStart()
+			Global.goToEnd()
 			//InterfaceHelper.drawCurrentTik()
 		}
 		else
@@ -193,6 +196,9 @@ export class Tailors
 	start()
 	{
 		Global.tailorPlus()
+		//Global.goToStart()
+		Global.goToStart()
+		Global.goToEnd()
 
 		//Tailors.saveCurrentSolution()
 	}
