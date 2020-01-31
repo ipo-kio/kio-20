@@ -75,7 +75,7 @@ export class Threadexperiment { //TODO название класса должн�
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             this._draw(elapsed_time / TIME_FOR_ONE_STEP);
 
-            // requestAnimationFrame(frame);
+            requestAnimationFrame(frame);
         };
 
         requestAnimationFrame(frame);
@@ -85,7 +85,6 @@ export class Threadexperiment { //TODO название класса должн�
         // }
     }
 
-    //
     _draw(time) {
         let segment_length = new Array(N).fill(0);
         let segment_type = new Array(N).fill(SEGMENT_TYPE_NO);
@@ -109,67 +108,95 @@ export class Threadexperiment { //TODO название класса должн�
         //next steps-1 steps:  segment_length[i] = N - i - x;  segment_type[i] = TO_POINT
         //x = 0..N-i-1         segment_length[i + 1] = x;  segment_type[i + 1] = TO_AIR_IN
 
-        if (time < 1) {
-            segment_type[i] = SEGMENT_TYPE_TO_AIR_OUT;
-            segment_length[i] = N - i;
-        } else {
-            let x = time - 1;
-            segment_type[i] = SEGMENT_TYPE_TO_POINT;
-            segment_length[i] = N - i - x;
-            segment_type[i + 1] = SEGMENT_TYPE_TO_AIR_IN;
-            segment_length[i + 1] = x;
-            out_length = N - i - 1;
-        }
-
-        out_length = 1;
-        segment_type = [SEGMENT_TYPE_INSERTED, SEGMENT_TYPE_TO_POINT, SEGMENT_TYPE_TO_AIR_IN];
-        segment_length = [1, 2, 0.5];
-
-        let c = this.ctx;
-        c.lineWidth = THREAD_THICKNESS;
-        c.strokeStyle = "black";
-        for (let s = 0; s < segment_type.length; s++) {
-            c.save();
-            c.translate(X0, Y0 + s * L);
-
-            if (s % 2 === 0)
-                c.scale(-1, 1);
-
-            c.fillStyle = "rgba(255,0,0,0.4)";
-            c.beginPath();
-            c.arc(0, 0, 4, 0, Math.PI * 2);
-            c.fill();
-            this._draw_segment(L * segment_length[s], segment_type[s], out_length);
-
-            c.restore();
-        }
-    }
-
-    _draw_segment(length, type, out_length) {
-        let c = this.ctx;
-        c.save();
-
-        c.beginPath();
-        if (type === SEGMENT_TYPE_INSERTED) {
-            c.strokeStyle = THREAD_INSERTED_COLOR;
-            c.moveTo(0, 0);
-            c.lineTo(0, L);
-        } else if (type === SEGMENT_TYPE_TO_POINT) {
-            c.strokeStyle = THREAD_INSERTING_COLOR;
-            this._add_round_path(0, 0, 0, L, length);
-        } else if (type === SEGMENT_TYPE_TO_AIR_IN) {
-            c.strokeStyle = THREAD_INSERTING_COLOR;
-
-            if (out_length === 1) {
-                this._add_round_path(0, 0, 0, length / 2, length);
+        if (i < N) {
+            if (time < 1) {
+                segment_type[i] = SEGMENT_TYPE_TO_AIR_OUT;
+                segment_length[i] = N - i;
+            } else {
+                let x = time - 1;
+                segment_type[i] = SEGMENT_TYPE_TO_POINT;
+                segment_length[i] = N - i - x;
+                segment_type[i + 1] = SEGMENT_TYPE_TO_AIR_IN;
+                segment_length[i + 1] = x;
+                out_length = N - i - 1;
             }
         }
 
+        let c = this.ctx;
+        let needle = {dx: 0, dy: 1, x: 0, y: 1};
+
+        for (let s = 0; s <= N; s++) {
+            c.lineWidth = 1;
+            c.strokeStyle = "rgba(128, 128, 0, 0.5)";
+            c.moveTo(X0 - 3, Y0 + s * L - 3);
+            c.lineTo(X0 + 3, Y0 + s * L + 3);
+            c.moveTo(X0 - 3, Y0 + s * L + 3);
+            c.lineTo(X0 + 3, Y0 + s * L - 3);
+            c.stroke();
+        }
+
+        for (let s = 0; s < segment_type.length; s++)
+            if (segment_type[s] !== SEGMENT_TYPE_NO) {
+                c.save();
+                c.translate(X0, Y0 + s * L);
+
+                if (s % 2 === 1)
+                    c.scale(-1, 1);
+
+                needle = this._draw_segment(L * segment_length[s], segment_type[s], out_length, time);
+                if (s % 2 === 1) {
+                    needle.x *= -1;
+                    needle.dx *= -1;
+                }
+                needle.x += X0;
+                needle.y += Y0 + s * L;
+
+                c.restore();
+            }
+
+        // draw needle
+
+        c.save();
+        c.lineWidth = NEEDLE_THICKNESS;
+        c.strokeStyle = NEEDLE_COLOR;
+        let {x, y, dx, dy} = needle;
+        c.beginPath();
+        c.moveTo(x, y);
+        c.lineTo(x + dx * NEEDLE_LENGTH, y + dy * NEEDLE_LENGTH);
         c.stroke();
+
         c.restore();
     }
 
-    _add_round_path(x1, y1, x2, y2, len) {
+    _draw_segment(length, type, out_length, time) {
+        let c = this.ctx;
+        c.save();
+
+        let line_type_index = 1;
+        let needle;
+
+        c.beginPath();
+        if (type === SEGMENT_TYPE_INSERTED) {
+            c.moveTo(0, 0);
+            c.lineTo(0, L);
+            line_type_index = 0;
+
+            needle = {dx: 0, dy: 1, x: 0, y: L};
+        } else if (type === SEGMENT_TYPE_TO_POINT) {
+            needle = this._add_round_path(0, 0, 0, L, length);
+        } else if (type === SEGMENT_TYPE_TO_AIR_IN) {
+            needle = this._add_round_path(0, 0, 0, L, (out_length + 1) * L, length);
+        } else if (type === SEGMENT_TYPE_TO_AIR_OUT) {
+            needle = this._add_round_path(0, 0, 0, L, length + L - time * L, length);
+        }
+
+        this._stroke(line_type_index);
+        c.restore();
+
+        return needle;
+    }
+
+    _add_round_path(x1, y1, x2, y2, len, len2 = len) {
         let c = this.ctx;
 
         let dx = x2 - x1;
@@ -178,22 +205,42 @@ export class Threadexperiment { //TODO название класса должн�
 
         let l = Math.PI * d / 2;
 
+        let needle;
+
         if (len > l) {
             let skip = (len - l) / 2;
-            let vx = -dy / d * skip;
-            let vy = dx / d * skip;
+            let real_skip = Math.min(skip, len2);
+            let vx = dy / d * real_skip;
+            let vy = -dx / d * real_skip;
 
             c.moveTo(x1, y1);
             c.lineTo(x1 + vx, y1 + vy);
-            this._add_arc_path(x1 + vx, y1 + vy, x2 + vx, y2 + vy, l);
-            c.lineTo(x2, y2);
-        } else
-            this._add_arc_path(x1, y1, x2, y2, len);
 
-        c.stroke();
+            needle = {dx: dy / d, dy: -dx / d, x: x1 + vx, y: y1 + vy};
+
+            if (len2 > skip) {
+                len2 -= skip;
+                let x3 = x2 + vx;
+                let y3 = y2 + vy;
+                needle = this._add_arc_path(x1 + vx, y1 + vy, x3, y3, l, Math.min(l, len2));
+                if (len2 > l) {
+                    len2 -= l;
+                    let end_x = x3 + (x2 - x3) / skip * len2;
+                    let end_y = y3 + (y2 - y3) / skip * len2;
+                    c.lineTo(end_x, end_y);
+
+                    needle = {dx: -dy / d, dy: dx / d, x: end_x, y: end_y};
+                }
+            }
+        } else
+            needle = this._add_arc_path(x1, y1, x2, y2, len, Math.min(len, len2));
+
+        this._stroke(1);
+
+        return needle;
     }
 
-    _add_arc_path(x1, y1, x2, y2, len) {
+    _add_arc_path(x1, y1, x2, y2, len, len2) {
         // sin(len / 2r) = d / 2r
         // len >= d
         // r = d/2: (>=)                              sin(len / d) <= 1
@@ -221,32 +268,60 @@ export class Threadexperiment { //TODO название класса должн�
         if (Math.abs(s0) < 1e-5) { //if s0 is zero
             this.ctx.moveTo(x1, y1);
             this.ctx.lineTo(x2, y2);
-            return;
+            return {dx: dx / d, dy: dy / d, x: x2, y: y2};
         }
 
         let r = 1 / s0;
         let v = Math.cos(len / (2 * r)) * r;
-        let vx = dy / d * v;
-        let vy = -dx / d * v;
-        let x0 =  (x1 + x2) / 2 + vx;
-        let y0 =  (y1 + y2) / 2 + vy;
+        let vx = -dy / d * v;
+        let vy = dx / d * v;
+        let x0 = (x1 + x2) / 2 + vx;
+        let y0 = (y1 + y2) / 2 + vy;
 
         let startAngle = Math.atan2(y1 - y0, x1 - x0);
         let endAngle = Math.atan2(y2 - y0, x2 - x0);
 
-        this.ctx.arc(x0, y0, r, startAngle, endAngle, true);
+        endAngle = startAngle + (endAngle - startAngle) * len2 / len;
+
+        this.ctx.arc(x0, y0, r, startAngle, endAngle);
+
+        return {
+            dx: -Math.sin(endAngle),
+            dy: Math.cos(endAngle),
+            x: x0 + r * Math.cos(endAngle),
+            y: y0 + r * Math.sin(endAngle)
+        };
+    }
+
+    _stroke(line_type_index) {
+        let c = this.ctx;
+
+        c.lineWidth = THREAD_THICKNESS1;
+        c.strokeStyle = line_type_index === 0 ? THREAD_INSERTED_COLOR1 : THREAD_INSERTING_COLOR1;
+        c.stroke();
+
+        c.lineWidth = THREAD_THICKNESS2;
+        c.strokeStyle = line_type_index === 0 ? THREAD_INSERTED_COLOR2 : THREAD_INSERTING_COLOR2;
+        c.stroke();
     }
 }
 
-const N = 10; // длина нити
+const N = 7; // длина нити
 const L = 20; // длина единичного сегмента нити в пикселях
 const TIME_FOR_ONE_STEP = 1; // время в секундах на один шаг
 const X0 = 100; // позиция начала нити.
 const Y0 = 100;
 
-const THREAD_THICKNESS = 2;
-const THREAD_INSERTED_COLOR = '#00AA00';
-const THREAD_INSERTING_COLOR = '#0000CC';
+const THREAD_THICKNESS1 = 4;
+const THREAD_THICKNESS2 = 2;
+const THREAD_INSERTED_COLOR1 = '#5daa0c';
+const THREAD_INSERTED_COLOR2 = '#6ced39';
+const THREAD_INSERTING_COLOR1 = '#fd4c39';
+const THREAD_INSERTING_COLOR2 = '#ffd739';
+
+const NEEDLE_LENGTH = 10;
+const NEEDLE_THICKNESS = 1;
+const NEEDLE_COLOR = '#c7ac60';
 
 const SEGMENT_TYPE_NO = 0;
 const SEGMENT_TYPE_INSERTED = 1;
