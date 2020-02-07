@@ -9,4 +9,5 @@ export class Tailor
 	_reloadCount
 	_totalResult
 	_reloadStep  //-- количество текущих ожиданий на перезагрузке
+	_tanimate
 }

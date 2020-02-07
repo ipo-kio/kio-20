@@ -157,7 +157,7 @@ export class Tailors
 				document.getElementById('tailor_maxlen_' + tailor._id).innerHTML = tailor._maxLen
 
 			}
-			log('start11()')
+
 			//Global.createResult()
 			TailorHelper.redrawTailors()
 			Global.goToStart()

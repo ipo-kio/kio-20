@@ -4,6 +4,7 @@ import { Global } from './Global.js'
 import { Slider } from './slider.js'
 import { TailorHelper } from "./TailorHelper.js"
 import { LogHelper } from "./LogHelper.js"
+import { Tanimate } from "./Tanimate.js"
 
 export class InterfaceHelper
 {
@@ -132,6 +133,8 @@ export class InterfaceHelper
 				canvas.className = 'canvas_bot'
 				canvas.id = 'canvas_bot'
 				div.appendChild(canvas)
+
+				Global._canvasBotCtx = canvas.getContext('2d');
 			}
 
 
@@ -430,12 +433,12 @@ export class InterfaceHelper
 		let princessState = ''
 		let totalResH
 
-
+		//log('next12=' + Global._drawProcess._currentTik)
 
 		let canvasBot = document.getElementById('canvas_bot')
 
 		let w = p._tailorsArr.length * 90
-		canvasBot.width = w
+		canvasBot.width = w + 100
 
 		/*
 		if(p._maxTailorTotalResult > 5){
@@ -451,16 +454,18 @@ export class InterfaceHelper
 		//InterfaceHelper._canvasBotHeight = InterfaceHelper._canvasBotHeight + 10
 		//canvasBot.height =  InterfaceHelper._canvasBotHeight
 
-		let ctxBot = canvasBot.getContext('2d');
+		//let ctxBot = canvasBot.getContext('2d');
 
 
-		InterfaceHelper.canvasBotClear()
+		//InterfaceHelper.canvasBotClear()
 
 		let nitYstart = 100;
 
 		for(i = 0; i < p._tailorsArr.length; i++)
 		{
 			tailor = p._tailorsArr[i]
+
+			tailor._tanimate =  Global.getTanimate(tailor._id);
 
 			div = document.getElementById('tailor_lencurrent_' + tailor._id);
 			div.innerHTML = tailor._lenCurrent
@@ -511,18 +516,21 @@ export class InterfaceHelper
 
 			totalResH = tailor._totalResult * 10 //+ 50
 
-			ctxBot.beginPath();
-			ctxBot.lineWidth = 4;
-			ctxBot.strokeStyle = "silver";
-			//ctxBot.fillStyle = "red";
+			//ctxBot.beginPath();
+			//ctxBot.lineWidth = 4;
+			//ctxBot.strokeStyle = "silver";
+
 
 			x = 25 + (i)* 95
 
-			ctxBot.moveTo(x, nitYstart)
-			ctxBot.lineTo(x, totalResH + nitYstart)
+			//ctxBot.moveTo(x, nitYstart)
+			//ctxBot.lineTo(x, totalResH + nitYstart)
 
 			if(tailor._currentState == '-')
 			{
+				//tailor._tanimate.run(x, tailor._lenCurrent, tailor._totalResult, tailor._step);
+
+				/*
 				ctxBot.moveTo(x, nitYstart-10)
 
 				n = ((tailor._lenCurrent-tailor._step+1)*5)
@@ -536,11 +544,13 @@ export class InterfaceHelper
 
 				//ctxBot.quadraticCurveTo(x1,5,x,10)
 				ctxBot.quadraticCurveTo(x1,y1,x,nitYstart)
+				*/
 			}
 
-			ctxBot.stroke();
-			ctxBot.closePath();
+			//ctxBot.stroke();
+			//ctxBot.closePath();
 
+			/*
 			//-- отметки стежков
 			{
 				ctxBot.beginPath();
@@ -563,8 +573,8 @@ export class InterfaceHelper
 				ctxBot.stroke();
 				ctxBot.closePath();
 			}
-
-
+			*/
+			/*
 			//-- длина нити
 			{
 				ctxBot.beginPath();
@@ -575,6 +585,7 @@ export class InterfaceHelper
 				ctxBot.stroke();
 				ctxBot.closePath();
 			}
+			*/
 
 			if(InterfaceHelper._canvasBotHeight < totalResH + nitYstart + 50)
 			{
@@ -585,6 +596,12 @@ export class InterfaceHelper
 			}
 
 		}
+
+		//if(!Global._canPlay)
+		{
+			Tanimate.drawNit(true);
+		}
+
 
 		//log('Global._drawProcess._princessState =' + Global._drawProcess._princessState )
 
