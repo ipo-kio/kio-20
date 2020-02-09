@@ -6,6 +6,7 @@ import { TailorHelper } from './TailorHelper.js'
 import { InterfaceHelper } from "./InterfaceHelper.js"
 import { SettingsHelper } from "./SettingsHelper.js"
 import { LogHelper } from "./LogHelper.js"
+import { Tanimate } from "./Tanimate.js"
 
 export class Global
 {
@@ -17,8 +18,12 @@ export class Global
 	static _princessDiv
 	static _princessCtx
 	static _princessTimeOutId
+	static _nitTimeOutId
+	static _moveNitStep = 0
 	static _princessState = ""
 	static _princessCanvas
+	static _tanimateDic = {};
+	static _canvasBotCtx
 
 	static createResult()
 	{
@@ -26,6 +31,26 @@ export class Global
 		LogHelper.clearLog(process._tailorsArr)
 		Tailors._currentSolution = process.calcFullSolution()
 		Tailors.saveCurrentSolution()
+	}
+
+	static getTanimate(tailorId)
+	{
+		//log('getTanimate() tailorId=' + tailorId)
+
+		var tan;
+
+		if(Global._tanimateDic.hasOwnProperty(tailorId)){
+			tan = Global._tanimateDic[tailorId]
+		}
+		else{
+			tan = new Tanimate()
+			let canvasBot = document.getElementById('canvas_bot')
+			tan.ctx = canvasBot.getContext('2d');
+			Global._tanimateDic[tailorId] = tan
+
+		}
+
+		return tan;
 	}
 
 	static tailorPlus()
@@ -298,6 +323,7 @@ export class Global
 			if(Global._drawProcess._currentTik < Tailors._levelSettings.timeInSec)
 			{
 				Global.setCanPlay(true)
+
 				setTimeout(Global.playNexTik, 500)
 			}
 			else{
@@ -334,20 +360,43 @@ export class Global
 	{
 		if(!Global._canPlay) return
 
-
+		Global._moveNitStep = 0;
 
 		Global._drawProcess.calcNextTik()
 		InterfaceHelper.drawCurrentTik()
 		LogHelper.selectTik(Global._drawProcess._currentTik)
 
+		//log('next2=' + Global._drawProcess._currentTik)
+
 		if(Global._drawProcess._currentTik < Tailors._levelSettings.timeInSec && Global._canPlay)
 		{
 			setTimeout(Global.playNexTik, 500)
 			Global.movePrincess();
+			Global.moveNit();
 		}
 		else{
 			Global.setCanPlay(false)
 		}
+	}
+
+	static moveNit(){
+		if(!Global._canPlay) return
+
+		Global._moveNitStep++;
+
+		if(Global._moveNitStep > 5){
+			//Global._moveNitStep = 0;
+			return;
+		}
+
+
+
+		Tanimate.drawNit(false);
+
+		//log('moveNit()')
+
+		clearTimeout(Global._nitTimeOutId)
+		Global._nitTimeOutId = setTimeout(Global.moveNit, 100)
 	}
 
 	static movePrincess()
@@ -359,7 +408,6 @@ export class Global
 
 		Global._princessDiv.style.left = (pLeft + 5) + 'px';
 
-		//log('p=' + pLeft)
 		clearTimeout(Global._princessTimeOutId)
 		Global._princessTimeOutId = setTimeout(Global.movePrincess, 100)
 	}
