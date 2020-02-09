@@ -11,6 +11,11 @@ export default class Body {
         return A[m];
     }
 
+    aa(x: number, y: number): number {
+        let a = this.a(x, y);
+        return a * a;
+    }
+
 
     get width(): number {
         return this.elements[0].length;
