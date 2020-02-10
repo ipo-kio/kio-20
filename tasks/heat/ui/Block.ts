@@ -3,16 +3,23 @@ import {KioApi} from "../../KioApi";
 
 export default class Block extends createjs.Container {
     public static readonly WIDTH = 64;
+    private kioapi: KioApi;
     public static readonly HEIGHT = 64;
 
     private readonly _material: Material;
     private _mouseover: boolean;
     private readonly border: createjs.Shape;
 
-    constructor(kioapi: KioApi, material: Material) {
+    private readonly x0: number;
+    private readonly y0: number;
+
+    constructor(kioapi: KioApi, material: Material, x0: number, y0: number) {
         super();
+        this.kioapi = kioapi;
 
         this._material = material;
+        this.x0 = x0;
+        this.y0 = y0;
 
         let image = new createjs.Bitmap(kioapi.getResource(material));
         image.setBounds(0, 0, Block.WIDTH, Block.HEIGHT);

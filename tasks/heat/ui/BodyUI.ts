@@ -15,6 +15,14 @@ export class BodyUI extends createjs.Container {
             for (let j = 0; j < N; j++)
                 this.blocks[i][j] = null; //new Block(null, DEFAULT_MATERIAL);
         }
+
+        this.highlight = new createjs.Shape();
+        this.highlight.graphics
+            .beginFill('rgba(255,255,0,0.5)')
+            .rect(0, 0, Block.WIDTH, Block.HEIGHT)
+            .endFill();
+
+        this.selected_cell = null;
     }
 
     get body(): Body {
@@ -98,4 +106,4 @@ export class BodyUI extends createjs.Container {
 
 const M = 6;
 const N = 6;
-const DEFAULT_MATERIAL: Material = "tree";
+export const DEFAULT_MATERIAL: Material = "tree";
