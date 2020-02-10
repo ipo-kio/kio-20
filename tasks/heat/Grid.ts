@@ -26,7 +26,7 @@ export default class Grid {
         return this._N_element * this.body.height;
     }
 
-    aa(x: number, y: number) {
+    a(x: number, y: number) {
         let x1 = Math.floor(x / this._N_element);
         let y1 = Math.floor(y / this._N_element);
 
@@ -35,7 +35,7 @@ export default class Grid {
         if (y1 === this.body.height)
             y1 -= 1;
 
-        return this.body.aa(x1, y1);
+        return this.body.a(x1, y1);
     }
 
     get N_element(): number {

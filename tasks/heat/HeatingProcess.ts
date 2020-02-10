@@ -48,7 +48,7 @@ export default class HeatingProcess {
         for (let x = 0; x <= w; x++)
             for (let y = 0; y <= h; y++) {
                 let fxy = x === 0 ? this.left_edge_heat(y) : 0;
-                u1[x][y] = (fxy + this.g.aa(x, y) * delta_u(u, x, y)) * dt + u[x][y];
+                u1[x][y] = (fxy + this.g.a(x, y) * delta_u(u, x, y)) * dt + u[x][y];
             }
 
         //(v[t] - v[t - 2]) / (2 * dt) - a^2 delta_u(t - 1) = f(t - 1, x, y)
@@ -59,7 +59,7 @@ export default class HeatingProcess {
             for (let x = 0; x <= w; x++)
                 for (let y = 0; y <= h; y++) {
                     let fxy = x === 0 ? this.left_edge_heat(y) : 0;
-                    u2[x][y] = (fxy + this.g.aa(x, y) * delta_u(u1, x, y)) * 2 * dt + u[x][y];
+                    u2[x][y] = (fxy + this.g.a(x, y) * delta_u(u1, x, y)) * 2 * dt + u[x][y];
                 }
         }
 

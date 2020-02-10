@@ -11,12 +11,6 @@ export default class Body {
         return A[m];
     }
 
-    aa(x: number, y: number): number {
-        let a = this.a(x, y);
-        return a * a;
-    }
-
-
     get width(): number {
         return this.elements[0].length;
     }
@@ -26,16 +20,12 @@ export default class Body {
     }
 }
 
-enum Material {
-    GLASS,
-    AIR,
-    TREE,
-    ALUMINIUM
-}
+export type Material = "glass" | "air" | "tree" | "aluminium" | "sand";
 
-const A = [
-    3.4e-7,
-    1.9e-5,
-    8.2e-8,
-    8.418e-5
-];
+const A = {
+    "aluminium": 8.418e-5,
+    "air": 1.9e-5,
+    "sand": 1.15e-6,
+    "glass": 3.4e-7,
+    "tree": 8.2e-8
+};

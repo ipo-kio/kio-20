@@ -1,0 +1,92 @@
+import Body, {Material} from "../Body";
+import Block from "./Block";
+
+export class BodyUI extends createjs.Container {
+
+    blocks: Block[][];
+    private _selected_cell: {i: number, j: number} | null;
+
+    constructor() {
+        super();
+        this.blocks = new Array<Block[]>(M);
+        for (let i = 0; i < M; i++) {
+            this.blocks[i] = new Array<Block>(N);
+            for (let j = 0; j < N; j++)
+                this.blocks[i][j] = null; //new Block(null, DEFAULT_MATERIAL);
+        }
+    }
+
+    get body(): Body {
+        let b = new Array<Material[]>(M);
+        for (let i = 0; i < M; i++) {
+            b[i] = new Array<Material>(N);
+            for (let j = 0; j < N; j++) {
+                let block = this.blocks[i][j];
+                b[i][j] = block ? block.material : DEFAULT_MATERIAL;
+            }
+        }
+
+        return new Body(b);
+    }
+
+    block_is_passing_over(x: number, y: number) {
+        let i1 = Math.floor(x / Block.WIDTH);
+        let j1 = Math.floor(y / Block.HEIGHT);
+
+        let max_area = 0;
+        let max_area_i = 0;
+        let max_area_j = 0;
+        for (let ci = 0; ci <= 1; ci++)
+            for (let cj = 0; cj <= 1; cj++) {
+                let j = j1 + cj;
+                let i = i1 + ci;
+                let area = intersection_by_index(i, j, x, y, Block.WIDTH, Block.HEIGHT);
+                if (area > max_area) {
+                    max_area = area;
+                    max_area_i = i;
+                    max_area_j = j;
+                }
+            }
+
+        if (max_area === 0)
+            this.no_block_is_passing();
+        else
+            this._selected_cell = {i: max_area_i, j: max_area_j};
+
+        function intersection_by_index(i1: number, j1: number, x: number, y: number, w: number, h: number) {
+            if (i1 < 0 || j1 < 0 || i1 >= M || j1 >= N)
+                return 0;
+            return intersection(j1 * Block.WIDTH, i1 * Block.HEIGHT, x, y, w, h);
+        }
+
+        function intersection(x1: number, y1: number, x2: number, y2: number, w: number, h: number): number {
+            //not intersected
+            //x1      x1 + w        x2       x2 + w
+            //x2      x2 + w        x1       x1 + w
+            if (x1 + w <= x2 || x2 + w <= x1 || y1 + h <= y2 || y2 + h <= y1)
+                return 0;
+            let dx = Math.min(x1 + w - x2, x2 + w - x1);
+            let dy = Math.min(y1 + h - y2, y2 + h - y1);
+
+            return dx * dy;
+        }
+    }
+
+    no_block_is_passing() {
+        this._selected_cell = null;
+    }
+
+
+    get selected_cell(): { i: number; j: number } | null {
+        return this._selected_cell;
+    }
+
+    set selected_cell({i, j}: { i: number; j: number } | null) {
+        if (value === null && value.i === )
+        this._selected_cell = value;
+    }
+}
+
+const M = 6;
+const N = 6;
+const DEFAULT_MATERIAL: Material = "tree";
