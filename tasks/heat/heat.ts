@@ -1,15 +1,19 @@
 import './heat.scss'; //TODO заменить имя файла со стилями
+import {KioApi, KioTaskSettings} from "../KioApi";
 
 export class Heat { //TODO название класса должно совпадать с id задачи, но с заглавной буквы
-    private settings: any;
-    private kioapi: any;
+    private settings: KioTaskSettings;
+    private kioapi: KioApi;
+
+    private canvas: HTMLCanvasElement;
+    private scene: createjs.Stage;
 
     /**
      *
      * @param settings Объект с настройками задачи. В данный момент, внутри объекта settings ожидается только поле level,
      * которое может быть 0, 1 или 2.
      */
-    constructor(settings: any) {
+    constructor(settings: KioTaskSettings) {
         this.settings = settings;
 
         //TODO здесь можно совершить инициализацию, которая не зависит от положения в DOM и kioapi
@@ -30,10 +34,14 @@ export class Heat { //TODO название класса должно совпа
      * @param kioapi
      * @param preferred_width
      */
-    initialize(domNode: any, kioapi: any, preferred_width: bigint) {
+    initialize(domNode: HTMLElement, kioapi: KioApi, preferred_width: number) {
         this.kioapi = kioapi;
 
-        //TODO реализовать инициализацию
+        this.canvas = document.createElement('canvas');
+        this.canvas.width = 900;
+        this.canvas.height = 600;
+
+        this.scene = new createjs.Stage(this.canvas);
     }
 
     /*
