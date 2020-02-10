@@ -5,6 +5,7 @@ export class BodyUI extends createjs.Container {
 
     blocks: Block[][];
     private _selected_cell: {i: number, j: number} | null;
+    private highlight: createjs.Shape;
 
     constructor() {
         super();
@@ -29,7 +30,7 @@ export class BodyUI extends createjs.Container {
         return new Body(b);
     }
 
-    block_is_passing_over(x: number, y: number) {
+    find_cell_for_position(x: number, y: number) {
         let i1 = Math.floor(x / Block.WIDTH);
         let j1 = Math.floor(y / Block.HEIGHT);
 
@@ -49,9 +50,9 @@ export class BodyUI extends createjs.Container {
             }
 
         if (max_area === 0)
-            this.no_block_is_passing();
+            return null;
         else
-            this._selected_cell = {i: max_area_i, j: max_area_j};
+            return {i: max_area_i, j: max_area_j};
 
         function intersection_by_index(i1: number, j1: number, x: number, y: number, w: number, h: number) {
             if (i1 < 0 || j1 < 0 || i1 >= M || j1 >= N)
@@ -72,18 +73,26 @@ export class BodyUI extends createjs.Container {
         }
     }
 
-    no_block_is_passing() {
-        this._selected_cell = null;
-    }
-
-
     get selected_cell(): { i: number; j: number } | null {
         return this._selected_cell;
     }
 
-    set selected_cell({i, j}: { i: number; j: number } | null) {
-        if (value === null && value.i === )
-        this._selected_cell = value;
+    set selected_cell(cell: { i: number; j: number } | null) {
+        if (this._selected_cell === null && cell == null)
+            return;
+
+        if (cell !== null) {
+            let {i, j} = cell;
+            if (this._selected_cell !== null && this._selected_cell.i === i && this._selected_cell.j === j)
+                return;
+            this._selected_cell = cell;
+            this.highlight.visible = true;
+            this.highlight.x = j * Block.WIDTH;
+            this.highlight.y = i * Block.HEIGHT;
+        } else {
+            this._selected_cell = null;
+            this.highlight.visible = false;
+        }
     }
 }
 
