@@ -34,6 +34,7 @@ module.exports = function (env) {
         },
         resolve: {
             modules: sourceFolders,
+            extensions: ['.js', '.ts']
         },
         module: {
             rules: [

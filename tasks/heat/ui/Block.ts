@@ -21,6 +21,9 @@ export default class Block extends createjs.Container {
         this.x0 = x0;
         this.y0 = y0;
 
+        this.x = x0;
+        this.y = y0;
+
         let image = new createjs.Bitmap(kioapi.getResource(material));
         image.setBounds(0, 0, Block.WIDTH, Block.HEIGHT);
         this.border = new createjs.Shape();
@@ -41,6 +44,10 @@ export default class Block extends createjs.Container {
 
         this.addEventListener("rollout", () => {
             this.mouseover = false;
+        });
+
+        this.addEventListener("pressmove", () => {
+
         });
     }
 

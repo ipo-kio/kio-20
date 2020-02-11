@@ -86,13 +86,11 @@ export class BodyUI extends createjs.Container {
     }
 
     set selected_cell(cell: { i: number; j: number } | null) {
-        if (this._selected_cell === null && cell == null)
+        if (this._selected_cell?.i === cell?.i && this._selected_cell?.j === cell?.j)
             return;
 
         if (cell !== null) {
             let {i, j} = cell;
-            if (this._selected_cell !== null && this._selected_cell.i === i && this._selected_cell.j === j)
-                return;
             this._selected_cell = cell;
             this.highlight.visible = true;
             this.highlight.x = j * Block.WIDTH;

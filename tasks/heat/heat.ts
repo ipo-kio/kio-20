@@ -1,5 +1,6 @@
 import './heat.scss'; //TODO заменить имя файла со стилями
 import {KioApi, KioTaskSettings} from "../KioApi";
+import BlocksRegistry from "./ui/BlocksRegistry";
 
 export class Heat { //TODO название класса должно совпадать с id задачи, но с заглавной буквы
     private settings: KioTaskSettings;
@@ -7,6 +8,7 @@ export class Heat { //TODO название класса должно совпа
 
     private canvas: HTMLCanvasElement;
     private scene: createjs.Stage;
+    private blocksRegistry: BlocksRegistry;
 
     /**
      *
@@ -42,6 +44,13 @@ export class Heat { //TODO название класса должно совпа
         this.canvas.height = 600;
 
         this.scene = new createjs.Stage(this.canvas);
+        this.blocksRegistry = new BlocksRegistry(kioapi, {
+            "glass": 5,
+            "air": 5,
+            "aluminium": 5,
+            "sand": 5,
+            "tree": 16
+        });
     }
 
     /*
@@ -59,14 +68,14 @@ export class Heat { //TODO название класса должно совпа
         ];
     }
 
-    solution() {
-        return "";
-        //TODO вернуть объект с описанием решения участника
-    }
-
     loadSolution(solution: string) {
         // Все объекты, которые сюда передаются, были ранее возвращены методом solution,
         // но проверять их все равно необходимо.
         //TODO загрузить объект с решением участника.
+    }
+
+    solution() {
+        return "";
+        //TODO вернуть объект с описанием решения участника
     }
 }
