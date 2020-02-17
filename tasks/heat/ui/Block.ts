@@ -25,7 +25,7 @@ export default class Block extends createjs.Container {
         this.y = y0;
 
         let image = new createjs.Bitmap(kioapi.getResource(material));
-        image.setBounds(0, 0, Block.WIDTH, Block.HEIGHT);
+        image.sourceRect = new createjs.Rectangle(0, 0, Block.WIDTH, Block.HEIGHT);
         this.border = new createjs.Shape();
         this.border.graphics
             .beginStroke('red')

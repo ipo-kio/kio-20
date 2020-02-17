@@ -1,13 +1,14 @@
 import './heat.scss'; //TODO заменить имя файла со стилями
-import {KioApi, KioTaskSettings} from "../KioApi";
+import {KioApi, KioResourceDescription, KioTaskSettings} from "../KioApi";
 import BlocksRegistry from "./ui/BlocksRegistry";
+import Block from "./ui/Block";
 
 export class Heat { //TODO название класса должно совпадать с id задачи, но с заглавной буквы
     private settings: KioTaskSettings;
     private kioapi: KioApi;
 
     private canvas: HTMLCanvasElement;
-    private scene: createjs.Stage;
+    private stage: createjs.Stage;
     private blocksRegistry: BlocksRegistry;
 
     /**
@@ -27,7 +28,7 @@ export class Heat { //TODO название класса должно совпа
      * @returns {string} идентификатор задачи
      */
     id() {
-        return 'heat' + this.settings.level; //TODO заменить task-id на реальный id задачи
+        return 'heat' + this.settings.level;
     }
 
     /**
@@ -41,9 +42,10 @@ export class Heat { //TODO название класса должно совпа
 
         this.canvas = document.createElement('canvas');
         this.canvas.width = 900;
-        this.canvas.height = 600;
+        this.canvas.height = 480;
 
-        this.scene = new createjs.Stage(this.canvas);
+        this.stage = new createjs.Stage(this.canvas);
+        this.stage.enableMouseOver();
         this.blocksRegistry = new BlocksRegistry(kioapi, {
             "glass": 5,
             "air": 5,
@@ -51,16 +53,22 @@ export class Heat { //TODO название класса должно совпа
             "sand": 5,
             "tree": 16
         });
+        this.stage.addChild(this.blocksRegistry);
+
+        createjs.Ticker.addEventListener('tick', this.stage);
+
+        domNode.appendChild(this.canvas);
     }
 
-    /*
-    static preloadManifest() {
+    static preloadManifest(): KioResourceDescription[] {
         return [
-            // {id: "pic1", src: "heat-resources/pic1.png"},
-            // {id: "pic2", src: "heat-resources/pic2.png"}
+            {id: "air", src: "heat-resources/air.jpg"},
+            {id: "aluminium", src: "heat-resources/aluminium.jpg"},
+            {id: "glass", src: "heat-resources/glass.jpg"},
+            {id: "sand", src: "heat-resources/sand.jpg"},
+            {id: "tree", src: "heat-resources/tree.jpg"}
         ]; //TODO перечислить загружаемые ресурсы. Они находятся в каталоге heat-resources
     }
-    */
 
     parameters() {
         return [
