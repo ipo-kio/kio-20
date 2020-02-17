@@ -13,16 +13,16 @@ export class MercatorProjector {
      * @param long2 долгота правой сторон прямоугольника в градусах
      * @param lat1 широта верхней стороны прямоугольника в градусах
      */
-    constructor(x1, x2, y1, long1=-180, long2=180, lat1=86) {
+    constructor(x1, x2, y1, long1 = -180, long2 = 180, lat1 = 86) {
         lat1 *= Math.PI / 180;
         long1 *= Math.PI / 180;
         long2 *= Math.PI / 180;
 
         //c(long2 - long1) = (x2 - x1)
-        //y1 = y0 + c ln tg (lat1/2 + pi/4)
-        //y2 = y0 + c ln tg (lat2/2 + pi/4)
+        //y1 = y0 - c ln tg (lat1/2 + pi/4)
+        //y2 = y0 - c ln tg (lat2/2 + pi/4)
         this.c = (x2 - x1) / (long2 - long1);
-        this.y0 = y1 - this.c * Math.log(Math.tan(lat1 / 2 + Math.PI / 4));
+        this.y0 = y1 + this.c * Math.log(Math.tan(lat1 / 2 + Math.PI / 4));
         this.long1 = long1;
     }
 
@@ -80,16 +80,26 @@ export class MercatorProjector {
         let y3 = -(x1 * z2 - x2 * z1);
         let z3 = x1 * y2 - x2 * y1;
 
+        lat1 *= Math.PI / 180;
+        lat2 *= Math.PI / 180;
         long1 *= Math.PI / 180;
         long2 *= Math.PI / 180;
 
         let dx = this.c * (long2 - long1);
         let steps = Math.floor(dx / 4) + 2;
 
+        if (steps === 2) {
+            let [xx1, yy1] = this.sphere2euclid([lat1 * 180 / Math.PI, long1 * 180 / Math.PI]);
+            let [xx2, yy2] = this.sphere2euclid([lat2 * 180 / Math.PI, long2 * 180 / Math.PI]);
+            ctx.moveTo(xx1, yy1);
+            ctx.lineTo(xx2, yy2);
+            return;
+        }
+
         for (let i = 0; i < steps; i++) {
-            let long = i * (long2 - long1) / (steps - 1);
-            let b = -z3;
-            let a = x3 * Math.cos(long) + y3 * Math.sin(long);
+            let long = long1 + i * (long2 - long1) / (steps - 1);
+            let a = -z3;
+            let b = x3 * Math.cos(long) + y3 * Math.sin(long);
             if (a < 0) {
                 a = -a;
                 b = -b;
@@ -102,5 +112,4 @@ export class MercatorProjector {
                 ctx.lineTo(x, y);
         }
     }
-
 }

@@ -5,6 +5,7 @@ import { Global } from './Classes/Global'
 import { Helper } from './Classes/Helper'
 import { Process } from './Classes/Process'
 import { Config } from './Classes/Config'
+import {MercatorProjector} from "./Classes/MercatorProjector";
 
 var _thisProblem = null
 
@@ -33,7 +34,10 @@ export class Datacenters
 		// TODO реализовать инициализацию
 		log('initialize')
 		//log(kioapi)
-		this.initInterface(domNode, preferred_width)
+		// this.initInterface(domNode, preferred_width)
+
+		this.initMercatorExampleInterface(domNode);
+
 	}
 
 	static preloadManifest ()
@@ -147,6 +151,29 @@ export class Datacenters
 		  _dcBadCount: Datacenters._currentSolution._dcBadCount,
 		  _dcSelectedArr: Global.getDcSelectedArr(),
 		})
+	}
+
+	initMercatorExampleInterface(domNode) {
+		let canvas = document.createElement('canvas');
+		canvas.width = 640;
+		canvas.height = 480;
+		domNode.appendChild(canvas);
+		let ctx = canvas.getContext('2d');
+
+		let m = new MercatorProjector(0, 640, 0);
+		ctx.strokeStyle = 'black';
+
+		for (let long = -180; long <= 180; long += 10) {
+			ctx.beginPath();
+			m.draw_path(ctx, [86, long], [-86, long]);
+			ctx.stroke();
+		}
+
+		for (let lat = 80; lat >= -80; lat -= 10) {
+			ctx.beginPath();
+			m.draw_path(ctx, [lat, -180], [lat, 180]);
+			ctx.stroke();
+		}
 	}
 }
 
