@@ -32,7 +32,7 @@ export default class Block extends createjs.Container {
         this.border.graphics
             .beginStroke('red')
             .setStrokeStyle(3)
-            .rect(0, 0, Block.WIDTH, Block.HEIGHT)
+            .rect(1, 1, Block.WIDTH - 1, Block.HEIGHT - 1)
             .endStroke();
         this.addChild(image);
         this.addChild(this.border);
