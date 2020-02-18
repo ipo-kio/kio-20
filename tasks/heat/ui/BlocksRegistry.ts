@@ -2,15 +2,17 @@ import {Material} from "../Body";
 import {BodyUI, DEFAULT_MATERIAL} from "./BodyUI";
 import Block from "./Block";
 import {KioApi} from "../../KioApi";
+import HeatingProcess from "../HeatingProcess";
 
 export default class BlocksRegistry extends createjs.Container {
 
     private bodyUI: BodyUI;
+    // private heatMap: HeatMap;
 
     constructor(kioapi: KioApi, amount: { [key in Material]: number }) {
         super();
 
-        this.bodyUI = new BodyUI();
+        this.bodyUI = new BodyUI(kioapi);
         this.addChild(this.bodyUI);
 
         let row_element = 0;

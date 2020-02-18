@@ -1,14 +1,20 @@
 import Body, {Material} from "../Body";
 import Block from "./Block";
+import {KioApi} from "../../KioApi";
+import Rectangle = createjs.Rectangle;
+import HeatingProcess from "../HeatingProcess";
+import Grid from "../Grid";
 
 export class BodyUI extends createjs.Container {
 
     blocks: Block[][];
     private _selected_cell: {i: number, j: number} | null;
     private highlight: createjs.Shape;
-    private bg: createjs.Shape;
+    private bg: createjs.Bitmap;
+    private grid: createjs.Shape;
+    private process: HeatingProcess;
 
-    constructor() {
+    constructor(kioapi: KioApi) {
         super();
         this.blocks = new Array<Block[]>(M);
         for (let i = 0; i < M; i++) {
@@ -23,22 +29,29 @@ export class BodyUI extends createjs.Container {
             .rect(0, 0, Block.WIDTH, Block.HEIGHT)
             .endFill();
         this.highlight.visible = false;
-        this.addChild(this.highlight);
 
         this.selected_cell = null;
 
-        this.bg = new createjs.Shape();
-        this.bg.graphics.beginStroke("grey");
+        this.grid = new createjs.Shape();
+        this.grid.graphics.beginStroke("grey");
         for (let i = 0; i <= M; i++) {
-            this.bg.graphics.moveTo(0, i * Block.HEIGHT);
-            this.bg.graphics.lineTo(N * Block.WIDTH, i * Block.HEIGHT);
+            this.grid.graphics.moveTo(0, i * Block.HEIGHT);
+            this.grid.graphics.lineTo(N * Block.WIDTH, i * Block.HEIGHT);
         }
         for (let j = 0; j <= N; j++) {
-            this.bg.graphics.moveTo( j * Block.WIDTH, 0);
-            this.bg.graphics.lineTo(j * Block.WIDTH, M * Block.HEIGHT);
+            this.grid.graphics.moveTo( j * Block.WIDTH, 0);
+            this.grid.graphics.lineTo(j * Block.WIDTH, M * Block.HEIGHT);
         }
-        this.bg.graphics.endStroke();
+        this.grid.graphics.endStroke();
+
+        this.bg = new createjs.Bitmap(kioapi.getResource(DEFAULT_MATERIAL));
+        this.bg.sourceRect = new Rectangle(0, 0, this.width, this.height);
+
         this.addChild(this.bg);
+        this.addChild(this.grid);
+        this.addChild(this.highlight);
+
+        this.update_process();
     }
 
     get body(): Body {
@@ -128,6 +141,8 @@ export class BodyUI extends createjs.Container {
         this.blocks[i][j] = b;
         b.x = this.x + j * Block.WIDTH;
         b.y = this.y + i * Block.HEIGHT;
+
+        this.update_process();
     }
 
     remove_block(b: Block) {
@@ -135,12 +150,27 @@ export class BodyUI extends createjs.Container {
             for (let j = 0; j < N; j++)
                 if (this.blocks[i][j] === b) {
                     this.blocks[i][j] = null;
+                    this.update_process();
                     return;
                 }
     }
 
     get width(): number {
         return N * Block.WIDTH;
+    }
+
+    get height(): number {
+        return M * Block.HEIGHT;
+    }
+
+    private update_process() {
+        console.log("start update");
+        // this.process = new HeatingProcess(
+        //     new Grid(this.body, 1, 0.01, 10, 0.1),
+        //     () => 10,
+        //     () => 0
+        // );
+        console.log("stop update");
     }
 }
 
