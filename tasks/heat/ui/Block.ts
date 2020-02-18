@@ -81,4 +81,9 @@ export default class Block extends createjs.Container {
         this._mouseover = value;
         this.border.visible = this._mouseover;
     }
+
+    move_home() {
+        this.x = this.x0;
+        this.y = this.y0;
+    }
 }

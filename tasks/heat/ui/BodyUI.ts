@@ -107,6 +107,13 @@ export class BodyUI extends createjs.Container {
 
         if (cell !== null) {
             let {i, j} = cell;
+
+            if (this.blocks[i][j] !== null) {
+                this._selected_cell = null;
+                this.highlight.visible = false;
+                return;
+            }
+
             this._selected_cell = cell;
             this.highlight.visible = true;
             this.highlight.x = j * Block.WIDTH;
@@ -115,6 +122,25 @@ export class BodyUI extends createjs.Container {
             this._selected_cell = null;
             this.highlight.visible = false;
         }
+    }
+
+    set_block({i, j}: { i: number; j: number }, b: Block) {
+        this.blocks[i][j] = b;
+        b.x = this.x + j * Block.WIDTH;
+        b.y = this.y + i * Block.HEIGHT;
+    }
+
+    remove_block(b: Block) {
+        for (let i = 0; i < M; i++)
+            for (let j = 0; j < N; j++)
+                if (this.blocks[i][j] === b) {
+                    this.blocks[i][j] = null;
+                    return;
+                }
+    }
+
+    get width(): number {
+        return N * Block.WIDTH;
     }
 }
 

@@ -20,7 +20,9 @@ export default class BlocksRegistry extends createjs.Container {
                 let material = m as Material;
                 let a = amount[material];
                 for (let i = 0; i < a; i++) {
-                    let b = new Block(kioapi, material, row_element * (Block.WIDTH + DW), row_index * (Block.HEIGHT + DH));
+                    let x0 = this.bodyUI.width + 24 + row_element * (Block.WIDTH + DW);
+                    let y0 = row_index * (Block.HEIGHT + DH);
+                    let b = new Block(kioapi, material, x0, y0);
                     this.addChild(b);
                     row_element++;
                     if (row_element === ROW) {
@@ -29,22 +31,27 @@ export default class BlocksRegistry extends createjs.Container {
                     }
                     b.addEventListener("block move", () => {
                         this.bodyUI.selected_cell = this.bodyUI.find_cell_for_position(b.x - this.bodyUI.x, b.y - this.bodyUI.y);
-                        // console.log(this.bodyUI.find_cell_for_position(b.x - this.bodyUI.x, b.y - this.bodyUI.y));
                     });
                     b.addEventListener("block stop move", () => {
-                        // console.log("stop move", this.bodyUI.find_cell_for_position(b.x - this.bodyUI.x, b.y - this.bodyUI.y));
+                        let ij = this.bodyUI.selected_cell;
+                        if (ij !== null) {
+                            this.bodyUI.set_block(ij, b);
+                        } else
+                            b.move_home();
+                    });
+                    b.addEventListener("mousedown", () => {
+                        this.setChildIndex(b, this.children.length - 1);
+                        this.bodyUI.remove_block(b);
                     });
                 }
             }
 
         this.bodyUI.x = 0;
-        this.bodyUI.y = (Block.HEIGHT + DH) * 3;
+        this.bodyUI.y = 0;
         console.log(this.bodyUI.x, this.bodyUI.y)
     }
-
-
 }
 
-const DW = 8;
-const DH = 8;
-const ROW = 8;
+const DW = 4;
+const DH = 4;
+const ROW = 5;
