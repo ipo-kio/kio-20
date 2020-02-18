@@ -12,6 +12,8 @@ export default class Block extends createjs.Container {
 
     private readonly x0: number;
     private readonly y0: number;
+    private press_x: number;
+    private press_y: number;
 
     constructor(kioapi: KioApi, material: Material, x0: number, y0: number) {
         super();
@@ -46,9 +48,23 @@ export default class Block extends createjs.Container {
             this.mouseover = false;
         });
 
-        this.addEventListener("pressmove", () => {
-
+        this.addEventListener("mousedown", e => {
+            let ev = e as createjs.MouseEvent;
+            this.press_x = ev.localX;
+            this.press_y = ev.localY;
         });
+
+        this.addEventListener("pressmove", e => {
+            let ev = e as createjs.MouseEvent;
+            this.x = ev.stageX - this.parent.x - this.press_x;
+            this.y = ev.stageY - this.parent.y - this.press_y;
+            this.dispatchEvent(new Event("block move"), this);
+        });
+
+        this.addEventListener("pressup", e => {
+            let ev = e as createjs.MouseEvent;
+            this.dispatchEvent(new Event("block stop move"), this);
+        })
     }
 
     get material(): Material {

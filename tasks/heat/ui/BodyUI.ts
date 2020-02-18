@@ -6,6 +6,7 @@ export class BodyUI extends createjs.Container {
     blocks: Block[][];
     private _selected_cell: {i: number, j: number} | null;
     private highlight: createjs.Shape;
+    private bg: createjs.Shape;
 
     constructor() {
         super();
@@ -23,6 +24,19 @@ export class BodyUI extends createjs.Container {
             .endFill();
 
         this.selected_cell = null;
+
+        this.bg = new createjs.Shape();
+        this.bg.graphics.beginStroke("grey");
+        for (let i = 0; i <= M; i++) {
+            this.bg.graphics.moveTo(0, i * Block.HEIGHT);
+            this.bg.graphics.lineTo(N * Block.WIDTH, i * Block.HEIGHT);
+        }
+        for (let j = 0; j <= N; j++) {
+            this.bg.graphics.moveTo( j * Block.WIDTH, 0);
+            this.bg.graphics.lineTo(j * Block.WIDTH, M * Block.HEIGHT);
+        }
+        this.bg.graphics.endStroke();
+        this.addChild(this.bg);
     }
 
     get body(): Body {
