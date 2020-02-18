@@ -22,6 +22,8 @@ export class BodyUI extends createjs.Container {
             .beginFill('rgba(255,255,0,0.5)')
             .rect(0, 0, Block.WIDTH, Block.HEIGHT)
             .endFill();
+        this.highlight.visible = false;
+        this.addChild(this.highlight);
 
         this.selected_cell = null;
 
@@ -53,8 +55,8 @@ export class BodyUI extends createjs.Container {
     }
 
     find_cell_for_position(x: number, y: number) {
-        let i1 = Math.floor(x / Block.WIDTH);
-        let j1 = Math.floor(y / Block.HEIGHT);
+        let j1 = Math.floor(x / Block.WIDTH);
+        let i1 = Math.floor(y / Block.HEIGHT);
 
         let max_area = 0;
         let max_area_i = 0;

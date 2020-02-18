@@ -28,10 +28,11 @@ export default class BlocksRegistry extends createjs.Container {
                         row_index++;
                     }
                     b.addEventListener("block move", () => {
+                        this.bodyUI.selected_cell = this.bodyUI.find_cell_for_position(b.x - this.bodyUI.x, b.y - this.bodyUI.y);
                         // console.log(this.bodyUI.find_cell_for_position(b.x - this.bodyUI.x, b.y - this.bodyUI.y));
                     });
                     b.addEventListener("block stop move", () => {
-                        console.log("stop move", this.bodyUI.find_cell_for_position(b.x - this.bodyUI.x, b.y - this.bodyUI.y));
+                        // console.log("stop move", this.bodyUI.find_cell_for_position(b.x - this.bodyUI.x, b.y - this.bodyUI.y));
                     });
                 }
             }
