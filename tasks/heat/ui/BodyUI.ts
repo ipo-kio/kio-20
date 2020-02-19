@@ -165,12 +165,12 @@ export class BodyUI extends createjs.Container {
 
     private update_process() {
         console.log("start update");
-        // this.process = new HeatingProcess(
-        //     new Grid(this.body, 1, 0.01, 10, 0.1),
-        //     () => 10,
-        //     () => 0
-        // );
-        console.log("stop update");
+        this.process = new HeatingProcess(
+            new Grid(this.body, 10, 0.01, 10, 0.1),
+            () => 10,
+            () => 0
+        );
+        console.log("stop update", this.process);
     }
 }
 

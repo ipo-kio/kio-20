@@ -22,6 +22,60 @@ export default class HeatingProcess {
         this.solve();
     }
 
+    value(t: number, x: number, y: number): number {
+        return this.values[t][x][y];
+    }
+
+    get x_max(): number {
+        return this.g.N_width;
+    }
+
+    get y_max(): number {
+        return this.g.N_height;
+    }
+
+    get t_max(): number {
+        return this.g.N_time;
+    }
+
+    xy_slice(t: number, dx: number, dy: number): number[][] {
+        // *0 1 *2 3 *4
+        let x_max = this.x_max;
+        let y_max = this.y_max;
+        let time = this.values[t];
+
+        let nx = Math.floor(x_max / dx);
+        let ny = Math.floor(y_max / dy);
+
+        let result = new Array(nx + 1);
+        for (let x = 0; x <= nx; x++) {
+            let line = new Array(ny + 1);
+            result[x] = line;
+            for (let y = 0; y <= ny; y++)
+                line[y] = time[x * dx][y * dy];
+        }
+
+        // x <= nx
+        // nx * dx <= x_max => nx <= x_max / dx
+
+        return result;
+    }
+
+    ty_slice(x: number, dy: number, dt: number): number[][] {
+        let nt = Math.floor(this.t_max / dt);
+        let ny = Math.floor(this.y_max / dy);
+        let result = new Array(nt + 1);
+        for (let t = 0; t <= nt; t++) {
+            let values_line = this.values[t * dt][x];
+            let line = new Array(ny + 1);
+            result[t] = line;
+            for (let y = 0; y <= ny; y++)
+                line[y] = values_line[y * dy];
+        }
+
+        return result;
+    }
+
     private fillInitialValues() {
         for (let x = 0; x <= this.g.N_width; x++)
             for (let y = 0; y <= this.g.N_height; y++)
