@@ -1,18 +1,20 @@
 import Body, {Material} from "../Body";
 import Block from "./Block";
 import {KioApi} from "../../KioApi";
-import Rectangle = createjs.Rectangle;
 import HeatingProcess from "../HeatingProcess";
 import Grid from "../Grid";
+import ProcessDrawer, {SliceType} from "./ProcessDrawer";
+import Rectangle = createjs.Rectangle;
 
 export class BodyUI extends createjs.Container {
 
-    blocks: Block[][];
+    private blocks: Block[][];
     private _selected_cell: {i: number, j: number} | null;
     private highlight: createjs.Shape;
     private bg: createjs.Bitmap;
     private grid: createjs.Shape;
     private process: HeatingProcess;
+    private _processDrawer: ProcessDrawer;
 
     constructor(kioapi: KioApi) {
         super();
@@ -52,6 +54,10 @@ export class BodyUI extends createjs.Container {
         this.addChild(this.highlight);
 
         this.update_process();
+    }
+
+    get processDrawer(): ProcessDrawer {
+        return this._processDrawer;
     }
 
     get body(): Body {
@@ -166,14 +172,33 @@ export class BodyUI extends createjs.Container {
     private update_process() {
         console.log("start update");
         this.process = new HeatingProcess(
-            new Grid(this.body, 10, 0.01, 10, 0.1),
+            new Grid(this.body, N_element, LENGTH / (M * N_element), TIME_DIVISION, TIME / TIME_DIVISION),
             () => 10,
             () => 0
         );
+
+        this._processDrawer = new ProcessDrawer(
+            this.process,
+            SliceType.XY,
+            VIEW_DIVISION,
+            VIEW_DIVISION,
+            this.width,
+            this.height
+        );
+
+        this._processDrawer.v0 = Math.floor(TIME_DIVISION / 2);
+
+        this.dispatchEvent("drawer changed");
+
         console.log("stop update", this.process);
     }
 }
 
 const M = 6;
 const N = 6;
+const VIEW_DIVISION = 5;
+const N_element = VIEW_DIVISION * 5;
+const LENGTH = 1;
+const TIME = 60 * 60;
+const TIME_DIVISION = 10;
 export const DEFAULT_MATERIAL: Material = "tree";

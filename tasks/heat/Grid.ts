@@ -54,7 +54,6 @@ export default class Grid {
         return this._dt;
     }
 
-
     get body(): Body {
         return this._body;
     }

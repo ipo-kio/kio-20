@@ -2,12 +2,12 @@ import {Material} from "../Body";
 import {BodyUI, DEFAULT_MATERIAL} from "./BodyUI";
 import Block from "./Block";
 import {KioApi} from "../../KioApi";
-import HeatingProcess from "../HeatingProcess";
+import ProcessDrawer from "./ProcessDrawer";
 
 export default class BlocksRegistry extends createjs.Container {
 
     private bodyUI: BodyUI;
-    // private heatMap: HeatMap;
+    private processDrawer: ProcessDrawer;
 
     constructor(kioapi: KioApi, amount: { [key in Material]: number }) {
         super();
@@ -50,7 +50,15 @@ export default class BlocksRegistry extends createjs.Container {
 
         this.bodyUI.x = 0;
         this.bodyUI.y = 0;
-        console.log(this.bodyUI.x, this.bodyUI.y)
+
+        this.addChild(this.bodyUI.processDrawer);
+        this.processDrawer = this.bodyUI.processDrawer;
+
+        this.bodyUI.addEventListener("drawer changed", () => {
+            this.removeChild(this.processDrawer);
+            this.processDrawer = this.bodyUI.processDrawer;
+            this.addChild(this.processDrawer);
+        });
     }
 }
 
