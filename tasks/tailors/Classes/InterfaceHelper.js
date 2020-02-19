@@ -597,10 +597,11 @@ export class InterfaceHelper
 
 		}
 
-		//if(!Global._canPlay)
+		if(!Global._canPlay)
 		{
 			Tanimate.drawNit(true);
 		}
+
 
 
 		//log('Global._drawProcess._princessState =' + Global._drawProcess._princessState )

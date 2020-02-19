@@ -39,7 +39,7 @@ export class Datacenters
 	static preloadManifest ()
 	{
 		return [
-			{ id: 'bg', src: 'datacenters-resources/bg.jpg' },
+			{ id: 'bg', src: 'datacenters-resources/bg1.jpg' },
 		] // TODO перечислить загружаемые ресурсы. Они находятся в каталоге taskid-resources
 	}
 

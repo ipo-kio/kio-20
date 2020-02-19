@@ -20,6 +20,7 @@ export class Global
 	static _princessTimeOutId
 	static _nitTimeOutId
 	static _moveNitStep = 0
+	static _playTik = 0
 	static _princessState = ""
 	static _princessCanvas
 	static _tanimateDic = {};
@@ -94,6 +95,7 @@ export class Global
 		//log('goToStart()')
 		Global.setCanPlay(false)
 		Tailors._slider.value2 = 0
+		Global._playTik = 0
 
 		Global._drawProcess = new Process()
 		Global.createResult()
@@ -216,6 +218,8 @@ export class Global
 		}
 		Global._drawProcess.calcNextTik()
 
+		Global._playTik = Global._drawProcess._currentTik * 10
+
 		InterfaceHelper.drawCurrentTik()
 
 		LogHelper.selectTik(Global._drawProcess._currentTik)
@@ -232,7 +236,7 @@ export class Global
 		}
 
 		Global._drawProcess._currentTik--
-
+		Global._playTik = Global._drawProcess._currentTik * 10
 		Global._drawProcess.calcToTik(Global._drawProcess._currentTik)
 		InterfaceHelper.drawCurrentTik()
 		LogHelper.selectTik(Global._drawProcess._currentTik)
@@ -292,6 +296,8 @@ export class Global
 	{
 		Global._drawProcess.calcToTik(newStep)
 
+		Global._playTik = Global._drawProcess._currentTik * 10
+
 		InterfaceHelper.drawCurrentTik()
 
 		LogHelper.selectTik(Global._drawProcess._currentTik)
@@ -323,12 +329,42 @@ export class Global
 			if(Global._drawProcess._currentTik < Tailors._levelSettings.timeInSec)
 			{
 				Global.setCanPlay(true)
+				//Global.playNexTik();
 
-				setTimeout(Global.playNexTik, 500)
+
+				Global.playAll()
 			}
 			else{
 				Global.goToStart();
 			}
+		}
+	}
+
+	static playAll()
+	{
+		if(!Global._canPlay) return
+
+		Global._playTik++;
+		//log(Global._playTik + ' --------------------------------')
+		if(Global._playTik % 10 == 0)
+		{
+			//-- это отметка секунды
+			//log(Global._playTik + ' --------------------------------')
+			Global._moveNitStep = 0
+			Global._drawProcess.calcNextTik()
+
+			InterfaceHelper.drawCurrentTik()
+		}
+		Global._moveNitStep++;
+		Global.movePrincess();
+		Tanimate.drawNit(false);
+
+		if(Global._drawProcess._currentTik < Tailors._levelSettings.timeInSec)
+		{
+			setTimeout(Global.playAll, 100)
+		}
+		else{
+			Global.setCanPlay(false)
 		}
 	}
 
@@ -346,6 +382,7 @@ export class Global
 		else{
 			s = '&#9658;' //&#8250; >
 			tt = 'Поехали'
+			Global._moveNitStep = 0;
 		}
 
 
@@ -358,45 +395,79 @@ export class Global
 
 	static playNexTik()
 	{
+		//log('playNexTik() ' + Global._canPlay)
+
 		if(!Global._canPlay) return
 
 		Global._moveNitStep = 0;
 
 		Global._drawProcess.calcNextTik()
+
 		InterfaceHelper.drawCurrentTik()
-		LogHelper.selectTik(Global._drawProcess._currentTik)
 
 		//log('next2=' + Global._drawProcess._currentTik)
 
+
+
 		if(Global._drawProcess._currentTik < Tailors._levelSettings.timeInSec && Global._canPlay)
 		{
-			setTimeout(Global.playNexTik, 500)
 			Global.movePrincess();
+
+			setTimeout(Global.playNexTik, 1000)  //-- длительность тика при анимации
 			Global.moveNit();
+
+
 		}
 		else{
-			Global.setCanPlay(false)
+
+			if(Global._drawProcess._currentTik == Tailors._levelSettings.timeInSec && Global._canPlay)
+			{
+				Global.setCanPlay(false)
+				Global.goToEnd()
+			}
+			else{
+				Global.setCanPlay(false)
+			}
+
 		}
+
+		LogHelper.selectTik(Global._drawProcess._currentTik)
+	}
+
+	static playPosov(){
+
+		let p = Global._drawProcess;
+		let tailor = p._tailorsArr[0]
+		let x = 25 + (0)* 95
+
+		if(tailor._lenCurrent > 0){
+			//tailor._tanimate.run(x, tailor._lenCurrent, tailor._totalResult, tailor._step);
+		}
+
 	}
 
 	static moveNit(){
 		if(!Global._canPlay) return
 
+
 		Global._moveNitStep++;
+/*
+		//log('moveNit() - ' + Global._moveNitStep)
 
 		if(Global._moveNitStep > 5){
 			//Global._moveNitStep = 0;
 			return;
 		}
 
-
+*/
 
 		Tanimate.drawNit(false);
 
-		//log('moveNit()')
+
 
 		clearTimeout(Global._nitTimeOutId)
-		Global._nitTimeOutId = setTimeout(Global.moveNit, 100)
+		Global._nitTimeOutId = setTimeout(Global.moveNit, 50)
+
 	}
 
 	static movePrincess()

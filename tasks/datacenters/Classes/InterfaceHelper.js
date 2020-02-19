@@ -22,7 +22,7 @@ export class InterfaceHelper
 
 			let canvasContDiv = document.createElement('div')
 			canvasContDiv.innerHTML = ''
-			canvasContDiv.setAttribute('style', 'background-image: url("./datacenters-resources/bg.jpg");')
+			canvasContDiv.setAttribute('style', 'background-image: url("./datacenters-resources/bg1.jpg");')
 			canvasContDiv.id = 'canvasContDiv'
 			canvasContDiv.className = 'canvas_cont_div'
 			superDiv.appendChild(canvasContDiv)
@@ -42,8 +42,8 @@ export class InterfaceHelper
 		//Global._stageTop.removeAllEventListeners();
 		Global._stageTop.enableMouseOver();
 
-		//createjs.Ticker.on("tick", Global.tick);
-		//createjs.Ticker.interval = 1000;
+		createjs.Ticker.on("tick", Global.tick);
+		createjs.Ticker.interval = 600;
 		//createjs.Ticker.framerate = 1000;
 
 		//Config.setLevelData(Datacenters._level)

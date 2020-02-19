@@ -11,6 +11,7 @@ export class Global
 	static _dcDic = {}
 	static _relArr = []
 	static _dcBadDic = {}
+	static _tik01 = false;
 
 	static clickDC(name)
 	{
@@ -67,7 +68,14 @@ export class Global
 
 		if(dc._selected)
 		{
-			dcShape.fillCmd.style =  "blue";
+			if(Global._tik01)
+			{
+				dcShape.fillCmd.style =  "green";
+			}
+			else{
+				dcShape.fillCmd.style =  "#62e362";
+			}
+
 		}
 		else
 		{
@@ -81,6 +89,12 @@ export class Global
 				dcShape.fillCmd.style =  "green";
 			}
 		}
+	}
+
+	static tick(){
+		//log('tick')
+		Global._tik01 = !Global._tik01
+		Global._stageTop.update();
 	}
 }
 //http://sp-pr-dt0282.mara.local/kio/kio-20/dist/datacenters.html

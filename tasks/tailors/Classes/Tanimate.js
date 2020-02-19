@@ -305,8 +305,8 @@ export class Tanimate
         c.stroke();
 	}
 
-	static drawNit(finishStep){
-
+	static drawNit2(finishStep)
+	{
 		let canvasBot = document.getElementById('canvas_bot')
 		let ctxBot = canvasBot.getContext('2d');
 		ctxBot.clearRect(0, 0, canvasBot.width, canvasBot.height);
@@ -315,7 +315,6 @@ export class Tanimate
 		let i, tailor, totalResH
 		let nitYstart = 130;
 		let steLen = 10   //-- длина стежка в пикселях
-
 
 		for(i = 0; i < p._tailorsArr.length; i++)
 		{
@@ -374,6 +373,16 @@ export class Tanimate
 
 			ctxBot.beginPath();
 
+			if(finishStep)
+			{
+				//log('drawNit -- finishStep')
+				ctxBot.strokeStyle = "green";
+			}
+			else{
+				//log('drawNit -- ')
+				ctxBot.strokeStyle = "green";
+			}
+
 			//-- петля остатка
 			ctxBot.moveTo(x, lastY)
 
@@ -399,15 +408,8 @@ export class Tanimate
 				ctxBot.bezierCurveTo(x1, lastY,   x1, lastY + steLen,   x,lastY + steLen)
 			}
 
-
-
-
-
 			if(tailor._currentState == '-')
 			{
-
-
-			//-- петля
 				{
 
 					//-- петля продернутая
@@ -436,6 +438,385 @@ export class Tanimate
 		}
 	}
 
+	static drawNit(finishStep){
+
+		let canvasBot = document.getElementById('canvas_bot')
+		let ctxBot = canvasBot.getContext('2d');
+		ctxBot.clearRect(0, 0, canvasBot.width, canvasBot.height);
+		let n, j, x, lastY, x1, y1, mm, n1
+		let p = Global._drawProcess;
+		let i, tailor, totalResH
+		let nitYstart = 130;
+		let steLen = 10   //-- длина стежка в пикселях
+
+		/*
+		if(finishStep)
+		{
+			log('drawNit -- finishStep')
+		}
+		else{
+			log('drawNit -- ')
+		}
+		*/
+
+
+		for(i = 0; i < p._tailorsArr.length; i++)
+		{
+			tailor = p._tailorsArr[i]
+
+			totalResH = tailor._totalResult * steLen //+ 50
+			x = 25 + (i)* 95
+			lastY = nitYstart;
+
+			//-- готовые стежки
+			{
+				ctxBot.beginPath();
+				ctxBot.lineWidth = 4;
+				ctxBot.strokeStyle = "silver";
+				ctxBot.moveTo(x, nitYstart)
+				ctxBot.lineTo(x, totalResH + nitYstart)
+				ctxBot.stroke();
+				ctxBot.closePath();
+			}
+
+			//-- отметки стежков
+			{
+				ctxBot.beginPath();
+				ctxBot.lineWidth = 2;
+				ctxBot.strokeStyle = "black";
+
+				if(tailor._totalResult > 0)
+				{
+					//n = totalResH / tailor._totalResult;
+					//n = 10;
+
+					for (j = 0; j <= tailor._totalResult; j++)
+					{
+						lastY = (j*steLen) + nitYstart
+
+						ctxBot.moveTo(x-2, lastY)
+						ctxBot.lineTo(x+2, lastY)
+
+					}
+					//-- будущяя дырка от стежка
+					//ctxBot.moveTo(x-2, ((tailor._totalResult+1)*steLen) + nitYstart)
+					//ctxBot.lineTo(x+2, ((tailor._totalResult+1)*steLen) + nitYstart)
+				}
+
+				ctxBot.stroke();
+				ctxBot.closePath();
+			}
+
+			if(tailor._totalResult % 2 == 0){
+				mm  = 1
+			}
+			else{
+				mm = -1
+			}
+
+
+			ctxBot.beginPath();
+			ctxBot.lineWidth = 2;
+
+			if(finishStep)
+			{
+				//log('drawNit -- finishStep')
+				ctxBot.strokeStyle = "green";
+			}
+			else{
+				//log('drawNit -- ')
+				ctxBot.strokeStyle = "green";
+			}
+
+			//-- петля остатка
+
+
+			n = ((tailor._lenCurrent-tailor._step+1)* steLen/2)
+			//-- координата петли остатка
+			x1 = x-(n * mm)
+			//x1 = x;
+			y1 = lastY + steLen/2  // ((tailor._lenCurrent-tailor._step-1)*5)
+
+
+
+
+			if(!finishStep)
+			{
+				if(tailor._currentState == '-' || tailor._currentState == '+')
+				{
+					x1 = x1 + ((Global._moveNitStep/2) * mm)
+				}
+
+			}
+			else{
+				//log('fffffffffffffff')
+			}
+
+			//log('x1=' + x1 + ' Global._moveNitStep=' + Global._moveNitStep + ' step=' + tailor._step + ' n=' + n)
+
+			if(tailor._lenCurrent > 0 || tailor._step > 1)
+			{
+				//log('x11=' + x1 )
+				//ctxBot.bezierCurveTo(x1, lastY,   x1, lastY + steLen,   x,lastY + steLen)
+
+				Tanimate.drawCurve(ctxBot, x, lastY, mm, tailor._lenCurrent, steLen, tailor._step)
+			}
+
+			ctxBot.stroke();
+			ctxBot.closePath();
+
+			ctxBot.beginPath();
+			ctxBot.lineWidth = 2;
+			ctxBot.strokeStyle = "red";
+
+			if(tailor._currentState == '-' || tailor._currentState == '+')
+			{
+				{
+
+					//-- петля продернутая
+					Tanimate.aaa(ctxBot, x, lastY + steLen, tailor._step, steLen, tailor._totalResult, tailor._lenCurrent);
+
+					//Tanimate.bbb(ctxBot, x, lastY + 10, tailor._step, tailor._lenCurrent, tailor._totalResult, steLen, finishStep)
+				}
+			}
+			else{
+				//log(tailor._currentState)
+			}
+
+
+			ctxBot.stroke();
+			ctxBot.closePath();
+
+
+
+
+			//-- длина нити
+			{
+				ctxBot.beginPath();
+				ctxBot.lineWidth = 1;
+				ctxBot.fillStyle = 'blue';
+				ctxBot.font = 'bold 20px Arial';
+				ctxBot.fillText(tailor._totalResult, x + 15 , nitYstart + 40 )
+				ctxBot.stroke();
+				ctxBot.closePath();
+			}
+		}
+	}
+
+	static drawCurve(ctx, xStart, yStart, mm, lenCurrent, steLen, step)
+	{
+		let n, x
+
+		let lineLen = ((lenCurrent-1-step)/2 ) * steLen
+
+
+
+		if(lenCurrent % 2 == 0){
+			lineLen = lineLen - 1
+		}
+
+		if(lineLen < 0)
+		{
+			lineLen = 0
+		}
+
+
+
+		//-- верхняя прямая часть петли
+
+
+
+
+		if(Global._moveNitStep == 0){
+			n = (lineLen)* (-mm)
+		}
+		else{
+			n = (lineLen * (-mm) + (Global._moveNitStep/2)* (mm))
+		}
+
+		x = xStart + n
+
+		//log('lineLen=' + lineLen + ' step='+ step + ' x=' + x + ' Global._moveNitStep=' + Global._moveNitStep)
+
+		if(mm < 0 && x > xStart)
+		{
+			ctx.moveTo(xStart, yStart)
+			ctx.lineTo( x, yStart)
+			//-- нижняя прямая
+			ctx.moveTo(xStart, yStart + steLen)
+			ctx.lineTo(x, yStart + steLen)
+		}
+		else{
+			if(mm > 0 && x < xStart){
+				ctx.moveTo(xStart, yStart)
+				ctx.lineTo( x, yStart)
+				//-- нижняя прямая
+				ctx.moveTo(xStart, yStart + steLen)
+				ctx.lineTo(x, yStart + steLen)
+
+				ctx.moveTo(x, yStart)
+				ctx.arc(x, yStart + steLen/2 , steLen/2, -Math.PI/2, Math.PI/2, (mm > 0));
+
+
+			}
+		}
+
+
+
+	//	ctx.arc(x, yStart + steLen/2 , steLen/2, -Math.PI/2, Math.PI/2, (mm < 0));
+
+
+		//Tanimate.drawNitArc(ctx, x, yStart, steLen, false, -mm)
+	}
+
+
+	static aaa(ctx, xStart, yStart, step, steLen, totalResult, lenCurrent)
+	{
+		if(step == 1) return;
+		let p, n, mm , mm1, n1, x, st, xLast, yLast;
+
+		if(totalResult % 2 == 0){
+			mm  = 1
+		}
+		else{
+			mm = -1
+		}
+
+		//-- step это длина продернутой нити
+
+		let stepLine = Math.trunc(lenCurrent/2)  //-- это номера шагов для верхней прямой. От 0 до stepLine
+
+		if(lenCurrent % 2 == 0){
+			stepLine = stepLine - 1
+		}
+
+
+		//log('stepLine=' + stepLine + ' step=' + step)
+
+		ctx.moveTo(xStart, yStart);
+
+		xLast = xStart
+		yLast = yStart;
+
+		//-- прорисовываем каждый предыдущий степ кроме последнего
+		for(st = 2; st < step; st++)
+		{
+
+			//log('st=' + st +  ' lastX=' + xLast)
+
+
+			if(st <= stepLine + 1)
+			{
+				//-- верхняя прямая часть петли
+
+				//n = (steLen*(step - (1 - Global._moveNitStep*0.1))) * mm
+				x = (xLast + (steLen)* mm)
+
+
+				//log('111111 stepLine=' + stepLine + ' x=' + x)
+
+				ctx.lineTo(x, yStart);
+
+				xLast = x
+			}
+			else if(st > stepLine+2)
+			{
+				//-- нижняя прямая часть петли
+				yLast = yStart + steLen
+
+				//x = (xLast + (steLen)*  mm)
+				//x = (xStart + steLen*(step-stepLine-1)* mm)
+				x = (xStart + (steLen*stepLine -  (st-stepLine-2)*steLen) *  mm)
+
+				ctx.lineTo(x, yLast);
+
+				//log('222222 stepLine=' + stepLine+ ' x=' + x)
+
+				xLast = x
+			}
+			else{
+				//-- это закругление
+
+				Tanimate.drawNitArc(ctx, xLast, yStart, steLen, false, mm)
+
+				ctx.moveTo(xLast, yLast + steLen);
+
+				//log('zzzzz stepLine=' + stepLine+ ' x=' + x)
+			}
+		}
+
+		//-- рисуем последний степ
+
+		if(step <= stepLine+1)
+		{
+			if(Global._moveNitStep == 0){
+				x = (xStart + steLen*(step-1)* mm)
+
+
+			}
+			else{
+				x = (xLast  + (( Global._moveNitStep)* mm))
+			}
+
+			//log('aa=' + x)
+
+			ctx.lineTo(x, yStart);
+			xLast = x
+		}
+		else if(step > stepLine+2)
+		{
+			yLast = yStart + steLen
+
+			if(Global._moveNitStep == 0){
+				x = (xStart + (steLen*stepLine -  (step-stepLine-2)*steLen - 0) *  mm)
+
+				//log('dd='+ x)
+			}
+			else{
+				x = (xLast  - (( Global._moveNitStep)* mm))
+			}
+-
+			ctx.lineTo(x, yLast);
+			xLast = x
+		}
+		else{
+
+
+			Tanimate.drawNitArc(ctx, xLast, yStart, steLen, true, mm)
+
+
+		}
+
+		//log(x + ' step=' + step +  ' _moveNitStep=' + Global._moveNitStep)
+
+	}
+
+	static drawNitArc(ctx, xLast, yStart, steLen, lastStep, mm)
+	{
+		let yLast = yStart + steLen/2
+		let n
+
+		if(Global._moveNitStep == 0)
+		{
+			n = Math.PI/2
+		}
+		else{
+			if(lastStep){
+				n = -Math.PI/2 + (((Math.PI/2)/10) * Global._moveNitStep)
+			}
+			else{
+				n = Math.PI/2
+			}
+
+
+		}
+
+		log('Global._moveNitStep=' + Global._moveNitStep + ' n=' + n)
+
+
+		ctx.arc(xLast, yLast , steLen/2, -Math.PI/2, n, (mm < 0));
+	}
+
 	static bbb(ctx, xStart, yStart, step, lenCurrent, totalResult, steLen, finishStep)
 	{
 		if(lenCurrent == 0) return;
@@ -461,29 +842,29 @@ export class Tanimate
 
 		ctx.moveTo(xStart, yStart);
 
-		n = ((1 / lenCurrent) * (lenCurrent - step))
-
+		n = ((1 / lenCurrent) * (lenCurrent - (step )))
+		let n2 = n
 		//Global._moveNitStep  //-- 1..5
 
 
 
-
-
-		//log('step=' + step + ' lenCurrent=' +  lenCurrent +  ' n=' + n + ' Global._moveNitStep=' + Global._moveNitStep + ' n1=' + n1)
-
 		if(!finishStep){
-			n1 = n + 0.1 - (Global._moveNitStep) * 0.02
-			n = n1
+			//n1 = n + 0.3 - (Global._moveNitStep) * 0.02
+			n1 =  (1/Global._moveNitStep) * 0.02
+			n = n + n1
+
 		}
 		else{
-			//log('finishStep')
+
 		}
+
+		//log('Global._moveNitStep=' + Global._moveNitStep + ' n=' + n + ' n2=' + n2 + ' gg=' + Global._playTik + ' t=' +  Global._drawProcess._currentTik + ' n1=' + n1)
 
 
 		for (let i=0; i<(1-n); i+=(accuracy))
 		{
 			p = Tanimate.bezier(i, p0, p1, p2, p3, mm);
-
+			//log(p.x + ' nn=' + (1-n))
 			ctx.lineTo(p.x, p.y);
 		}
 

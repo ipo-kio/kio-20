@@ -79,7 +79,7 @@ export class Process
 
 	calcFullSolution()
 	{
-		log('calcFullSolution Global._currentTik=' + Global._currentTik + ' ss=' + Tailors._levelSettings.timeInSec)
+		//log('calcFullSolution Global._currentTik=' + Global._currentTik + ' ss=' + Tailors._levelSettings.timeInSec)
 
 
 		let tailor, tailorG
@@ -159,7 +159,7 @@ export class Process
 					tailor._lenCurrent--;
 					tailor._totalResult++;
 					tailor._step = 1;
-					tailor._currentState = '<b>+</b>'; //--завершение стежка
+					tailor._currentState = '+'; //--завершение стежка
 				}
 				else
 				{
