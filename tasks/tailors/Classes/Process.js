@@ -193,8 +193,6 @@ export class Process
 
 					this._princessLastPass = true
 
-
-
 					//log('NNNNNNNNNNN 1')
 				}
 				else{
