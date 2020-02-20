@@ -8,6 +8,7 @@ export default class BlocksRegistry extends createjs.Container {
 
     private bodyUI: BodyUI;
     private processDrawer: ProcessDrawer;
+    private processDrawerTime: ProcessDrawer;
 
     constructor(kioapi: KioApi, amount: { [key in Material]: number }) {
         super();
@@ -51,14 +52,26 @@ export default class BlocksRegistry extends createjs.Container {
         this.bodyUI.x = 0;
         this.bodyUI.y = 0;
 
-        this.addChild(this.bodyUI.processDrawer);
-        this.processDrawer = this.bodyUI.processDrawer;
+        this.update_processes();
 
         this.bodyUI.addEventListener("drawer changed", () => {
             this.removeChild(this.processDrawer);
-            this.processDrawer = this.bodyUI.processDrawer;
-            this.addChild(this.processDrawer);
+            this.removeChild(this.processDrawerTime);
+
+            this.update_processes();
         });
+    }
+
+    private update_processes() {
+        this.addChild(this.bodyUI.processDrawer);
+        this.processDrawer = this.bodyUI.processDrawer;
+        this.processDrawer.x = this.bodyUI.x;
+        this.processDrawer.y = this.bodyUI.y;
+
+        this.addChild(this.bodyUI.processDrawerTime);
+        this.processDrawerTime = this.bodyUI.processDrawerTime;
+        this.processDrawerTime.x = 0;
+        this.processDrawerTime.y = 8 + this.bodyUI.height;
     }
 }
 

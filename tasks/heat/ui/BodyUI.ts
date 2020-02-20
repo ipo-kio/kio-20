@@ -15,6 +15,7 @@ export class BodyUI extends createjs.Container {
     private grid: createjs.Shape;
     private process: HeatingProcess;
     private _processDrawer: ProcessDrawer;
+    private _processDrawerTime: ProcessDrawer;
 
     constructor(kioapi: KioApi) {
         super();
@@ -58,6 +59,10 @@ export class BodyUI extends createjs.Container {
 
     get processDrawer(): ProcessDrawer {
         return this._processDrawer;
+    }
+
+    get processDrawerTime(): ProcessDrawer {
+        return this._processDrawerTime;
     }
 
     get body(): Body {
@@ -172,7 +177,7 @@ export class BodyUI extends createjs.Container {
     private update_process() {
         console.log("start update");
         this.process = new HeatingProcess(
-            new Grid(this.body, N_element, LENGTH / (M * N_element), TIME_DIVISION, TIME / TIME_DIVISION),
+            new Grid(this.body, N_element, LENGTH / (M * N_element), N_time, TIME / N_time),
             () => 10,
             () => 0
         );
@@ -188,6 +193,15 @@ export class BodyUI extends createjs.Container {
 
         this._processDrawer.v0 = Math.floor(TIME_DIVISION / 2);
 
+        this._processDrawerTime = new ProcessDrawer(
+            this.process,
+            SliceType.TY,
+            TIME_DIVISION,
+            VIEW_DIVISION,
+            640,
+            100
+        );
+
         this.dispatchEvent("drawer changed");
 
         console.log("stop update", this.process);
@@ -201,4 +215,5 @@ const N_element = VIEW_DIVISION * 5;
 const LENGTH = 1;
 const TIME = 60 * 60;
 const TIME_DIVISION = 10;
+const N_time = TIME_DIVISION;
 export const DEFAULT_MATERIAL: Material = "tree";
