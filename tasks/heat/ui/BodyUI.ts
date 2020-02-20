@@ -208,7 +208,7 @@ export class BodyUI extends createjs.Container {
 
         this.dispatchEvent("drawer changed");
 
-        console.log("stop update", this._process);
+        console.log("stop update");
     }
 }
 

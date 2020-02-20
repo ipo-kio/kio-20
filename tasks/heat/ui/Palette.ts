@@ -23,6 +23,8 @@ export class Palette {
         let index = Math.floor(v_normalized * colors.length);
         if (index >= colors.length)
             index = colors.length - 1;
+        if (index < 0)
+            index = 0;
 
         return ind2color[index];
     }

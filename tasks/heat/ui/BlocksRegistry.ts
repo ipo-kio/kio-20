@@ -55,7 +55,7 @@ export default class BlocksRegistry extends createjs.Container {
         this.bodyUI.y = 0;
 
         this.processDebugger = new ProcessDebugger();
-        // this.addChild(this.processDebugger);
+        this.addChild(this.processDebugger);
         this.processDebugger.x = 0;
         this.processDebugger.y = this.bodyUI.height + 8 + 100 + 8; // 100 is the height of processDrawerTime
 
