@@ -3,12 +3,14 @@ import {BodyUI, DEFAULT_MATERIAL} from "./BodyUI";
 import Block from "./Block";
 import {KioApi} from "../../KioApi";
 import ProcessDrawer from "./ProcessDrawer";
+import {ProcessDebugger} from "./ProcessDebugger";
 
 export default class BlocksRegistry extends createjs.Container {
 
     private bodyUI: BodyUI;
     private processDrawer: ProcessDrawer;
     private processDrawerTime: ProcessDrawer;
+    private processDebugger: ProcessDebugger;
 
     constructor(kioapi: KioApi, amount: { [key in Material]: number }) {
         super();
@@ -52,6 +54,11 @@ export default class BlocksRegistry extends createjs.Container {
         this.bodyUI.x = 0;
         this.bodyUI.y = 0;
 
+        this.processDebugger = new ProcessDebugger();
+        // this.addChild(this.processDebugger);
+        this.processDebugger.x = 0;
+        this.processDebugger.y = this.bodyUI.height + 8 + 100 + 8; // 100 is the height of processDrawerTime
+
         this.update_processes();
 
         this.bodyUI.addEventListener("drawer changed", () => {
@@ -72,6 +79,8 @@ export default class BlocksRegistry extends createjs.Container {
         this.processDrawerTime = this.bodyUI.processDrawerTime;
         this.processDrawerTime.x = 0;
         this.processDrawerTime.y = 8 + this.bodyUI.height;
+
+        this.processDebugger.process = this.bodyUI.process;
     }
 }
 

@@ -8,7 +8,7 @@ export default class ProcessDrawer extends createjs.Shape {
     private _v0: number = 0;
     private dx: number;
     private dy: number;
-    private pallete: Palette = new Palette(0, 100);
+    private palette: Palette = new Palette(0, 100);
     private width: number;
     private height: number;
 
@@ -47,14 +47,15 @@ export default class ProcessDrawer extends createjs.Shape {
         let g = this.graphics;
         g.clear();
         let slice = this.slice;
-        let a = slice.length;
-        let b = slice[0].length;
-        let w = this.width / b;
-        let h = this.height / a;
-        for (let j = 0; j < a; j++)
-            for (let i = 0; i < b; i++) {
-                let color = this.pallete.get(slice[j][i]);
-                g.beginFill(color).rect(j * w, i * h, w, h);
+        let a = slice.length; //for x
+        let b = slice[0].length; //for y
+        let w = this.width / a;
+        let h = this.height / b;
+        console.log(a, b);
+        for (let x = 0; x < a; x++)
+            for (let y = 0; y < b; y++) {
+                let color = this.palette.get(slice[x][y]);
+                g.beginFill(color).rect(x * w, y * h, w, h);
             }
     }
 }

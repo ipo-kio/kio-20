@@ -13,7 +13,7 @@ export class BodyUI extends createjs.Container {
     private highlight: createjs.Shape;
     private bg: createjs.Bitmap;
     private grid: createjs.Shape;
-    private process: HeatingProcess;
+    private _process: HeatingProcess;
     private _processDrawer: ProcessDrawer;
     private _processDrawerTime: ProcessDrawer;
 
@@ -174,16 +174,20 @@ export class BodyUI extends createjs.Container {
         return M * Block.HEIGHT;
     }
 
+    get process(): HeatingProcess {
+        return this._process;
+    }
+
     private update_process() {
         console.log("start update");
-        this.process = new HeatingProcess(
+        this._process = new HeatingProcess(
             new Grid(this.body, N_element, LENGTH / (M * N_element), N_time, TIME / N_time),
             () => 10,
             () => 0
         );
 
         this._processDrawer = new ProcessDrawer(
-            this.process,
+            this._process,
             SliceType.XY,
             VIEW_DIVISION,
             VIEW_DIVISION,
@@ -194,7 +198,7 @@ export class BodyUI extends createjs.Container {
         this._processDrawer.v0 = Math.floor(TIME_DIVISION / 2);
 
         this._processDrawerTime = new ProcessDrawer(
-            this.process,
+            this._process,
             SliceType.TY,
             TIME_DIVISION,
             VIEW_DIVISION,
@@ -204,16 +208,16 @@ export class BodyUI extends createjs.Container {
 
         this.dispatchEvent("drawer changed");
 
-        console.log("stop update", this.process);
+        console.log("stop update", this._process);
     }
 }
 
-const M = 6;
-const N = 6;
-const VIEW_DIVISION = 5;
-const N_element = VIEW_DIVISION * 5;
-const LENGTH = 1;
-const TIME = 60 * 60;
-const TIME_DIVISION = 10;
-const N_time = TIME_DIVISION;
+export const M = 6;
+export const N = 6;
+export const VIEW_DIVISION = 5;
+export const N_element = VIEW_DIVISION * 5;
+export const LENGTH = 1;
+export const TIME = 60 * 60;
+export const TIME_DIVISION = 2;
+export const N_time = TIME_DIVISION * 10;
 export const DEFAULT_MATERIAL: Material = "tree";
