@@ -7,7 +7,7 @@ export class TailorHelper
 {
 	static createTailorDiv(tailor)
 	{
-		log('createTailorDiv id=' + tailor._id)
+		//log('createTailorDiv id=' + tailor._id)
 		let div
 
 		let tailorDiv = document.createElement('div')
@@ -21,15 +21,15 @@ export class TailorHelper
 		}
 
 		let canvasTop = document.createElement('canvas')
-		canvasTop.width = 40
-		canvasTop.height = 40
+		canvasTop.width = 80
+		canvasTop.height = 80
 		canvasTop.id = 'tailor_canvas_top_' + tailor._id
 		canvasTop.className = 'canvas_top'
 		tailorDiv.appendChild(canvasTop)
 
 		var ctx = canvasTop.getContext('2d');
 		let img1 = Tailors.kioapi.getResource('tailor_w')
-		ctx.drawImage(img1, 2, 2, 40, 40);
+		ctx.drawImage(img1, 2, 2, 80, 80);
 
 
 
@@ -117,15 +117,15 @@ export class TailorHelper
 		let ctx = canvasT.getContext('2d');
 		ctx.clearRect(0, 0, canvasT.width, canvasT.height);
 		let img1 = Tailors.kioapi.getResource(tailorPng)
-		ctx.drawImage(img1, 2, 2, 40, 40);
+		ctx.drawImage(img1, 2, 2, 80, 80);
 
 		//-- number
 
-		let tx = 17
+		let tx = 10
 		let ty = 26
 
 		if(num > 9){
-			tx = 15
+			//tx = 15
 		}
 
 		ctx.beginPath();

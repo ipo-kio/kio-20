@@ -62,6 +62,7 @@ td.cellTopRight {
 
 .tailors_div{
     display: block;
+    margin-left: 50px;
 }
 
 .tailor_div{
@@ -97,22 +98,22 @@ button.tailor_control_maxlen_btn
 .tailor_maxlen_div{
     border: silver solid 1px;
     padding: 2px;
-    font-size: 10px;
+    font-size: 12px;
     background-color: rgb(248, 210, 215);
     border-radius: 2px;
     position: absolute;
-    left: 45px;
+    left: 85px;
     top: 10px;
 }
 .tailor_lencurrent_div{
     border: silver solid 1px;
     padding: 2px;
-    font-size: 11px;
+    font-size: 12px;
     background-color: bisque;
     border-radius: 2px;
     position: absolute;
-    left: 45px;
-    top: 30px;
+    left: 85px;
+    top: 50px;
 }
 
 .tailor_total_div{
@@ -234,15 +235,19 @@ button.tailor_plusminus_btn
     vertical-align: top;
     color: black;
     background-color: azure;
-    margin-left: 10px;
-    margin-top: 10px;
-    z-index: 11111111;
+    margin1-left: 10px;
+    margin1-top: 10px;
+
+    z-index: 1000000;
+    position: fixed;
+    left: 20px;
+    top: 20px;
 }
 
 div.canvas_bot_div{
     display: block;
     position1: absolute;
-    margin-left: 20px;
+    margin-left1: 20px;
     margin-top: -140px;
     z-index: 1000;
 }

@@ -18,6 +18,7 @@ export class Process
 	 _currentTik = 0
 	 _princessState = 'run'
 	 _princessLastPass
+	 _princessToTailorId = 0  //-- к кому сейчас бежит принцесса
 //	 _maxTailorTotalResult = 0  //-- самый длинный результат
 
 	constructor()
@@ -35,6 +36,7 @@ export class Process
 		this._qArr = []
 		this._princessLastPass = false
 		this._currentTik = 0
+		this._princessToTailorId = 0
 
 		//if(Global._selectedTailor)
 		//log('selected = ' + Global._selectedTailor._maxLen)
@@ -71,6 +73,7 @@ export class Process
 
 		this._currentReloadId = 0;// this._qArr[0]; //-- текущий на перезагрузке
 		this._nextReloadId = this._qArr[0];  //-- id следующий в очереди на релоад
+		this._princessToTailorId = this._nextReloadId
 		this._reloadSecStep = 1;  //-- тут накапливаем тики для текущего релоада
 		this._reloadCurrentIndex = 0;  //-- текущий индекс портного в очереди на перезагрузку
 		this._reloadSec = Tailors._levelSettings.timeReloadInSec
@@ -140,10 +143,10 @@ export class Process
 		let i, tailor
 		let canReload = true; //-- можно ли делать релоад новому портному в этом Тике
 		this._princessState = ''
-
+		let reloadOK = false;
 		this._currentReloadId = 0
 
-		//log('11111   _currentReloadId='+ this._currentReloadId + ' this._nextReloadId=' + this._nextReloadId)
+		log('11111   _currentReloadId='+ this._currentReloadId + ' this._nextReloadId=' + this._nextReloadId)
 
 		for(i = 0; i < this._tailorsArr.length; i++)
 		{
@@ -177,6 +180,7 @@ export class Process
 						this.setNextReloadId() //-- this._nextReloadId
 						this._princessState = 'run'
 						tailor._reloadStep = 0
+						reloadOK = true
 					}
 					else{
 						//-- принцесса бежит к нему
@@ -188,6 +192,9 @@ export class Process
 					canReload = false; //-- запрет всем остальным делать релоад в этом цикле
 
 					this._princessLastPass = true
+
+
+
 					//log('NNNNNNNNNNN 1')
 				}
 				else{
@@ -246,6 +253,9 @@ export class Process
 							tailor._reloadStep = 0
 							//log('NNNNNNNNNNN 2')
 							this._princessLastPass = false
+
+							reloadOK = true;
+
 						}
 						else{
 							//-- принцесса бежит к нему
@@ -264,12 +274,16 @@ export class Process
 					tailor._totalWait++;
 					tailor._currentState = 'w';
 				}
-
-
 			}
 		}
 
-		//log('222222 _currentReloadId='+ this._currentReloadId + ' this._nextReloadId=' + this._nextReloadId)
+		if(!reloadOK && tik > 1)
+		{
+			log('reloadOK = FALSE')
+			//this.setNextReloadId()
+		}
+
+		log('222222 _currentReloadId='+ this._currentReloadId + ' this._nextReloadId=' + this._nextReloadId + ' pct=' + this._princessState)
 	}
 
 	setNextReloadId()
@@ -285,6 +299,9 @@ export class Process
 
 
 		this._nextReloadId = this._qArr[this._reloadCurrentIndex];
+
+
+
 	}
 
 	calcToTik(newStep)

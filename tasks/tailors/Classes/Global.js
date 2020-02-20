@@ -26,6 +26,7 @@ export class Global
 	static _tanimateDic = {};
 	static _canvasBotCtx
 
+
 	static createResult()
 	{
 		let process = new Process()
@@ -100,6 +101,8 @@ export class Global
 		Global._drawProcess = new Process()
 		Global.createResult()
 		InterfaceHelper.canvasBotClear()
+
+		InterfaceHelper.drawCurrentTik()
 
 	}
 
@@ -186,8 +189,6 @@ export class Global
 		Global.tailorControlShow()
 	}
 
-
-
 	static tailorControlShow()
 	{
 		let txt = document.getElementById('tailor_control_maxlen')
@@ -201,7 +202,7 @@ export class Global
 
 		let tcd = document.getElementById('tailor_control_div')
 		tcd.style.left = pLeft + 'px'
-		tcd.style.top = '180px'
+		tcd.style.top = '160px'
 		tcd.style.display = 'block'
 
 		txt.focus()
@@ -230,16 +231,19 @@ export class Global
 		Global.tailorsUnselectAndControlHide()
 		Global.setCanPlay(false);
 
-		if(Global._drawProcess._currentTik <= 0)
+		if(Global._drawProcess._currentTik < 2)
 		{
-			return
+			goToStart()
+		}
+		else{
+			Global._drawProcess._currentTik--
+			Global._playTik = Global._drawProcess._currentTik * 10
+			Global._drawProcess.calcToTik(Global._drawProcess._currentTik)
+			InterfaceHelper.drawCurrentTik()
+			LogHelper.selectTik(Global._drawProcess._currentTik)
 		}
 
-		Global._drawProcess._currentTik--
-		Global._playTik = Global._drawProcess._currentTik * 10
-		Global._drawProcess.calcToTik(Global._drawProcess._currentTik)
-		InterfaceHelper.drawCurrentTik()
-		LogHelper.selectTik(Global._drawProcess._currentTik)
+
 	}
 
 	static stageDivClick()
@@ -344,12 +348,14 @@ export class Global
 	{
 		if(!Global._canPlay) return
 
+
+
 		Global._playTik++;
 		//log(Global._playTik + ' --------------------------------')
-		if(Global._playTik % 10 == 0)
+		if(Global._playTik % 10 == 0 || Global._drawProcess._currentTik == 0)
 		{
 			//-- это отметка секунды
-			//log(Global._playTik + ' --------------------------------')
+			//log(Global._playTik + ' ----------------drawCurrentTik----------------')
 			Global._moveNitStep = 0
 			Global._drawProcess.calcNextTik()
 
@@ -434,18 +440,6 @@ export class Global
 		LogHelper.selectTik(Global._drawProcess._currentTik)
 	}
 
-	static playPosov(){
-
-		let p = Global._drawProcess;
-		let tailor = p._tailorsArr[0]
-		let x = 25 + (0)* 95
-
-		if(tailor._lenCurrent > 0){
-			//tailor._tanimate.run(x, tailor._lenCurrent, tailor._totalResult, tailor._step);
-		}
-
-	}
-
 	static moveNit(){
 		if(!Global._canPlay) return
 
@@ -472,16 +466,21 @@ export class Global
 
 	static movePrincess()
 	{
-		if(!Global._canPlay) return
+		if(!Global._canPlay ) return
+
 		if(Global._princessState == 'R') return;
 
-		let pLeft = Global._princessDiv.offsetLeft;
 
-		Global._princessDiv.style.left = (pLeft + 5) + 'px';
 
-		clearTimeout(Global._princessTimeOutId)
-		Global._princessTimeOutId = setTimeout(Global.movePrincess, 100)
+		let div = document.getElementById('tailor_div_' + Global._drawProcess._nextReloadId)
+		let pLeft = div.offsetLeft - 120 +  Global._moveNitStep * 10
+
+		log('Global._drawProcess._nextReloadId=' + Global._drawProcess._nextReloadId + ' pLeft='+ pLeft + ' tik=' + Global._drawProcess._currentTik)
+
+		Global._princessDiv.style.left = (pLeft) + 'px';
+
 	}
+
 
 	static goToEnd()
 	{

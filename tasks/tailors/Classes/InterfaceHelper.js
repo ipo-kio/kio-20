@@ -9,6 +9,7 @@ import { Tanimate } from "./Tanimate.js"
 export class InterfaceHelper
 {
 	static _canvasBotHeight = 60
+	static _tailorsLeft = 130
 
 	static create(domNode, preferred_width)
 	{
@@ -24,7 +25,7 @@ export class InterfaceHelper
 			superDiv = document.createElement('div')
 			superDiv.id = 'super_div'
 			superDiv.className = 'super_div'
-			superDiv.setAttribute('style', 'background-image: url("./tailors-resources/bg.png");')
+			superDiv.setAttribute('style', 'background-image: url("./tailors-resources/background.png");')
 			domNode.appendChild(superDiv)
 
 			topDiv = document.createElement('div')
@@ -65,14 +66,6 @@ export class InterfaceHelper
 			})
 			cellTopLeft.appendChild(btn)
 
-			div = document.createElement('div')
-			div.className = 'stage1_div'
-			cellTopLeft.appendChild(div)
-
-			div.onclick = function(){
-				Global.stageDivClick()
-			}
-
 
 			//-- tailor plus - minus
 			{
@@ -86,9 +79,22 @@ export class InterfaceHelper
 					Global.tailorPlus()
 				})
 				//Tailors._stageDiv.appendChild(btn)
-				div.appendChild(btn)
-
+				//div.appendChild(btn)
+				cellTopLeft.appendChild(btn)
 			}
+
+
+
+			div = document.createElement('div')
+			div.className = 'stage1_div'
+			cellTopLeft.appendChild(div)
+
+			div.onclick = function(){
+				Global.stageDivClick()
+			}
+
+
+
 		}
 
 		//-- stage div
@@ -149,8 +155,8 @@ export class InterfaceHelper
 				Global._princessDiv = princessDiv;
 
 				let canvasPrinc = document.createElement('canvas')
-				canvasPrinc.width = 40
-				canvasPrinc.height = 40
+				canvasPrinc.width = 80
+				canvasPrinc.height = 80
 				canvasPrinc.className = 'canvas_princ'
 				canvasPrinc.id = 'canvas_princ'
 				princessDiv.appendChild(canvasPrinc)
@@ -160,7 +166,7 @@ export class InterfaceHelper
 				Global._princessCtx = Global._princessCanvas.getContext('2d');
 
 				let img1 = Tailors.kioapi.getResource('princess')
-				Global._princessCtx.drawImage(img1, 2, 2, 40, 40);
+				Global._princessCtx.drawImage(img1, 2, 2, 80, 80);
 			}
 
 			//-- протокол
@@ -433,31 +439,12 @@ export class InterfaceHelper
 		let princessState = ''
 		let totalResH
 
-		//log('next12=' + Global._drawProcess._currentTik)
-
 		let canvasBot = document.getElementById('canvas_bot')
+		let w = p._tailorsArr.length * 130
+		canvasBot.width = w + 300
 
-		let w = p._tailorsArr.length * 90
-		canvasBot.width = w + 100
-
-		/*
-		if(p._maxTailorTotalResult > 5){
-			h = InterfaceHelper._canvasBotHeight + (p._maxTailorTotalResult-5)*10
-		}
-		else{
-			h = InterfaceHelper._canvasBotHeight
-		}
-		*/
 		h = InterfaceHelper._canvasBotHeight
 		canvasBot.height = h;
-
-		//InterfaceHelper._canvasBotHeight = InterfaceHelper._canvasBotHeight + 10
-		//canvasBot.height =  InterfaceHelper._canvasBotHeight
-
-		//let ctxBot = canvasBot.getContext('2d');
-
-
-		//InterfaceHelper.canvasBotClear()
 
 		let nitYstart = 100;
 
@@ -465,7 +452,7 @@ export class InterfaceHelper
 		{
 			tailor = p._tailorsArr[i]
 
-			tailor._tanimate =  Global.getTanimate(tailor._id);
+			//tailor._tanimate =  Global.getTanimate(tailor._id);
 
 			div = document.getElementById('tailor_lencurrent_' + tailor._id);
 			div.innerHTML = tailor._lenCurrent
@@ -476,9 +463,8 @@ export class InterfaceHelper
 			if(tailor._currentState == 'R' || tailor._currentState == '@')
 			{
 				//-- этот сейчас на перезагрузке
-				//pLeft = div.offsetLeft
 
-				tailorPng = 'tailor_r';
+				tailorPng = 'tailor_r0';
 				princessState = 'R'
 
 				//document.getElementById('tailor_lencurrent_' + tailor._id).style.backgroundColor = 'red'
@@ -500,13 +486,8 @@ export class InterfaceHelper
 			}
 			else
 			{
-				if(tailor._step % 2 == 0)
-				{
-					tailorPng = 'tailor_1';
-				}
-				else{
-					tailorPng = 'tailor_2';
-				}
+				tailorPng = 'tailor_1';
+
 			}
 
 			TailorHelper.drawTailor(tailor._id, tailorPng, i+1)
@@ -516,76 +497,9 @@ export class InterfaceHelper
 
 			totalResH = tailor._totalResult * 10 //+ 50
 
-			//ctxBot.beginPath();
-			//ctxBot.lineWidth = 4;
-			//ctxBot.strokeStyle = "silver";
 
+			x = InterfaceHelper._tailorsLeft + (i)* 95
 
-			x = 25 + (i)* 95
-
-			//ctxBot.moveTo(x, nitYstart)
-			//ctxBot.lineTo(x, totalResH + nitYstart)
-
-			if(tailor._currentState == '-')
-			{
-				//tailor._tanimate.run(x, tailor._lenCurrent, tailor._totalResult, tailor._step);
-
-				/*
-				ctxBot.moveTo(x, nitYstart-10)
-
-				n = ((tailor._lenCurrent-tailor._step+1)*5)
-
-				x1 = x-n
-
-
-				y1 = nitYstart- ((tailor._lenCurrent-tailor._step-1)*5)
-
-				//log('l='+(tailor._lenCurrent)+ ' s=' + tailor._step + ' y1=' + y1)
-
-				//ctxBot.quadraticCurveTo(x1,5,x,10)
-				ctxBot.quadraticCurveTo(x1,y1,x,nitYstart)
-				*/
-			}
-
-			//ctxBot.stroke();
-			//ctxBot.closePath();
-
-			/*
-			//-- отметки стежков
-			{
-				ctxBot.beginPath();
-				ctxBot.lineWidth = 2;
-				ctxBot.strokeStyle = "black";
-
-				if(tailor._totalResult > 0)
-				{
-					n = totalResH / tailor._totalResult;
-
-					for (j = 0; j < tailor._totalResult; j++)
-					{
-						ctxBot.moveTo(x-2, (j*n) + nitYstart)
-						ctxBot.lineTo(x+2, (j*n) + nitYstart)
-
-						//log(j + ' ss=' + ((j*n) + nitYstart))
-					}
-				}
-
-				ctxBot.stroke();
-				ctxBot.closePath();
-			}
-			*/
-			/*
-			//-- длина нити
-			{
-				ctxBot.beginPath();
-				ctxBot.lineWidth = 1;
-				ctxBot.fillStyle = 'blue';
-				ctxBot.font = 'bold 20px Arial';
-				ctxBot.fillText(tailor._totalResult, x + 15 , nitYstart + 40 )
-				ctxBot.stroke();
-				ctxBot.closePath();
-			}
-			*/
 
 			if(InterfaceHelper._canvasBotHeight < totalResH + nitYstart + 50)
 			{
@@ -600,38 +514,36 @@ export class InterfaceHelper
 		if(!Global._canPlay)
 		{
 			Tanimate.drawNit(true);
+
+			log('Global._drawProcess._princessState =' + Global._drawProcess._princessState  + ' nextId=' + Global._drawProcess._nextReloadId)
+
 		}
 
 
 
-		//log('Global._drawProcess._princessState =' + Global._drawProcess._princessState )
-
-
-		if(Global._drawProcess._princessState == 'reload')
-		{
-			div = document.getElementById('tailor_div_' + Global._drawProcess._currentReloadId);
-			pLeft = div.offsetLeft
-			//log('sssssss 11')
+		if(Global._drawProcess._currentTik == 0){
+			pLeft = 10
 		}
 		else{
-			// run
-			div = document.getElementById('tailor_div_' + Global._drawProcess._nextReloadId)
-			pLeft = div.offsetLeft - 30
+			if(Global._drawProcess._princessState == 'reload')
+			{
+				div = document.getElementById('tailor_div_' + Global._drawProcess._currentReloadId);
+				pLeft = div.offsetLeft
+				//log('sssssss 11')
+			}
+			else{
+				// run
+				div = document.getElementById('tailor_div_' + Global._drawProcess._nextReloadId)
+				pLeft = div.offsetLeft //- 30
+
+				//log('sssssss 22')
+			}
 		}
 
-		pLeft = pLeft - 10;
 
-
-		if(!(pLeft < Global._princessDiv.offsetLeft && pLeft > 0))
+		if(!Global._canPlay)
 		{
-			//log('pp=' + Global._princessDiv.offsetLeft)
-
-			//pLeft = Global._princessDiv.offsetLeft + 3
-
-			Global._princessDiv.style.left = (pLeft - 20) + 'px';
-			//Global._princessDiv.style.top = '130px';
-
-			//log('LLLLLL=' + (pLeft-20))
+			Global._princessDiv.style.left = (pLeft - 30) + 'px';
 		}
 
 		if(princessState == 'R'){
@@ -645,10 +557,11 @@ export class InterfaceHelper
 
 		Global._princessCtx.clearRect(0, 0, Global._princessCanvas.width, Global._princessCanvas.height);
 		img1 = Tailors.kioapi.getResource(s)
-		Global._princessCtx.drawImage(img1, 0, 0, 50, 50);
+		Global._princessCtx.drawImage(img1, 0, 0, 80, 80);
 
 
 		Tailors._slider.value2 = Global._drawProcess._currentTik
+		LogHelper.selectTik(Global._drawProcess._currentTik)
 
 	}
 }
