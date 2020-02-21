@@ -182,7 +182,7 @@ export class BodyUI extends createjs.Container {
         console.log("start update");
         this._process = new HeatingProcess(
             new Grid(this.body, N_element, LENGTH / (M * N_element), N_time, TIME / N_time),
-            () => 10,
+            () => 100,
             () => 0
         );
 
@@ -195,7 +195,7 @@ export class BodyUI extends createjs.Container {
             this.height
         );
 
-        this._processDrawer.v0 = Math.floor(TIME_DIVISION / 2);
+        this._processDrawer.v0 = Math.floor(0);
 
         this._processDrawerTime = new ProcessDrawer(
             this._process,

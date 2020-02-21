@@ -82,6 +82,8 @@ export default class HeatingProcess {
                 this.values[0][x][y] = x === 0 ? this.left_edge_initial(y) : 0;
     }
 
+    static s = 0;
+
     private solve() {
         //du/dt - a^2 Δ u = f(t, x, y)
         //t = 0: (u(t + 1, x, y) - u(t, x, y)) / dt - a^2 delta_u(t, x, y) = f(t, x, y)
@@ -96,7 +98,7 @@ export default class HeatingProcess {
         let dhh = dh * dh;
 
         // for t = 1
-        //(values[t] - values[t - 1]) / dh - a^2 delta_u(t - 1) = f(t - 1, x, y)
+        //(values[t] - values[t - 1]) / dt - a^2 delta_u(t - 1) = f(t - 1, x, y)
         let u = values[0];
         let u1 = values[1];
         for (let x = 0; x <= w; x++)
@@ -104,6 +106,11 @@ export default class HeatingProcess {
                 let fxy = x === 0 ? this.left_edge_heat(y) : 0;
                 u1[x][y] = (fxy + this.g.a(x, y) * delta_u(u, x, y)) * dt + u[x][y];
             }
+
+        if (HeatingProcess.s === 0) {
+            console.log('heating process u1', u1);
+            HeatingProcess.s = 1;
+        }
 
         //(v[t] - v[t - 2]) / (2 * dt) - a^2 delta_u(t - 1) = f(t - 1, x, y)
         for (let t = 2; t <= this.g.N_time; t++) {

@@ -31,6 +31,7 @@ export class ProcessDebugger extends createjs.Container {
             this._drawer.push(d);
             this.addChild(d);
             d.alpha = 1;
+            d.v0 = t;
 
             let j = t % 5;
             let i = Math.floor(t / 5);
