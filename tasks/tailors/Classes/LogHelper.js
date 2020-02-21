@@ -17,6 +17,7 @@ export class LogHelper
 		cell  = row.insertCell(0);
 		cell.innerHTML = '<b>' + process._currentTik + '</b>'
 
+
 		for(i=0; i < process._tailorsArr.length; i++){
 			tailor = process._tailorsArr[i]
 
@@ -45,6 +46,7 @@ export class LogHelper
 
 				th = document.createElement('th');
 				th.innerHTML = (i+1);
+				th.className = 'log_head_col'
 				thead.appendChild(th);
 			}
 		}

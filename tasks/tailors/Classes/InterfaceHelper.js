@@ -226,7 +226,7 @@ export class InterfaceHelper
 		{
 
 			let tailorControl = document.createElement('div')
-			tailorControl.innerHTML = 'Длина нити: <br>'
+			tailorControl.innerHTML = '<span style="color: #005d60;">Длина нити:</span> <br>'
 			tailorControl.id = 'tailor_control_div'
 			tailorControl.className = 'tailor_control_div'
 			//superDiv.appendChild(tailorControl)
@@ -247,6 +247,7 @@ export class InterfaceHelper
 			btn.innerHTML = '&#8722;'; //'&#8678;'
 			btn.id = 'tailor_control_maxlen_minus'
 			btn.className = 'tailor_control_maxlen_btn'
+			btn.setAttribute('style', 'margin-left: 7px;')
 			btn.addEventListener('click', function (evt) {
 				Global.tailorMaxlenPlusMinus(-1)
 				//evt.stopPropagation()
@@ -260,11 +261,6 @@ export class InterfaceHelper
 			t.setAttribute('oninput', 'this.value=this.value.replace(/[^0-9]/g,"");')
 			t.id = 'tailor_control_maxlen'
 			t.className = 'tailor_control_maxlen'
-
-
-			t.onchange = function(){
-				//Global.tailorControlMaxlenChange()
-			}
 
 			t.addEventListener('keyup', (event) => {
 				//const keyName = event.key;
@@ -301,33 +297,37 @@ export class InterfaceHelper
 			{
 
 				btn = document.createElement('button')
-				btn.innerHTML = '' // '&#171;';// <<
+				btn.innerHTML = '&#171;';// <<
 				btn.id = 'go_btn_tostart'
 				btn.title = 'В начало'
 				btn.className = 'go_btn1'
 				btn.addEventListener('click', function (evt) {
 					Global.goToStart()
 				})
+				/*
 				btn.style.backgroundImage = 'url("./tailors-resources/btn_go_start.png")'
 				btn.style.backgroundRepeat = 'no-repeat'
 				btn.style.backgroundPosition = 'center'
 				btn.setAttribute('onmouseover', 'this.style.backgroundImage=\'url("./tailors-resources/btn_go_start_hover.png")\'')
 				btn.setAttribute('onmouseout', 'this.style.backgroundImage=\'url("./tailors-resources/btn_go_start.png")\'')
+				*/
 				controlDiv.appendChild(btn)
 
 				btn = document.createElement('button')
-				btn.innerHTML = ''//'&#187;';// >>
+				btn.innerHTML = '&#187;';// >>
 				btn.id = 'go_btn_toend'
 				btn.title = 'В конец'
 				btn.className = 'go_btn1'
 				btn.addEventListener('click', function (evt) {
 					Global.goToEnd()
 				})
+				/*
 				btn.style.backgroundImage = 'url("./tailors-resources/btn_go_end.png")'
 				btn.style.backgroundRepeat = 'no-repeat'
 				btn.style.backgroundPosition = 'center'
 				btn.setAttribute('onmouseover', 'this.style.backgroundImage=\'url("./tailors-resources/btn_go_end_hover.png")\'')
 				btn.setAttribute('onmouseout', 'this.style.backgroundImage=\'url("./tailors-resources/btn_go_end.png")\'')
+				*/
 				controlDiv.appendChild(btn)
 
 				btn = document.createElement('button')

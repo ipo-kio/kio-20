@@ -136,8 +136,9 @@ export class Slider {
         ctx.beginPath();
         ctx.moveTo(this.img.width/2, this.canvas.height / 2);
         ctx.lineTo(this.scaleWidth + this.img.width, this.canvas.height / 2);
-        ctx.strokeStyle = '#085e7d'; //--#f7f700
+        ctx.strokeStyle =  '#005d60';// '#085e7d'; //--#f7f700
         ctx.stroke();
+        ctx.closePath();
 
 
         //-- peter
@@ -149,6 +150,8 @@ export class Slider {
 
         ctx.beginPath();
         ctx.lineWidth = 1;
+        ctx.strokeStyle =  '#005d60';
+
 
        // console.log("slider w=" + this.canvas.width)
 
@@ -192,13 +195,14 @@ export class Slider {
         ctx.stroke();
 
         x = this.value_2_pos(this.value)
-        y = this.canvas.height / 2 - this.img.height / 2
+        y = this.canvas.height / 2 - this.img.height / 2 + 14
 
         //console.log('vx=' + x + ' val=' + this.value)
 
-        ctx.globalAlpha = 0.6;
-        ctx.drawImage(this.is_over ? this.hover_img : this.img, x  , y);
         ctx.globalAlpha = 1;
+        ctx.drawImage(this.is_over ? this.hover_img : this.img, x  , y);
+        //ctx.globalAlpha = 1;
+        ctx.closePath();
     }
 
     value_2_pos(value) {

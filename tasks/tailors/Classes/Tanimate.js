@@ -61,12 +61,13 @@ export class Tanimate
 			{
 				ctxBot.beginPath();
 				ctxBot.lineWidth = 10;
-				ctxBot.strokeStyle = "silver";
+				ctxBot.strokeStyle = "#fff331";
 				ctxBot.moveTo(x, nitYstart)
 				ctxBot.lineTo(x, totalResH + nitYstart)
 				ctxBot.stroke();
 				ctxBot.closePath();
 
+				/*
 				ctxBot.beginPath();
 				ctxBot.lineWidth = 2;
 				ctxBot.strokeStyle = "#918951";
@@ -74,13 +75,14 @@ export class Tanimate
 				ctxBot.lineTo(x, totalResH + nitYstart)
 				ctxBot.stroke();
 				ctxBot.closePath();
+				*/
 			}
 
 			//-- отметки стежков
 			{
 				ctxBot.beginPath();
 				ctxBot.lineWidth = 2;
-				ctxBot.strokeStyle = "black";
+				ctxBot.strokeStyle = "#005d60";
 
 				if(tailor._totalResult > 0)
 				{
@@ -112,15 +114,7 @@ export class Tanimate
 			ctxBot.beginPath();
 			ctxBot.lineWidth = 3;
 
-			if(finishStep)
-			{
-				//log('drawNit -- finishStep')
-				ctxBot.strokeStyle = "red";
-			}
-			else{
-				//log('drawNit -- ')
-				ctxBot.strokeStyle = "red";
-			}
+			ctxBot.strokeStyle = "#005d60";
 
 			//-- петля остатка
 
@@ -158,7 +152,7 @@ export class Tanimate
 
 			ctxBot.beginPath();
 			ctxBot.lineWidth = 3;
-			ctxBot.strokeStyle = "red";
+			ctxBot.strokeStyle = "#005d60";
 
 			if(tailor._currentState == '-' || tailor._currentState == '+')
 			{
@@ -185,7 +179,7 @@ export class Tanimate
 			{
 				ctxBot.beginPath();
 				ctxBot.lineWidth = 1;
-				ctxBot.fillStyle = 'blue';
+				ctxBot.fillStyle = '#005d60';
 				ctxBot.font = 'bold 20px Arial';
 				ctxBot.fillText(tailor._totalResult, x + 15 , nitYstart + 20 )
 				ctxBot.stroke();
@@ -291,7 +285,6 @@ export class Tanimate
 			}
 		}
 	}
-
 
 	static drawFree(ctx, xStart, yStart, step, steLen, totalResult, lenCurrent, currentState)
 	{

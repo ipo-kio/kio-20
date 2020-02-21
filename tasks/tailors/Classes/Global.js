@@ -183,7 +183,7 @@ export class Global
 
 		tailorDiv = document.getElementById('tailor_div_' + Global._selectedTailor._id)
 
-		tailorDiv.style.borderColor = 'red';
+		tailorDiv.style.borderColor = '#de5951';
 		document.getElementById('tailor_close_' + Global._selectedTailor._id).style.display = 'block'
 
 		Global.tailorControlShow()

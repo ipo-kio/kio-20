@@ -137,25 +137,7 @@ export class TailorHelper
 		ctx.stroke();
 		ctx.closePath();
 	}
-/*
-	static drawNumber(ctx, canvas, num)
-	{
 
-
-
-
-		ctx.beginPath();
-		//ctx.clearRect(0, 0, canvas.width, canvas.height);
-		ctx.strokeStyle = "green";
-		ctx.fillStyle = "black";
-		ctx.lineWidth = 1;
-		ctx.font = "8pt Arial";
-		//ctx.clearRect(tx, ty, 15, 15 - 8);
-		ctx.fillText(num, tx, ty);
-		ctx.stroke();
-		ctx.closePath();
-	}
-*/
 }
 
 function log(s){

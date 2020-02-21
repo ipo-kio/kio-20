@@ -16,6 +16,40 @@ table.top_table{
 td.cellTopLeft {
     vertical-align: top;
     overflow: auto;
+
+}
+
+td.cellTopLeft::-webkit-scrollbar
+{
+    color: black;
+}
+
+td.cellTopLeft::-webkit-scrollbar-track
+{
+	background-color: #addf76;
+}
+
+td.cellTopLeft::-webkit-scrollbar-thumb
+{
+	background-color: #8ec551;
+}
+
+td.cellTopLeft::-webkit-scrollbar-button:single-button:increment
+{
+    background:
+    linear-gradient(210deg, #8ec551 40%, rgba(0, 0, 0, 0) 41%),
+    linear-gradient(330deg, #8ec551 40%, rgba(0, 0, 0, 0) 41%),
+    linear-gradient(90deg, #8ec551 30%, rgba(0, 0, 0, 0) 31%);
+    background-color: #4a9830;
+}
+
+td.cellTopLeft::-webkit-scrollbar-button:single-button:decrement
+{
+    background:
+    linear-gradient(30deg, #8ec551 40%, rgba(0, 0, 0, 0) 41%),
+    linear-gradient(150deg, #8ec551 40%, rgba(0, 0, 0, 0) 41%),
+    linear-gradient(270deg, #8ec551 30%, rgba(0, 0, 0, 0) 31%);
+    background-color: #4a9830 ;
 }
 
 td.cellTopRight {
@@ -44,12 +78,16 @@ td.cellTopRight {
     width: 40px;
     height: 35px;
     vertical-align: top;
-    color: black;
-    background-color: #b4c8c0;
+    color: #005d60;
+    background-color: #51a635;
 }
 .go_btn1:disabled
 {
-    color: #edeae3;
+    color: #338053;
+}
+
+.go_btn1:hover{
+    color: #fff331;
 }
 
 
@@ -78,42 +116,53 @@ div.tailor_control_div{
     position: absolute;
     display: none;
     padding: 8px;
-    background-color: antiquewhite;
-    border: black solid 1px;
+    background-color: #addf76;
+    border: #4a9830 solid 1px;
 }
 
 input.tailor_control_maxlen{
     width: 30px;
     font-size: 14px;
     text-align: center;
+    border: none;
+    background-color: #cef7a1;
+    color: #005d60;
 }
+
+input.tailor_control_maxlen::selection {
+    background: #005d60;
+    color: #cef7a1;
+  }
 
 button.tailor_control_maxlen_btn
 {
-    background-color: lightblue;
-    border: #b4c8c0 1px solid;
+    background-color: #8ec551;
+    border: none;
     border-radius: 2px;
+    color: #005d60;
 }
 
 .tailor_maxlen_div{
-    border: silver solid 1px;
+    border1: silver solid 1px;
     padding: 2px;
     font-size: 12px;
-    background-color: rgb(248, 210, 215);
+    background-color: #cef7a1;
     border-radius: 2px;
     position: absolute;
     left: 85px;
     top: 10px;
+    color: #005d60;
 }
 .tailor_lencurrent_div{
-    border: silver solid 1px;
+    border1: silver solid 1px;
     padding: 2px;
     font-size: 12px;
-    background-color: bisque;
+    background-color: #89f3ff;
     border-radius: 2px;
     position: absolute;
     left: 85px;
     top: 50px;
+    color: #005d60;
 }
 
 .tailor_total_div{
@@ -136,7 +185,7 @@ button.tailor_control_maxlen_btn
     font-weight: bold;
     cursor: pointer;
     display: none;
-    color: red;
+    color: #de5951;
 }
 
 div.princess_div{
@@ -147,16 +196,18 @@ div.princess_div{
 .log_div{
     position: absolute;
     border: black solid 1px;
-    background-color: #edeae3;
+    background-color: #cef7a1;
     display: block;
     top: 20px;
     right: 10px;
     display: none;
 }
 
+
+
 .log_div_header{
-    background-color: blue;
-    color: white;
+    background-color: #005d60;
+    color:  #addf76;
     border: white 1px solid;
     padding: 4px;
     text-align: center;
@@ -173,8 +224,8 @@ div.princess_div{
 }
 
 button.btn_log_show{
-    background-color: blue;
-    color: white;
+    background-color: #005d60;
+    color: #addf76;
     border: white 1px solid;
     padding: 8px;
     font-size: 28px;
@@ -183,6 +234,10 @@ button.btn_log_show{
     z-index: 1000000;
     position: fixed;
     right: 50px;
+}
+
+button.btn_log_show:hover{
+    color:#fff331;
 }
 
 .log_div_left{
@@ -199,7 +254,43 @@ button.btn_log_show{
     max-height: 300px;
     overflow: auto;
     margin-left: 10px;
+    color: #005d60;
 }
+
+.log_div_table::-webkit-scrollbar
+{
+    color: black;
+}
+
+.log_div_table::-webkit-scrollbar-track
+{
+	background-color: #addf76;
+}
+
+.log_div_table::-webkit-scrollbar-thumb
+{
+	background-color: #8ec551;
+}
+
+.log_div_table::-webkit-scrollbar-button:single-button:increment
+{
+    background:
+    linear-gradient(300deg, #8ec551 40%, rgba(0, 0, 0, 0) 41%),
+    linear-gradient(60deg, #8ec551 40%, rgba(0, 0, 0, 0) 41%),
+    linear-gradient(180deg, #8ec551 30%, rgba(0, 0, 0, 0) 31%);
+    background-color: #4a9830;
+}
+
+.log_div_table::-webkit-scrollbar-button:single-button:decrement
+{
+    background:
+    linear-gradient(120deg, #8ec551 40%, rgba(0, 0, 0, 0) 41%),
+    linear-gradient(240deg, #8ec551 40%, rgba(0, 0, 0, 0) 41%),
+    linear-gradient(0deg, #8ec551 30%, rgba(0, 0, 0, 0) 31%);
+    background-color: #4a9830 ;
+}
+
+
 
 table.log_table{
     border: black solid 1px;
@@ -216,9 +307,14 @@ table.log_table td{
 }
 
 tr.log_row_selected{
-    color: red;
+    color: #de5951;
     font-weight: bold;
-    background-color: #b4c8c0;
+    background-color: #addf76;
+
+}
+
+th.log_head_col{
+
 }
 
 tr.log_row_tik{
@@ -233,8 +329,8 @@ button.tailor_plusminus_btn
     width: 50px;
     height: 45px;
     vertical-align: top;
-    color: black;
-    background-color: azure;
+    color: #4a9830;
+    background-color: #addf76;
     margin1-left: 10px;
     margin1-top: 10px;
 
@@ -242,6 +338,10 @@ button.tailor_plusminus_btn
     position: fixed;
     left: 20px;
     top: 20px;
+}
+
+button.tailor_plusminus_btn:hover{
+    color: #fff331;
 }
 
 div.canvas_bot_div{
@@ -256,13 +356,3 @@ div.canvas_bot_div{
     z-index: 1000;
 }
 
-/*
-
-
-.canvas_top{
-    position: absolute;
-    left: 10px;
-    top: 10px;
-    z-index: 101;
-}
-*/
