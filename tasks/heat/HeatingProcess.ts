@@ -101,11 +101,14 @@ export default class HeatingProcess {
         //(values[t] - values[t - 1]) / dt - a^2 delta_u(t - 1) = f(t - 1, x, y)
         let u = values[0];
         let u1 = values[1];
-        for (let x = 0; x <= w; x++)
+        for (let x = 0; x <= w; x++) {
+            log(x, "going to level");
             for (let y = 0; y <= h; y++) {
                 let fxy = x === 0 ? this.left_edge_heat(y) : 0;
                 u1[x][y] = (fxy + this.g.a(x, y) * delta_u(u, x, y)) * dt + u[x][y];
+                log(u1[x][y] + " " + u[x][y] + " " + delta_u(u, x, y), `for y = ${y}`)
             }
+        }
 
         if (HeatingProcess.s === 0) {
             console.log('heating process u1', u1);
@@ -138,7 +141,7 @@ export default class HeatingProcess {
             // by y
             if (y === 0)
                 delta += 2 * u[x][y] - 5 * u[x][y + 1] + 4 * u[x][y + 2] - u[x][y + 3];
-            else if (x === w)
+            else if (y === h)
                 delta += -u[x][y - 3] + 4 * u[x][y - 2] - 5 * u[x][y - 1] + 2 * u[x][y];
             else
                 delta += u[x][y - 1] - 2 * u[x][y] + u[x][y + 1];
@@ -148,5 +151,17 @@ export default class HeatingProcess {
     }
 }
 
+let num_out = 0;
+function log(m: any, title?: string) {
+    if (num_out > 30)
+        return;
+
+    if (title)
+        console.log(title, m);
+    else
+        console.log(m);
+
+    num_out++;
+}
 
 
