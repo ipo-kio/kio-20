@@ -7,13 +7,14 @@ export class LogHelper
 {
 	static tikToLog(process)
 	{
-		let i, tailor, cell
+		let i, tailor, cell, n
 		let tbody = document.getElementById('log_table_body');
 
 		var row   = tbody.insertRow()
 		row.id = 'log_tik_row_' + process._currentTik
 		row.className = 'log_row_tik'
 
+		n = 0
 		cell  = row.insertCell(0);
 		cell.innerHTML = '<b>' + process._currentTik + '</b>'
 
@@ -23,7 +24,11 @@ export class LogHelper
 
 			cell  = row.insertCell(i+1);
 			cell.innerHTML = tailor._currentState
+			n++
 		}
+
+		cell  = row.insertCell(n+1);
+		//cell.innerHTML = process._princessState + ' ' + (process._moveCurrentIndex + 1)
 	}
 
 	static clearLog(tailorsArr)
@@ -49,6 +54,10 @@ export class LogHelper
 				th.className = 'log_head_col'
 				thead.appendChild(th);
 			}
+
+			th = document.createElement('th');
+			th.innerHTML = "P";
+			thead.appendChild(th);
 		}
 		else{
 			log('tailorsArr is NULL')

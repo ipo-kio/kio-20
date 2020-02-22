@@ -232,7 +232,7 @@ button.btn_log_show{
     border-radius: 8px;
     vertical-align: top;
     z-index: 1000000;
-    position: fixed;
+    position: absolute;
     right: 50px;
 }
 
@@ -335,7 +335,7 @@ button.tailor_plusminus_btn
     margin1-top: 10px;
 
     z-index: 1000000;
-    position: fixed;
+    position: absolute;
     left: 20px;
     top: 20px;
 }

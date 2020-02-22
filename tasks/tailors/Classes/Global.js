@@ -469,15 +469,36 @@ export class Global
 		if(!Global._canPlay ) return
 
 		if(Global._princessState == 'R') return;
+		let s
 
+		//let div = document.getElementById('tailor_div_' + Global._drawProcess._nextReloadId)
+		let div = document.getElementById('tailor_div_' + Global._drawProcess._princessToTailorId)
 
+		let pLeft = div.offsetLeft - 130 +  Global._moveNitStep * 10
 
-		let div = document.getElementById('tailor_div_' + Global._drawProcess._nextReloadId)
-		let pLeft = div.offsetLeft - 120 +  Global._moveNitStep * 10
-
-		log('Global._drawProcess._nextReloadId=' + Global._drawProcess._nextReloadId + ' pLeft='+ pLeft + ' tik=' + Global._drawProcess._currentTik)
+		/*
+		log('Global._drawProcess._nextReloadId=' + Global._drawProcess._nextReloadId
+		+ ' _princessToTailorId=' + Global._drawProcess._princessToTailorId
+		+ ' pLeft='+ pLeft
+		+ ' tik=' + Global._drawProcess._currentTik)
+		*/
 
 		Global._princessDiv.style.left = (pLeft) + 'px';
+
+
+		if(Global._moveNitStep == 1 || Global._moveNitStep == 2
+			|| Global._moveNitStep == 3 || Global._moveNitStep == 7
+			|| Global._moveNitStep == 8 || Global._moveNitStep == 9 )
+		{
+			s = 'princess_2'
+		}
+		else{
+			s = 'princess_3'
+		}
+
+		Global._princessCtx.clearRect(0, 0, Global._princessCanvas.width, Global._princessCanvas.height);
+		let img1 = Tailors.kioapi.getResource(s)
+		Global._princessCtx.drawImage(img1, 0, 0, 80, 80);
 
 	}
 

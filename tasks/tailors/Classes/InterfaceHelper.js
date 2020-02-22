@@ -515,7 +515,7 @@ export class InterfaceHelper
 		{
 			Tanimate.drawNit(true);
 
-			log('Global._drawProcess._princessState =' + Global._drawProcess._princessState  + ' nextId=' + Global._drawProcess._nextReloadId)
+			//log('Global._drawProcess._princessState =' + Global._drawProcess._princessState  + ' nextId=' + Global._drawProcess._nextReloadId)
 
 		}
 
@@ -533,7 +533,9 @@ export class InterfaceHelper
 			}
 			else{
 				// run
-				div = document.getElementById('tailor_div_' + Global._drawProcess._nextReloadId)
+				//div = document.getElementById('tailor_div_' + Global._drawProcess._nextReloadId)
+				div = document.getElementById('tailor_div_' + Global._drawProcess._princessToTailorId)
+
 				pLeft = div.offsetLeft //- 30
 
 				//log('sssssss 22')
@@ -550,8 +552,12 @@ export class InterfaceHelper
 			s = 'princess'
 			Global._princessState = "R"
 		}
-		else{
+		else
+		{
+
+
 			s = 'princess_2'
+
 			Global._princessState = ""
 		}
 

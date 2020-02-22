@@ -6,4 +6,5 @@ export class Solution{
 	_totalLenResult = 0
 	_totalReloads = 0
 	_tailorsArr = []
+	_waitCount = 0
 }

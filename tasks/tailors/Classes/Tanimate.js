@@ -28,12 +28,21 @@ export class Tanimate
 
 			if(tailor._currentState == 'R' || tailor._currentState == '@')
 			{
-				if(Global._moveNitStep < 6)
-				{
-					tailorPng = 'tailor_r0';
+				if(Global._moveNitStep == 3 || Global._moveNitStep == 4){
+					tailorPng = 'tailor_r1';
 				}
-				else{
+				else if(Global._moveNitStep == 5 || Global._moveNitStep == 6)
+				{
 					tailorPng = 'tailor_r2';
+				}
+				else if(Global._moveNitStep == 7 || Global._moveNitStep == 8){
+					tailorPng = 'tailor_r3';
+				}
+				else if(Global._moveNitStep == 9 || Global._moveNitStep == 10){
+					tailorPng = 'tailor_r4';
+				}
+				else {
+					tailorPng = 'tailor_r0';
 				}
 
 				TailorHelper.drawTailor(tailor._id, tailorPng, i+1)

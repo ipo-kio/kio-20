@@ -71,11 +71,15 @@ export class Tailors
 			{ id: 'slider_p', src: 'tailors-resources/slider_p.png' },
 			{ id: 'princess', src: 'tailors-resources/princess_01_r.png' },
 			{ id: 'princess_2', src: 'tailors-resources/princess_02_move.png' },
+			{ id: 'princess_3', src: 'tailors-resources/princess_03_move.png' },
 			{ id: 'tailor_minus', src: 'tailors-resources/tailor_minus.png' },
 			{ id: 'tailor_plus', src: 'tailors-resources/tailor_plus.png' },
 			{ id: 'tailor_w', src: 'tailors-resources/taior_01_w.png' },
-			{ id: 'tailor_r0', src: 'tailors-resources/taior_04_r.png' },
-			{ id: 'tailor_r2', src: 'tailors-resources/taior_07_r.png' },
+			{ id: 'tailor_r0', src: 'tailors-resources/taior_03_r.png' },
+			{ id: 'tailor_r1', src: 'tailors-resources/taior_04_r.png' },
+			{ id: 'tailor_r2', src: 'tailors-resources/taior_05_r.png' },
+			{ id: 'tailor_r3', src: 'tailors-resources/taior_06_r.png' },
+			{ id: 'tailor_r4', src: 'tailors-resources/taior_07_r.png' },
 			{ id: 'tailor_1', src: 'tailors-resources/taior_26_plus.png' },
 			{ id: 'tailor_m1', src: 'tailors-resources/taior_09_m.png' },
 
@@ -93,7 +97,6 @@ export class Tailors
 
 			{ id: 'tailor_m2', src: 'tailors-resources/taior_25_m.png' },
 			{ id: 'bg', src: 'tailors-resources/background.png' },
-			{ id: 'btn_go_start', src: 'tailors-resources/btn_go_start.png' },
 		] // TODO перечислить загружаемые ресурсы. Они находятся в каталоге taskid-resources
 	}
 
@@ -117,12 +120,22 @@ export class Tailors
 			ordering: 'minimize'
 		}
 
-		if(Tailors._currentSolution._level != 2)
+		let _waitCount = {
+			name: '_waitCount',
+			title: 'Количество ожиданий:',
+			ordering: 'minimize'
+		}
+
+		if(Tailors._currentSolution._level == 1)
 		{
-			return[_totalLenResult, _tailorsCount];
+			return[_totalLenResult, _totalReloads, _tailorsCount];
+		}
+		else if(Tailors._currentSolution._level == 2)
+		{
+			return[_totalLenResult, _totalReloads, _tailorsCount, _waitCount];
 		}
 		else{
-			return[_totalLenResult, _totalReloads, _tailorsCount];
+			return[_totalLenResult, _tailorsCount];
 		}
 
 
@@ -202,7 +215,8 @@ export class Tailors
 		Tailors.kioapi.submitResult({
 		  _tailorsCount: Tailors._currentSolution._tailorsCount,
 		  _totalLenResult: Tailors._currentSolution._totalLenResult,
-		  _totalReloads: Tailors._currentSolution._totalReloads
+		  _totalReloads: Tailors._currentSolution._totalReloads,
+		  _waitCount: Tailors._currentSolution._waitCount
 		})
 	}
 

@@ -12,6 +12,7 @@ export class Process
 	 _currentReloadId
 	 _reloadSecStep
 	 _reloadCurrentIndex
+	 _moveCurrentIndex
 	 _reloadSec
 	 _qArr = [] //-- очередь на перезагрузку
 	 _tailorsArr = []
@@ -20,6 +21,7 @@ export class Process
 	 _princessLastPass
 	 _princessToTailorId = 0  //-- к кому сейчас бежит принцесса
 //	 _maxTailorTotalResult = 0  //-- самый длинный результат
+	_nextTikAllWait = 0
 
 	constructor()
 	{
@@ -73,9 +75,11 @@ export class Process
 
 		this._currentReloadId = 0;// this._qArr[0]; //-- текущий на перезагрузке
 		this._nextReloadId = this._qArr[0];  //-- id следующий в очереди на релоад
+
 		this._princessToTailorId = this._nextReloadId
 		this._reloadSecStep = 1;  //-- тут накапливаем тики для текущего релоада
 		this._reloadCurrentIndex = 0;  //-- текущий индекс портного в очереди на перезагрузку
+		this._moveCurrentIndex = 0 //-- текущий индекс портного, к которому будет двигаться принцесса
 		this._reloadSec = Tailors._levelSettings.timeReloadInSec
 		//this._maxTailorTotalResult = 0
 	}
@@ -105,6 +109,7 @@ export class Process
 		let totalReloads = 0;
 		let totalWaits = 0;
 
+
 		for(i=0; i < this._tailorsArr.length; i++)
 		{
 			tailor = this._tailorsArr[i]
@@ -113,18 +118,15 @@ export class Process
 			totalReloads = totalReloads + tailor._reloadCount;
 			totalWaits = totalWaits + tailor._totalWait;
 
-			/*
-			if(this._maxTailorTotalResult < tailor._totalResult)
-			{
-				this._maxTailorTotalResult = tailor._totalResult
-			}
-			*/
+	
+
 		}
 
 		let solution = new Solution()
 		solution._tailorsCount = this._tailorsArr.length
 		solution._totalReloads = totalReloads
 		solution._totalLenResult = totalLenResult
+		solution._waitCount = totalWaits
 
 		solution._tailorsArr = this._tailorsArr
 
@@ -140,25 +142,37 @@ export class Process
 	{
 		//log('calcTik='+ tik)
 
+
+		if(this._nextTikAllWait == 1){
+			this._nextTikAllWait++
+		}
+
 		let i, tailor
 		let canReload = true; //-- можно ли делать релоад новому портному в этом Тике
 		this._princessState = ''
 		let reloadOK = false;
 		this._currentReloadId = 0
+		let princessCanMoveNext = true;
 
-		log('11111   _currentReloadId='+ this._currentReloadId + ' this._nextReloadId=' + this._nextReloadId)
+
+
+		//log('11111   _currentReloadId='+ this._currentReloadId + ' this._nextReloadId=' + this._nextReloadId + ' this._princessToTailorId=' + this._princessToTailorId)
 
 		for(i = 0; i < this._tailorsArr.length; i++)
 		{
 			tailor = this._tailorsArr[i]
 
+			//log('STEP tailor._id=' + tailor._id)
 
 			if(tailor._lenCurrent > 0)
 			{
 				//-- идет процесс стежка
 
+				//log('STEP T-' + i + ' 111')
+
 				if(tailor._step == tailor._lenCurrent)
 				{
+					//log('STEP T-' + i + ' 111-1')
 					tailor._lenCurrent--;
 					tailor._totalResult++;
 					tailor._step = 1;
@@ -166,6 +180,7 @@ export class Process
 				}
 				else
 				{
+					//log('STEP T-' + i + ' 111-2')
 					tailor._step++;
 					tailor._currentState = '-';  //-- протягивает нить
 				}
@@ -174,62 +189,63 @@ export class Process
 
 				if((this._nextReloadId == tailor._id) && canReload)
 				{
+					//log('STEP T-' + i + ' 111-3')
 					if(tailor._reloadStep > 0)
 					{
 						this._currentReloadId = this._nextReloadId
-						this.setNextReloadId() //-- this._nextReloadId
 						this._princessState = 'run'
 						tailor._reloadStep = 0
-						reloadOK = true
+
+						//log('STEP T-' + i + ' 111-4')
+						canReload = false; //-- запрет всем остальным делать релоад в этом цикле
 					}
 					else{
 						//-- принцесса бежит к нему
 						tailor._reloadStep++
 						this._princessState = 'run'
 						this._currentReloadId = 0
+						//log('STEP T-' + i + ' 111-5')
+
+
 					}
 
-					canReload = false; //-- запрет всем остальным делать релоад в этом цикле
+					if(this._nextReloadId == tailor._id)
+					{
+						this._nextTikAllWait = 1 // сигнал что в следующем тике все ждут
+					}
+
 
 					this._princessLastPass = true
 
-					//log('NNNNNNNNNNN 1')
 				}
 				else{
-					//this._princessLastPass = false
-					//log('NNNNNNNNNNN 3')
+
+					//log('STEP T-' + i + ' 111-6')
+
 				}
 			}
 			else
 			{
 				//-- это ожидающие или на перезагрузке
 
-				if((this._nextReloadId == tailor._id) && canReload)
+				//log('STEP T-' + i + ' 222 canReload=' + canReload)
+
+				if((this._nextReloadId == tailor._id) && canReload )
 				{
 					//-- это его очередь на перевдевание
 					//-- но может быть принцесса к нему еще не подошла
 
+					//log('STEP T-' + i + ' 222-1')
 
-
-					/*
-					if(this._reloadSecStep < this._reloadSec)
-					{
-						//-- идет цикл перевдевания длинной в _reloadSec
-						this._reloadSecStep++;
-						tailor._currentState = 'R';
-					}
-					else
-					*/
+					if(this. _nextTikAllWait == 0 || this._princessToTailorId == tailor._id)
 					{
 						//-- окончание перевдевания (завершающий шаг)
-
-
-
 
 						//-- принцесса ждет 1 такт на релоаде
 						//-- либо она уже тут пробежав мимо предыдущего
 						if(tailor._reloadStep > 0 || this._princessLastPass)
 						{
+							//log('STEP T-' + i + ' 222-2(@)')
 							this._currentReloadId = this._nextReloadId
 							this._princessState = 'reload'
 							canReload = false; //-- запрет всем остальным делать релоад в этом цикле
@@ -245,47 +261,85 @@ export class Process
 							//-- пропуская тех, у которых еще есть запас
 
 							//-- назначаем следующего на перезагрузку
-							//this._nextReloadId = 0;
 
-							this.setNextReloadId() //-- this._nextReloadId
 							tailor._reloadStep = 0
-							//log('NNNNNNNNNNN 2')
+
 							this._princessLastPass = false
 
-							reloadOK = true;
+							princessCanMoveNext = false
+
+
+							if(this._nextReloadId == tailor._id)
+							{
+								this._nextTikAllWait = 1 // сигнал что в следующем тике все ждут
+							}
 
 						}
-						else{
+						else
+						{
+							//log('STEP T-' + i + ' 222-3')
 							//-- принцесса бежит к нему
 							tailor._reloadStep++
 							this._princessState = 'run'
 							this._currentReloadId = 0
+							reloadOK = true;
 						}
-
-
+					}
+					else{
+						//log('STEP T-' + i + ' 222-5')
+						reloadOK = true;
+						tailor._reloadStep++
+						this._princessState = 'run'
 					}
 				}
 				else
 				{
 					//-- ожидание очереди на перевдевание
 
-					tailor._totalWait++;
+
 					tailor._currentState = 'w';
+					//log('STEP T-' + i + ' 222-4 w=' + tailor._totalWait)
 				}
 			}
+
+			if(tailor._currentState == 'w'){
+				tailor._totalWait++;
+			}
+		}
+
+		if(princessCanMoveNext && tik > 1)
+		{
+			this._princessToTailorId = this.getNextTailorId()
 		}
 
 		if(!reloadOK && tik > 1)
 		{
-			log('reloadOK = FALSE')
-			//this.setNextReloadId()
+			//log('reloadOK = FALSE')
+			this.setNextReloadId()
+
 		}
 
-		log('222222 _currentReloadId='+ this._currentReloadId + ' this._nextReloadId=' + this._nextReloadId + ' pct=' + this._princessState)
+
+
+		if(this._nextTikAllWait == 1 )
+		{
+			this._nextTikAllWait++
+		}
+		else if(this._nextTikAllWait > 1 )
+		{
+			this._nextTikAllWait = 0
+		}
+
+
+
+		//log('222222 _currentReloadId='+ this._currentReloadId + ' this._nextReloadId=' + this._nextReloadId + ' pct=' + this._princessState
+		//+ ' this._princessToTailorId=' + this._princessToTailorId + ' this. _nextTikAllWait=' + this. _nextTikAllWait)
 	}
 
 	setNextReloadId()
 	{
+		//log('setNextReloadId()')
+
 		if(this._reloadCurrentIndex < this._qArr.length-1)
 		{
 			this._reloadCurrentIndex++;
@@ -297,9 +351,24 @@ export class Process
 
 
 		this._nextReloadId = this._qArr[this._reloadCurrentIndex];
+	}
 
 
+	getNextTailorId()
+	{
+		//log('getNextTailorId() ')
+		if(this._moveCurrentIndex < this._qArr.length-1)
+		{
+			this._moveCurrentIndex++;
 
+		}
+		else{
+			this._moveCurrentIndex = 0;
+		}
+
+		//log('getNextTailorId() this._moveCurrentIndex=' + this._moveCurrentIndex)
+
+		return this._qArr[this._moveCurrentIndex];
 	}
 
 	calcToTik(newStep)
