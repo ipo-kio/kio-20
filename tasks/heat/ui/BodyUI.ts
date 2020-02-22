@@ -9,7 +9,7 @@ import Rectangle = createjs.Rectangle;
 export class BodyUI extends createjs.Container {
 
     private blocks: Block[][];
-    private _selected_cell: {i: number, j: number} | null;
+    private _selected_cell: { i: number, j: number } | null;
     private highlight: createjs.Shape;
     private bg: createjs.Bitmap;
     private grid: createjs.Shape;
@@ -42,7 +42,7 @@ export class BodyUI extends createjs.Container {
             this.grid.graphics.lineTo(N * Block.WIDTH, i * Block.HEIGHT);
         }
         for (let j = 0; j <= N; j++) {
-            this.grid.graphics.moveTo( j * Block.WIDTH, 0);
+            this.grid.graphics.moveTo(j * Block.WIDTH, 0);
             this.grid.graphics.lineTo(j * Block.WIDTH, M * Block.HEIGHT);
         }
         this.grid.graphics.endStroke();
@@ -183,7 +183,7 @@ export class BodyUI extends createjs.Container {
         this._process = new HeatingProcess(
             new Grid(this.body, N_element, LENGTH / (M * N_element), N_time, TIME / N_time),
             () => 100,
-            () => 0
+            () => 10
         );
 
         this._processDrawer = new ProcessDrawer(
@@ -214,10 +214,10 @@ export class BodyUI extends createjs.Container {
 
 export const M = 6;
 export const N = 6;
-export const VIEW_DIVISION = 5;
+export const VIEW_DIVISION = 10;
 export const N_element = VIEW_DIVISION * 5;
 export const LENGTH = 1;
 export const TIME = 60 * 60;
-export const TIME_DIVISION = 2;
+export const TIME_DIVISION = 10;
 export const N_time = TIME_DIVISION * 10;
 export const DEFAULT_MATERIAL: Material = "tree";
