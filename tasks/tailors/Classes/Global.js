@@ -233,7 +233,7 @@ export class Global
 
 		if(Global._drawProcess._currentTik < 2)
 		{
-			goToStart()
+			Global.goToStart()
 		}
 		else{
 			Global._drawProcess._currentTik--
