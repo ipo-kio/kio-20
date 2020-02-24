@@ -37,13 +37,6 @@ export class Tailors
 		SettingsHelper.setSettings(this.settings)
 
 		Tailors._levelSettings = this.settings.levels[settings.level]
-
-		document.addEventListener('keydown', function(event) {
-			if(event.code == 'Delete')
-			{
-				Global.tailorMinus()
-			}
-		});
 	}
 
 	/**
@@ -63,6 +56,13 @@ export class Tailors
 		log('initialize')
 		//log(kioapi)
 		this.initInterface(domNode, preferred_width)
+
+		document.addEventListener('keydown', function(event) {
+			if(event.code == 'Delete')
+			{
+				Global.tailorMinus()
+			}
+		});
 	}
 
 	static preloadManifest ()
