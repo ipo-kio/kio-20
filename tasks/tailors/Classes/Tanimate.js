@@ -134,9 +134,6 @@ export class Tanimate
 			//x1 = x;
 			y1 = lastY + steLen/2  // ((tailor._lenCurrent-tailor._step-1)*5)
 
-
-
-
 			if(!finishStep)
 			{
 				if(tailor._currentState == '-' || tailor._currentState == '+')
@@ -145,14 +142,12 @@ export class Tanimate
 				}
 
 			}
-			else{
-				//log('fffffffffffffff')
-			}
 
 			//log('x1=' + x1 + ' Global._moveNitStep=' + Global._moveNitStep + ' step=' + tailor._step + ' n=' + n)
 
 			if(tailor._lenCurrent > 0 || tailor._step > 1)
 			{
+				//-- первая петля, полная (верхняя)
 				Tanimate.drawCurve(ctxBot, x, lastY, mm, tailor._lenCurrent, steLen, tailor._step, tailor._currentState)
 			}
 
@@ -166,23 +161,13 @@ export class Tanimate
 			if(tailor._currentState == '-' || tailor._currentState == '+')
 			{
 				{
-
 					//-- петля продернутая
 					Tanimate.drawFree(ctxBot, x, lastY + steLen, tailor._step, steLen, tailor._totalResult, tailor._lenCurrent, tailor._currentState);
-
-					//Tanimate.bbb(ctxBot, x, lastY + 10, tailor._step, tailor._lenCurrent, tailor._totalResult, steLen, finishStep)
 				}
 			}
-			else{
-				//log(tailor._currentState)
-			}
-
 
 			ctxBot.stroke();
 			ctxBot.closePath();
-
-
-
 
 			//-- длина нити _totalResult
 			{
@@ -262,7 +247,6 @@ export class Tanimate
 			}
 			else
 			{
-				//log('cccccccccccccccc x=' )
 				ctx.moveTo(x, yStart)
 
 				if(step == lenCurrent){
@@ -271,7 +255,6 @@ export class Tanimate
 						ctx.lineTo(x, yStart + steLen)
 					}
 					else{
-						//log('dddddddddddddd')
 						//ctx.arc(x-Global._moveNitStep , yStart + steLen/2 , steLen/2, -Math.PI/2 + Math.PI/2/10*Global._moveNitStep, Math.PI/2 - Math.PI/2/10*Global._moveNitStep, (mm > 0));
 						ctx.moveTo(xStart, yStart)
 						ctx.lineTo(xStart, yStart + steLen)
@@ -288,9 +271,6 @@ export class Tanimate
 						//ctx.arc(x, yStart + steLen/2 , steLen/2, -Math.PI/2, Math.PI/2, (mm > 0));
 					}
 				}
-
-
-
 			}
 		}
 	}
@@ -326,7 +306,6 @@ export class Tanimate
 			stepLine = stepLine - 1
 		}
 
-
 		//log('stepLine=' + stepLine + ' step=' + step)
 
 		ctx.moveTo(xStart, yStart);
@@ -337,17 +316,13 @@ export class Tanimate
 		//-- прорисовываем каждый предыдущий степ кроме последнего
 		for(st = 2; st < step; st++)
 		{
-
 			//log('st=' + st +  ' lastX=' + xLast)
-
-
 			if(st <= stepLine + 1)
 			{
 				//-- верхняя прямая часть петли
 
 				//n = (steLen*(step - (1 - Global._moveNitStep*0.1))) * mm
 				x = (xLast + (steLen)* mm)
-
 
 				//log('111111 stepLine=' + stepLine + ' x=' + x)
 
@@ -366,7 +341,6 @@ export class Tanimate
 				else{
 					x = (xStart + (steLen*stepLine -  (st-stepLine-2)*steLen) *  mm)
 				}
-
 
 				ctx.lineTo(x, yLast);
 
@@ -453,8 +427,6 @@ export class Tanimate
 		}
 		else{
 			if(lastStep){
-
-
 				if(mm > 0){
 					n = -Math.PI/2 + (((Math.PI/2)/10) * Global._moveNitStep)
 				}
@@ -469,13 +441,10 @@ export class Tanimate
 
 
 		}
-
 		//if(lastStep)log('Global._moveNitStep=' + Global._moveNitStep + ' n=' + n + ' mm=' + mm)
-
 
 		ctx.arc(xLast, yLast , steLen/2, -Math.PI/2, n, (mm < 0));
 	}
-
 }
 
 
