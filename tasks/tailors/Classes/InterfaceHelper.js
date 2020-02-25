@@ -25,7 +25,7 @@ export class InterfaceHelper
 			superDiv = document.createElement('div')
 			superDiv.id = 'super_div'
 			superDiv.className = 'super_div'
-			superDiv.setAttribute('style', 'background-image: url("./tailors-resources/background.png");')
+			// superDiv.setAttribute('style', 'background-image: url("./tailors-resources/background.png");')
 			domNode.appendChild(superDiv)
 
 			topDiv = document.createElement('div')

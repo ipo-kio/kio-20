@@ -50,9 +50,14 @@ module.exports = function (env) {
                     test: /\.scss$/,
                     use: [
                         MiniCssExtractPlugin.loader, //TODO remove empty main (with javascript)
-                        'css-loader',
+                        {
+                            loader: 'css-loader',
+                            options: {
+                                "url": false
+                            }
+                        },
                         'sass-loader'
-                    ]
+                    ],
                 },
                 {
                     test: /\.ts$/,
