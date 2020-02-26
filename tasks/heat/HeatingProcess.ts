@@ -159,7 +159,7 @@ function log(m: any, title?: string) {
     if (title)
         console.log(title, m);
     else
-        console.log(m);
+         console.log(m);
 
     num_out++;
 }
