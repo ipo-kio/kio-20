@@ -3,7 +3,7 @@ export class DimensionDescription {
     private readonly x_min:number;
     private readonly _min: number;
     private readonly _max: number;
-    private readonly dx: number;
+    private readonly _dx: number;
 
     constructor(min: number, max: number, n: number, is_neuman: boolean) {
         this._min = min;
@@ -15,14 +15,14 @@ export class DimensionDescription {
             //(max - min + dx) / (n - 1) = dx => max - min + dx = (n-1)dx
             //dx = (max - min) / (n - 2)
 
-            this.dx = (max - min) / (n - 2);
-            this.x_min = min - this.dx / 2;
+            this._dx = (max - min) / (n - 2);
+            this.x_min = min - this._dx / 2;
         } else {
             //is_neuman = false
             //dx = (max - min) / (n - 1)
 
             this.x_min = min;
-            this.dx = (max - min) / (n - 1);
+            this._dx = (max - min) / (n - 1);
         }
     }
 
@@ -31,7 +31,7 @@ export class DimensionDescription {
      * @param i in 0 .. n - 1
      */
     v(i: number) {
-        return this.x_min + i * this.dx;
+        return this.x_min + i * this._dx;
     }
 
     get n(): number {
@@ -45,5 +45,10 @@ export class DimensionDescription {
 
     get max(): number {
         return this._max;
+    }
+
+
+    get dx(): number {
+        return this._dx;
     }
 }
