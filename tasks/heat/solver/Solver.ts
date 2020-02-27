@@ -80,8 +80,14 @@ export class Solver {
         for (let i = 0; i < 4; i++)
             sys = new Array(x_max + 1); //TODO here x_max == y_max
 
-        sys[0][0] = 0; sys[1][0] = 1; sys[2][0] = -1; sys[3][0] = 0;
-        sys[0][x_max] = 0; sys[1][x_max] = 1; sys[2][x_max] = -1; sys[3][x_max] = 0;
+        sys[0][0] = 0;
+        sys[1][0] = 1;
+        sys[2][0] = -1;
+        sys[3][0] = 0;
+        sys[0][x_max] = 1;
+        sys[1][x_max] = -1;
+        sys[2][x_max] = 0;
+        sys[3][x_max] = 0;
 
         for (let t = 1; t < this.td.n; t++) {
             let v0 = u[t - 1];
@@ -110,48 +116,55 @@ export class Solver {
 
                         //----
                         sys[3][x] = v0[x][y] / tau + a * (v0[x][y - 1] - 2 * v0[x][y] + v0[x][y + 1]) / h2 + this.heat[x][y];
-
-                        this.solve_3sys(sys, v1, -1, y);
                     }
+
+                    this.solve_3sys(sys, v1, -1, y);
                 }
             } else {
                 for (let x = 1; x < x_max; x++) {
                     for (let y = 1; y < y_max; y++) {
                         let a = this.a[x][y];
-                        //v1[x-1, y]
                         sys[0][y] = -a / h2;
-
-                        //v1[x, y]
                         sys[1][y] = 1 / tau + 2 * a / h2;
-
-                        //v1[x+1, y]
                         sys[2][y] = -a / h2;
-
-                        //----
                         sys[3][y] = v0[x][y] / tau + a * (v0[x - 1][y] - 2 * v0[x][y] + v0[x + 1][y]) / h2 + this.heat[x][y];
-
-                        this.solve_3sys(sys, v1, x, -1);
                     }
+
+                    this.solve_3sys(sys, v1, x, -1);
                 }
             }
         }
     }
 
-    private solve_3sys(sys: number[][], v1: any, number: number, y: number) {
+    private solve_3sys(sys: number[][], v1: Layer, x: number, y: number) {
         // https://3ys.ru/metody-resheniya-nelinejnykh-uravnenij-i-zadach-linejnoj-algebry/metod-progonki.html
         let A = this.A;
         let B = this.B;
 
         A[0] = -sys[2][0] / sys[1][0];
-        B[0] = -sys[3][0] / sys[1][0];
+        B[0] = sys[3][0] / sys[1][0];
 
-        let x_max = A.length;
+        let n = A.length;
 
-        for (let i = 1; i < x_max; i++) {
+        for (let i = 1; i < n - 1; i++) {
             let e = sys[0][i] * A[i - 1] + sys[1][i];
             A[i] = -sys[2][i] / e;
-            B[i] = (sys[3][i] - sys[0][i] * B[i - 1]))
+            B[i] = (sys[3][i] - sys[0][i] * B[i - 1]) / e;
         }
 
+        let xn = (sys[3][n - 1] - sys[0][n - 1] * B[n - 2]) / (sys[1][n - 1] + sys[0][n - 1] * A[n - 2]);
+        set(n - 1, xn);
+
+        for (let i = n - 2; i >= 0; i--) {
+            xn = A[i] * xn + B[i];
+            set(i, xn);
+        }
+
+        function set(ind: number, value: number) {
+            if (x === -1)
+                v1[ind][y] = value;
+            else
+                v1[x][ind] = value;
+        }
     }
 }
