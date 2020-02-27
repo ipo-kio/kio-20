@@ -138,9 +138,6 @@ export class Process{
 								minLen = rel._len
 								goodRel = rel
 							}
-							else{
-								//rel._selected = false  //-- плохая связь, слишком длинная
-							}
 						}
 
 						if(Global._dcDic[rel._dc2Name]._selected)
@@ -150,10 +147,8 @@ export class Process{
 								minLen = rel._len
 								goodRel = rel
 							}
-							else{
-								//rel._selected = false  //-- плохая связь, слишком длинная
-							}
 						}
+
 
 						rel._selected = false
 					}
@@ -171,9 +166,17 @@ export class Process{
 
 		for(i=0; i < Global._relArr.length; i++)
 		{
-			if(Global._relArr[i]._selected)
+			rel = Global._relArr[i]
+
+			if(Global._dcDic[rel._dc1Name]._selected && Global._dcDic[rel._dc2Name]._selected)
 			{
-				totalLen = totalLen + Global._relArr[i]._len
+				//-- это связь между двумя отмеченными ДС, ее считать не надо
+				rel._selected = false
+			}
+
+			if(rel._selected)
+			{
+				totalLen = totalLen + rel._len
 			}
 		}
 
