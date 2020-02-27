@@ -104,7 +104,7 @@ export class Tailors
 
 		let _totalLenResult = {
 			name: '_totalLenResult',
-			title: 'Общая длинна:',
+			title: 'Общая длина:',
 			ordering: 'maximize'
 		}
 
