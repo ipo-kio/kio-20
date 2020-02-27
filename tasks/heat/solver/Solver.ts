@@ -15,6 +15,10 @@ export class Solver {
 
     private u: Layer[];
 
+    //for tridiagonal matrix algorithm
+    private A: number[];
+    private B: number[];
+
     constructor(
         body: Body,
         xd: DimensionDescription,
@@ -44,6 +48,9 @@ export class Solver {
         });
 
         this.solve();
+
+        this.A = new Array(xd.n);
+        this.B = new Array(xd.n);
     }
 
     lay_out(f: LayerFunction): Layer {
@@ -71,7 +78,10 @@ export class Solver {
 
         let sys: number[][] = new Array(4);
         for (let i = 0; i < 4; i++)
-            sys = new Array(x_max - 1);
+            sys = new Array(x_max + 1); //TODO here x_max == y_max
+
+        sys[0][0] = 0; sys[1][0] = 1; sys[2][0] = -1; sys[3][0] = 0;
+        sys[0][x_max] = 0; sys[1][x_max] = 1; sys[2][x_max] = -1; sys[3][x_max] = 0;
 
         for (let t = 1; t < this.td.n; t++) {
             let v0 = u[t - 1];
@@ -90,16 +100,16 @@ export class Solver {
                     for (let x = 1; x < x_max; x++) {
                         let a = this.a[x][y];
                         //v1[x-1, y]
-                        sys[0][x - 1] = -a / h2;
+                        sys[0][x] = -a / h2;
 
                         //v1[x, y]
-                        sys[1][x - 1] = 1 / tau + 2 * a / h2;
+                        sys[1][x] = 1 / tau + 2 * a / h2;
 
                         //v1[x+1, y]
-                        sys[2][x - 1] = -a / h2;
+                        sys[2][x] = -a / h2;
 
                         //----
-                        sys[3][x - 1] = -v0[x][y] / tau - a * (v0[x][y - 1] - 2 * v0[x][y] + v0[x][y + 1]) / h2 - this.heat[x][y];
+                        sys[3][x] = v0[x][y] / tau + a * (v0[x][y - 1] - 2 * v0[x][y] + v0[x][y + 1]) / h2 + this.heat[x][y];
 
                         this.solve_3sys(sys, v1, -1, y);
                     }
@@ -109,16 +119,16 @@ export class Solver {
                     for (let y = 1; y < y_max; y++) {
                         let a = this.a[x][y];
                         //v1[x-1, y]
-                        sys[0][y - 1] = -a / h2;
+                        sys[0][y] = -a / h2;
 
                         //v1[x, y]
-                        sys[1][y - 1] = 1 / tau + 2 * a / h2;
+                        sys[1][y] = 1 / tau + 2 * a / h2;
 
                         //v1[x+1, y]
-                        sys[2][y - 1] = -a / h2;
+                        sys[2][y] = -a / h2;
 
                         //----
-                        sys[3][y - 1] = -v0[x][y] / tau - a * (v0[x - 1][y] - 2 * v0[x][y] + v0[x + 1][y]) / h2 - this.heat[x][y];
+                        sys[3][y] = v0[x][y] / tau + a * (v0[x - 1][y] - 2 * v0[x][y] + v0[x + 1][y]) / h2 + this.heat[x][y];
 
                         this.solve_3sys(sys, v1, x, -1);
                     }
@@ -128,6 +138,20 @@ export class Solver {
     }
 
     private solve_3sys(sys: number[][], v1: any, number: number, y: number) {
+        // https://3ys.ru/metody-resheniya-nelinejnykh-uravnenij-i-zadach-linejnoj-algebry/metod-progonki.html
+        let A = this.A;
+        let B = this.B;
+
+        A[0] = -sys[2][0] / sys[1][0];
+        B[0] = -sys[3][0] / sys[1][0];
+
+        let x_max = A.length;
+
+        for (let i = 1; i < x_max; i++) {
+            let e = sys[0][i] * A[i - 1] + sys[1][i];
+            A[i] = -sys[2][i] / e;
+            B[i] = (sys[3][i] - sys[0][i] * B[i - 1]))
+        }
 
     }
 }
