@@ -5,4 +5,5 @@ export class Solution
 	_dcBadCount = 0
 	_dcSelectedArr = []
 	_len = 0
+	_dcPoints2 = 0
 }

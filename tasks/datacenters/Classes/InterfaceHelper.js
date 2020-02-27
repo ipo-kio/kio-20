@@ -78,8 +78,11 @@ export class InterfaceHelper
 			//log('x2=' + dc2.x)
 
 			line = new createjs.Shape();
+			line.name = rel._name
 			Global._stageTop.addChild(line)
 			line.graphics.setStrokeStyle(3).beginStroke("brown");
+			line.fillCmd = line.graphics.beginFill("brown").command;
+			line.strokeCmd = line.graphics.beginStroke("brown").command;
 
 			line.graphics.moveTo(dc1._x, dc1._y);
 			line.graphics.lineTo(dc2._x, dc2._y);
@@ -100,6 +103,7 @@ export class InterfaceHelper
 			rel._len = c
 
 			let text = new createjs.Text(c, "14px Arial", "blue");
+			text.name = rel._name + '_text'
 			if(dc1._x < dc2._x)
 			{
 				text.x = dc1._x + a/2
@@ -109,6 +113,9 @@ export class InterfaceHelper
 				text.x = dc1._x - a/2
 			}
 
+
+
+
 			if(dc1._y < dc2._y){
 				text.y = dc1._y + b/2
 			}
@@ -116,10 +123,16 @@ export class InterfaceHelper
 				text.y = dc1._y - b/2
 			}
 
+			/*
+			Можно попробовать рисовать текст не на прямоугольниках, они очень явные, а сам по себе. Чтобы было контрастно, делать fillText,
+			белым а потом сразу strokeText черным.
+			*/
+
 			var shape = new createjs.Shape();
 			shape.name = rel._name
 			shape.graphics.append({exec: Global.setLenColor});
 			shape.fillCmd = shape.graphics.beginFill("white").command;
+			shape.strokeCmd = shape.graphics.beginStroke("black").command;
 			//shape.graphics.beginFill("white").beginStroke(1).setStrokeStyle('black').drawRect(0, 0, 32, 20);
 
 			if(c > 999){
@@ -133,7 +146,16 @@ export class InterfaceHelper
 			//shape.graphics.endFill()
 			shape.graphics.endStroke()
 
-			shape.x = text.x - 4
+
+			if(rel._len < 100)
+			{
+				shape.x = text.x - 8
+			}
+			else{
+				shape.x = text.x - 4
+			}
+
+
 			shape.y = text.y - 4
 			Global._stageTop.addChild(shape)
 
@@ -166,7 +188,7 @@ export class InterfaceHelper
 			dc1 = new createjs.Shape()
 			dc1.name = dcObj._name
 			dc1.graphics.append({exec: Global.setPoweredState});
-			dc1.strokeCmd = dc1.graphics.beginStroke("white").command;
+			dc1.strokeCmd = dc1.graphics.beginStroke("black").command;
 			dc1.fillCmd = dc1.graphics.beginFill("white").command;
 			dc1.graphics.drawCircle(0, 0, 15)
 			//dc1.graphics.endFill()
@@ -174,10 +196,12 @@ export class InterfaceHelper
 			dc1.x = 0
 			dc1.y = 0
 
-
-
 			dc.addChild(dc1)
+
+
 			let text = new createjs.Text(i, "14px Arial", "yellow");
+			text.name = dc1.name + '_text'
+
 			if(i > 9){
 				text.x = -8
 			}

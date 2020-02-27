@@ -45,17 +45,12 @@ export class Datacenters
 
 	parameters ()
 	{
-		let _dcSelectedCount = {
-			name: '_dcSelectedCount',
-			title: 'Количество:',
-			ordering: 'minimize'
-		}
-
-		let _len = {
-			name: '_len',
-			title: 'Расстояние:',
-			ordering: 'minimize'
-		}
+		/*
+		1.Количество пропущенных вершин (надо как можно меньше)
+		2.Количество вершин, рядом с которыми 2 датацентра (надо как можно больше, только второй уровень)
+		3.суммарная длина расстояний от вершин до датацентров. Для каждой вершины, рядом с которой есть датацентры,
+		выбирается ровно один ближайший, и расстояние скаладывается до него (надо как можно больше)
+		*/
 
 		let _dcBadCount = {
 			name: '_dcBadCount',
@@ -63,9 +58,36 @@ export class Datacenters
 			ordering: 'minimize'
 		}
 
+		let _dcPoints2 = {
+			name: '_dcPoints2',
+			title: 'Дублированные:',
+			ordering: 'maximize'
+		}
+
+		/*
+		let _dcSelectedCount = {
+			name: '_dcSelectedCount',
+			title: 'Количество:',
+			ordering: 'minimize'
+		}
+		*/
+
+		let _len = {
+			name: '_len',
+			title: 'Расстояние:',
+			ordering: 'minimize'
+		}
 
 
-		return[_dcSelectedCount, _len, _dcBadCount];
+		if(Datacenters._level == 2){
+			return[_dcBadCount, _dcPoints2, _len];
+		}
+		else{
+			return[_dcBadCount,  _len];
+		}
+
+
+
 	}
 
 	solution (){
@@ -143,6 +165,7 @@ export class Datacenters
 
 		Datacenters.kioapi.submitResult({
 		  _dcSelectedCount: Datacenters._currentSolution._dcSelectedCount,
+		  _dcPoints2: Datacenters._currentSolution._dcPoints2,
 		  _len: Datacenters._currentSolution._len,
 		  _dcBadCount: Datacenters._currentSolution._dcBadCount,
 		  _dcSelectedArr: Global.getDcSelectedArr(),

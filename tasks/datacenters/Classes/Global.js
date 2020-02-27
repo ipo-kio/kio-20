@@ -46,17 +46,25 @@ export class Global
 
 	static setLenColor(ctx, lenShape)
 	{
-		let i
+		let i, text, line
 		for(i=0; i < Global._relArr.length; i++)
 		{
 			if(lenShape.name == Global._relArr[i]._name)
 			{
+				//text = Global._stageTop.getChildByName(lenShape.name + '_text')
+				line = Global._stageTop.getChildByName(Global._relArr[i]._name)
+
 				if(Global._relArr[i]._selected )
 				{
 					lenShape.fillCmd.style =  "yellow";
+					//text.color = 'yellow'
+
+					line.strokeCmd.style =  "yellow";
 				}
 				else{
 					lenShape.fillCmd.style =  "white";
+					//text.color = 'black'
+					line.strokeCmd.style =  "brown";
 				}
 			}
 		}
@@ -66,8 +74,12 @@ export class Global
 	{
 		let dc = Global._dcDic[dcShape.name]
 
+		let cont = Global._stageTop.getChildByName(dc._name + '_cont')
+		let text = cont.getChildByName(dc._name + '_text')
+
 		if(dc._selected)
 		{
+			/*
 			if(Global._tik01)
 			{
 				dcShape.fillCmd.style =  "green";
@@ -75,7 +87,12 @@ export class Global
 			else{
 				dcShape.fillCmd.style =  "#62e362";
 			}
+			*/
+			dcShape.fillCmd.style =  "yellow";
 
+
+
+			text.color =  "red";
 		}
 		else
 		{
@@ -86,8 +103,19 @@ export class Global
 			}
 			else{
 				//--охваченные
+
+				if(dc._points2Count > 0)
+				{
+					dcShape.strokeCmd.style =  "red";
+				}
+				else{
+					dcShape.strokeCmd.style =  "black";
+				}
+
 				dcShape.fillCmd.style =  "green";
 			}
+
+			text.color =  "yellow";
 		}
 	}
 
