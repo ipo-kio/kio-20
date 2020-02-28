@@ -1,7 +1,7 @@
 import { ENGINE_METHOD_DH } from "constants";
 
-if (!window)
-    window = {};
+// if (!window)
+//     window = {};
 
 export class Slider {
     constructor(outer, min_value, max_value, height, img, hover_img/*, ticks, big_ticks*/) { //TODO draw ticks

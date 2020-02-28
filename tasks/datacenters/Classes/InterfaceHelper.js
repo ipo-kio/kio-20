@@ -22,7 +22,6 @@ export class InterfaceHelper
 
 			let canvasContDiv = document.createElement('div')
 			canvasContDiv.innerHTML = ''
-			canvasContDiv.setAttribute('style', 'background-image: url("./datacenters-resources/bg1.jpg");')
 			canvasContDiv.id = 'canvasContDiv'
 			canvasContDiv.className = 'canvas_cont_div'
 			superDiv.appendChild(canvasContDiv)
