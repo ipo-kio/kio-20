@@ -15,8 +15,8 @@ export class InterfaceHelper
 		//-- Полный див
 		{
 			superDiv = document.createElement('div')
-			superDiv.id = 'super_div'
-			superDiv.className = 'super_div'
+			superDiv.id = 'super_div_dc'
+			superDiv.className = 'super_div_dc'
 
 			domNode.appendChild(superDiv)
 
