@@ -64,13 +64,11 @@ export class Datacenters
 			ordering: 'maximize'
 		}
 
-		/*
 		let _dcSelectedCount = {
 			name: '_dcSelectedCount',
 			title: 'Количество:',
 			ordering: 'minimize'
 		}
-		*/
 
 		let _len = {
 			name: '_len',
@@ -80,10 +78,10 @@ export class Datacenters
 
 
 		if(Datacenters._level == 2){
-			return[_dcBadCount, _dcPoints2, _len];
+			return[_dcBadCount, _dcSelectedCount, _dcPoints2, _len];
 		}
 		else{
-			return[_dcBadCount,  _len];
+			return[_dcBadCount, _dcSelectedCount,  _len];
 		}
 
 
