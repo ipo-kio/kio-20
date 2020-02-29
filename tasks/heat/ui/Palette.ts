@@ -1,37 +1,6 @@
-export class Palette {
-
-    private min: number;
-    private max: number;
-
-    constructor(min: number, max: number) {
-        this.min = min;
-        this.max = max;
-
-        for (let ind = 0; ind < colors.length; ind++) {
-            let c = colors[ind];
-            ind2color[ind] = `rgb(${Math.round(c[0] * 255)},${Math.round(c[1] * 255)},${Math.round(c[2] * 255)})`;
-        }
-    }
-
-    get(v: number): string {
-        if (v < this.min)
-            v = this.min;
-        if (v > this.max)
-            v = this.max;
-
-        let v_normalized = (v - this.min) / (this.max - this.min);
-        let index = Math.floor(v_normalized * colors.length);
-        if (index >= colors.length)
-            index = colors.length - 1;
-        if (index < 0)
-            index = 0;
-
-        return ind2color[index];
-    }
-}
-
 //taken from Wolfram Mathematica
 //Table[ColorData["TemperatureMap",i],{i,0,1,0.005}]
+
 const colors = [
     [0.178927, 0.305394, 0.933501],
     [0.18671614, 0.31358088, 0.93394458],
@@ -236,3 +205,38 @@ const colors = [
     [0.817319, 0.134127, 0.164218]
 ];
 const ind2color: string[] = new Array(colors.length);
+
+export class Palette {
+
+    static palette0100 = new Palette(0, 10);
+
+    private min: number;
+    private max: number;
+
+    constructor(min: number, max: number) {
+        this.min = min;
+        this.max = max;
+
+        for (let ind = 0; ind < colors.length; ind++) {
+            let c = colors[ind];
+            ind2color[ind] = `rgb(${Math.round(c[0] * 255)},${Math.round(c[1] * 255)},${Math.round(c[2] * 255)})`;
+        }
+    }
+
+    get(v: number): string {
+        if (v < this.min)
+            v = this.min;
+        if (v > this.max)
+            v = this.max;
+
+        let v_normalized = (v - this.min) / (this.max - this.min);
+        let index = Math.floor(v_normalized * colors.length);
+        if (index >= colors.length)
+            index = colors.length - 1;
+        if (index < 0)
+            index = 0;
+
+        return ind2color[index];
+    }
+}
+

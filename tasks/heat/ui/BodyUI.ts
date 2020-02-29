@@ -191,7 +191,7 @@ export class BodyUI extends createjs.Container {
             this.height
         );
 
-        this._processDrawer.v0 = 0;
+        this._processDrawer.v0 = 50;
 
         this._processDrawerTime = new ProcessDrawer(
             this._process,
@@ -202,6 +202,8 @@ export class BodyUI extends createjs.Container {
             100
         );
 
+        this._processDrawerTime.v0 = this.process.x_max - 1;
+
         this.dispatchEvent("drawer changed");
 
         console.log("stop update");
@@ -210,7 +212,7 @@ export class BodyUI extends createjs.Container {
 
 export const M = 6;
 export const N = 6;
-export const VIEW_DIVISION = 10;
+export const VIEW_DIVISION = 5;
 export const N_element = VIEW_DIVISION * 5;
 export const LENGTH = 1;
 export const TIME = 60 * 60;

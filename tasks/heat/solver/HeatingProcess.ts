@@ -2,7 +2,7 @@ import {Layer, Solver} from "./Solver";
 import {DimensionDescription} from "./DimensionDescription";
 import Body from "../Body";
 import {Slice} from "./Slice";
-import {N_time} from "../ui/BodyUI";
+import {N_element, N_time} from "../ui/BodyUI";
 
 export default class HeatingProcess {
 
@@ -11,8 +11,8 @@ export default class HeatingProcess {
     constructor(body: Body) {
         let solver = new Solver(
             body,
-            new DimensionDescription(0, 1, D * body.width + 2, true),
-            new DimensionDescription(0, 1, D * body.height + 2, true),
+            new DimensionDescription(0, 1, N_element * body.width + 2, true),
+            new DimensionDescription(0, 1, N_element * body.height + 2, true),
             new DimensionDescription(0, 10, N_time + 1, false),
             phi0,
             (x: number, y: number) => 0
@@ -82,8 +82,6 @@ function log(m: any, title?: string) {
     num_out++;
 }
 
-
-const D = 3;
 
 const MAX_T = 100;
 const T_DIST = 0.1;
