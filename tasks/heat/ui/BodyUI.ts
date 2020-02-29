@@ -33,7 +33,7 @@ export class BodyUI extends createjs.Container {
             .endFill();
         this.highlight.visible = false;
 
-        this.selected_cell = null;
+        this._selected_cell = null;
 
         this.grid = new createjs.Shape();
         this.grid.graphics.beginStroke("grey");
@@ -191,7 +191,7 @@ export class BodyUI extends createjs.Container {
             this.height
         );
 
-        this._processDrawer.v0 = Math.floor(0);
+        this._processDrawer.v0 = 0;
 
         this._processDrawerTime = new ProcessDrawer(
             this._process,

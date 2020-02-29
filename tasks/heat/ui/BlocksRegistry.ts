@@ -39,9 +39,9 @@ export default class BlocksRegistry extends createjs.Container {
                     });
                     b.addEventListener("block stop move", () => {
                         let ij = this.bodyUI.selected_cell;
-                        if (ij !== null) {
+                        if (ij !== null)
                             this.bodyUI.set_block(ij, b);
-                        } else
+                        else
                             b.move_home();
                     });
                     b.addEventListener("mousedown", () => {
@@ -80,7 +80,7 @@ export default class BlocksRegistry extends createjs.Container {
         this.processDrawerTime.x = 0;
         this.processDrawerTime.y = 8 + this.bodyUI.height;
 
-        // this.processDebugger.process = this.bodyUI.process;
+        this.processDebugger.process = this.bodyUI.process;
     }
 }
 

@@ -2,6 +2,7 @@ import {Layer, Solver} from "./Solver";
 import {DimensionDescription} from "./DimensionDescription";
 import Body from "../Body";
 import {Slice} from "./Slice";
+import {N_time} from "../ui/BodyUI";
 
 export default class HeatingProcess {
 
@@ -12,7 +13,7 @@ export default class HeatingProcess {
             body,
             new DimensionDescription(0, 1, D * body.width + 2, true),
             new DimensionDescription(0, 1, D * body.height + 2, true),
-            new DimensionDescription(0, 10, 20, false),
+            new DimensionDescription(0, 10, N_time + 1, false),
             phi0,
             (x: number, y: number) => 0
         );
