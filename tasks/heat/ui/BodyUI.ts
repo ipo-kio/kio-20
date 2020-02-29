@@ -1,7 +1,7 @@
 import Body, {Material} from "../Body";
 import Block from "./Block";
 import {KioApi} from "../../KioApi";
-import HeatingProcess from "../HeatingProcess";
+import HeatingProcess from "../solver/HeatingProcess";
 import Grid from "../Grid";
 import ProcessDrawer, {SliceType} from "./ProcessDrawer";
 import Rectangle = createjs.Rectangle;
@@ -180,11 +180,7 @@ export class BodyUI extends createjs.Container {
 
     private update_process() {
         console.log("start update");
-        this._process = new HeatingProcess(
-            new Grid(this.body, N_element, LENGTH / (M * N_element), N_time, TIME / N_time),
-            () => 100,
-            () => 10
-        );
+        this._process = new HeatingProcess(this.body);
 
         this._processDrawer = new ProcessDrawer(
             this._process,

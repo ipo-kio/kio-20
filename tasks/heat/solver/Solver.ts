@@ -1,7 +1,7 @@
 import {DimensionDescription} from "./DimensionDescription";
 import Body from "../Body";
 
-type Layer = number[][];
+export type Layer = number[][];
 export type LayerFunction = (x: number, y: number) => number;
 
 export class Solver {
@@ -13,7 +13,7 @@ export class Solver {
     private yd: DimensionDescription;
     private td: DimensionDescription;
 
-    private u: Layer[];
+    private _u: Layer[];
 
     //for tridiagonal matrix algorithm
     private A: number[];
@@ -38,19 +38,24 @@ export class Solver {
             let yy = (x - xd.min) / (yd.max - yd.min);
 
             let xi = Math.floor(xx * body.width);
+            if (xi < 0)
+                xi = 0;
             if (xi >= body.width)
                 xi = body.width - 1;
-            let yi = Math.floor(xx * body.height);
+
+            let yi = Math.floor(yy * body.height);
+            if (yi < 0)
+                yi = 0;
             if (yi >= body.height)
                 yi = body.height - 1;
 
             return body.a(xi, yi);
         });
 
-        this.solve();
-
         this.A = new Array(xd.n);
         this.B = new Array(xd.n);
+
+        this.solve();
     }
 
     lay_out(f: LayerFunction): Layer {
@@ -69,6 +74,7 @@ export class Solver {
 
     private solve() {
         let u = new Array(this.td.n);
+        this._u = u;
         u[0] = this.phi0;
         let x_max = this.xd.n - 1;
         let y_max = this.yd.n - 1;
@@ -78,7 +84,7 @@ export class Solver {
 
         let sys: number[][] = new Array(4);
         for (let i = 0; i < 4; i++)
-            sys = new Array(x_max + 1); //TODO here x_max == y_max
+            sys[i] = new Array(x_max + 1); //TODO here x_max == y_max
 
         sys[0][0] = 0;
         sys[1][0] = 1;
@@ -91,7 +97,8 @@ export class Solver {
 
         for (let t = 1; t < this.td.n; t++) {
             let v0 = u[t - 1];
-            let v1 = u[t];
+            let v1 = this.lay_out((x, y) => 0);
+            u[t] = v1;
 
             //(v1[x,y]-v0[x,y]) / tau - a (
             //      v1[x-1,y]-2v1[x,y]+v1[x+1,y] +
@@ -166,5 +173,9 @@ export class Solver {
             else
                 v1[x][ind] = value;
         }
+    }
+
+    get u(): Layer[] {
+        return this._u;
     }
 }

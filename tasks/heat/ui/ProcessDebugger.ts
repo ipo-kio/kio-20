@@ -1,4 +1,4 @@
-import HeatingProcess from "../HeatingProcess";
+import HeatingProcess from "../solver/HeatingProcess";
 import ProcessDrawer, {SliceType} from "./ProcessDrawer";
 import {N_time, VIEW_DIVISION} from "./BodyUI";
 
