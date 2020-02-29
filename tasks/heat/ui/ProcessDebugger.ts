@@ -23,11 +23,11 @@ export class ProcessDebugger extends createjs.Container {
 
         for (let t = 0; t <= N_time; t++) {
             let d = new ProcessDrawer(
-                this._process,
                 SliceType.XY,
                 VIEW_DIVISION, VIEW_DIVISION,
                 W, H
             );
+            d.process = this.process;
             this._drawer.push(d);
             this.addChild(d);
             d.alpha = 1;

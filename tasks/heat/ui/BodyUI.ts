@@ -54,7 +54,26 @@ export class BodyUI extends createjs.Container {
         this.addChild(this.grid);
         this.addChild(this.highlight);
 
+        this._processDrawer = new ProcessDrawer(
+            SliceType.XY,
+            VIEW_DIVISION,
+            VIEW_DIVISION,
+            this.width,
+            this.height
+        );
+
+        this._processDrawerTime = new ProcessDrawer(
+            SliceType.TY,
+            TIME_DIVISION,
+            VIEW_DIVISION,
+            640,
+            100
+        );
+
         this.update_process();
+
+        this._processDrawer.v0 = 50;
+        this._processDrawerTime.v0 = this.process.x_max - 1;
     }
 
     get processDrawer(): ProcessDrawer {
@@ -181,31 +200,8 @@ export class BodyUI extends createjs.Container {
     private update_process() {
         console.log("start update");
         this._process = new HeatingProcess(this.body);
-
-        this._processDrawer = new ProcessDrawer(
-            this._process,
-            SliceType.XY,
-            VIEW_DIVISION,
-            VIEW_DIVISION,
-            this.width,
-            this.height
-        );
-
-        this._processDrawer.v0 = 50;
-
-        this._processDrawerTime = new ProcessDrawer(
-            this._process,
-            SliceType.TY,
-            TIME_DIVISION,
-            VIEW_DIVISION,
-            640,
-            100
-        );
-
-        this._processDrawerTime.v0 = this.process.x_max - 1;
-
-        this.dispatchEvent("drawer changed");
-
+        this._processDrawer.process = this._process;
+        this._processDrawerTime.process = this._process;
         console.log("stop update");
     }
 }

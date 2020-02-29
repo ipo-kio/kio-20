@@ -4,7 +4,7 @@ import {Slice} from "../solver/Slice";
 
 export default class ProcessDrawer extends createjs.Shape {
 
-    private process: HeatingProcess;
+    private _process: HeatingProcess = null;
     private sliceType: SliceType;
     private _v0: number = 0;
     private dx: number;
@@ -12,9 +12,8 @@ export default class ProcessDrawer extends createjs.Shape {
     private width: number;
     private height: number;
 
-    constructor(process: HeatingProcess, sliceType: SliceType, dx: number, dy: number, width: number, height: number) {
+    constructor(sliceType: SliceType, dx: number, dy: number, width: number, height: number) {
         super();
-        this.process = process;
         this.sliceType = sliceType;
         this.dx = dx;
         this.dy = dy;
@@ -38,14 +37,17 @@ export default class ProcessDrawer extends createjs.Shape {
 
     get slice(): Slice {
         if (this.sliceType === SliceType.XY)
-            return this.process.xy_slice(this._v0, this.dx, this.dy);
+            return this._process.xy_slice(this._v0, this.dx, this.dy);
         else
-            return this.process.ty_slice(this._v0, this.dx, this.dy);
+            return this._process.ty_slice(this._v0, this.dx, this.dy);
     }
 
     private update_graphics() {
         let g = this.graphics;
         g.clear();
+        if (!this._process)
+            return;
+
         let slice = this.slice;
         let a = slice.width - 2; //for x
         let b = slice.height - 2; //for y
@@ -59,6 +61,11 @@ export default class ProcessDrawer extends createjs.Shape {
                 let color = Palette.palette0100.get(slice.get(x + 1, y + 1));
                 g.beginFill(color).rect(x * w, y * h, w, h);
             }
+    }
+
+    set process(value: HeatingProcess) {
+        this._process = value;
+        this.update_graphics();
     }
 }
 

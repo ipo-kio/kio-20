@@ -59,26 +59,13 @@ export default class BlocksRegistry extends createjs.Container {
         this.processDebugger.x = 0;
         this.processDebugger.y = this.bodyUI.height + 8 + 100 + 8; // 100 is the height of processDrawerTime
 
-        this.update_processes();
-
-        this.bodyUI.addEventListener("drawer changed", () => {
-            this.removeChild(this.processDrawer);
-            this.removeChild(this.processDrawerTime);
-
-            this.update_processes();
-        });
-    }
-
-    private update_processes() {
         this.addChild(this.bodyUI.processDrawer);
-        this.processDrawer = this.bodyUI.processDrawer;
-        this.processDrawer.x = this.bodyUI.x;
-        this.processDrawer.y = this.bodyUI.y;
+        this.bodyUI.processDrawer.x = this.bodyUI.x;
+        this.bodyUI.processDrawer.y = this.bodyUI.y;
 
         this.addChild(this.bodyUI.processDrawerTime);
-        this.processDrawerTime = this.bodyUI.processDrawerTime;
-        this.processDrawerTime.x = 0;
-        this.processDrawerTime.y = 8 + this.bodyUI.height;
+        this.bodyUI.processDrawerTime.x = 0;
+        this.bodyUI.processDrawerTime.y = 8 + this.bodyUI.height;
 
         this.processDebugger.process = this.bodyUI.process;
     }
