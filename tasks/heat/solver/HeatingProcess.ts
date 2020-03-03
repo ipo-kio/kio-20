@@ -9,13 +9,14 @@ export default class HeatingProcess {
     private values: Layer[];
 
     constructor(body: Body) {
+        console.log('here');
         let solver = new Solver(
             body,
             new DimensionDescription(0, 1, N_element * body.width + 2, true),
             new DimensionDescription(0, 1, N_element * body.height + 2, true),
             new DimensionDescription(0, 10, N_time + 1, false),
-            phi0,
-            (x: number, y: number) => 0
+            (x: number, y: number) => 0,
+            phi0
         );
 
         this.values = solver.u;
@@ -67,9 +68,14 @@ export default class HeatingProcess {
             }
         };
     }
+
+    get debug() {
+        return JSON.stringify(this.values);
+    }
 }
 
 let num_out = 0;
+
 function log(m: any, title?: string) {
     if (num_out > 30)
         return;
@@ -77,7 +83,7 @@ function log(m: any, title?: string) {
     if (title)
         console.log(title, m);
     else
-         console.log(m);
+        console.log(m);
 
     num_out++;
 }

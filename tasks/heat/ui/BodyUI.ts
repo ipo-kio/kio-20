@@ -18,6 +18,7 @@ export class BodyUI extends createjs.Container {
     private _processDrawerTime: ProcessDrawer;
 
     constructor(kioapi: KioApi) {
+        console.log('create body ui');
         super();
         this.blocks = new Array<Block[]>(M);
         for (let i = 0; i < M; i++) {
@@ -72,7 +73,7 @@ export class BodyUI extends createjs.Container {
 
         this.update_process();
 
-        this._processDrawer.v0 = 50;
+        this._processDrawer.v0 = 40;
         this._processDrawerTime.v0 = this.process.x_max - 1;
     }
 
@@ -203,6 +204,7 @@ export class BodyUI extends createjs.Container {
         this._processDrawer.process = this._process;
         this._processDrawerTime.process = this._process;
         console.log("stop update");
+        // download(this._process.debug, "values.json", "application/json");
     }
 }
 
@@ -215,3 +217,21 @@ export const TIME = 60 * 60;
 export const TIME_DIVISION = 10;
 export const N_time = TIME_DIVISION * 10;
 export const DEFAULT_MATERIAL: Material = "tree";
+
+function download(data:BlobPart, filename:string, type:string) {
+    let file = new Blob([data], {type: type});
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+    else { // Others
+        var a = document.createElement("a"),
+            url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 0);
+    }
+}

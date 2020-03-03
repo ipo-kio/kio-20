@@ -17,6 +17,7 @@ export class ProcessDebugger extends createjs.Container {
     }
 
     private update_process() {
+        console.log("updating process in debugger");
         for (let d of this._drawer)
             this.removeChild(d);
         this._drawer = [];

@@ -27,15 +27,17 @@ export class Solver {
         phi0: LayerFunction,
         heat: LayerFunction
     ) {
+        console.log('here');
         this.xd = xd;
         this.yd = yd;
         this.td = td;
+        console.log('dx, dy, dz', this.xd.dx, this.yd.dx, this.td.dx);
 
         this.phi0 = this.lay_out(phi0);
         this.heat = this.lay_out(heat);
         this.a = this.lay_out((x: number, y: number) => {
             let xx = (x - xd.min) / (xd.max - xd.min);
-            let yy = (x - xd.min) / (yd.max - yd.min);
+            let yy = (y - yd.min) / (yd.max - yd.min);
 
             let xi = Math.floor(xx * body.width);
             if (xi < 0)
@@ -51,6 +53,8 @@ export class Solver {
 
             return body.a(xi, yi);
         });
+
+        console.log(this.a);
 
         this.A = new Array(xd.n);
         this.B = new Array(xd.n);
