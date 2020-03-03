@@ -2,7 +2,6 @@ import {Material} from "../Body";
 import {BodyUI, DEFAULT_MATERIAL} from "./BodyUI";
 import Block from "./Block";
 import {KioApi} from "../../KioApi";
-import ProcessDrawer from "./ProcessDrawer";
 import {ProcessDebugger} from "./ProcessDebugger";
 
 export default class BlocksRegistry extends createjs.Container {
@@ -43,7 +42,7 @@ export default class BlocksRegistry extends createjs.Container {
                             b.move_home();
                     });
                     b.addEventListener("mousedown", () => {
-                        this.setChildIndex(b, this.children.length - 1);
+                        this.setChildIndex(b, this.children.length - 1 - 3); // 3 extra children
                         this.bodyUI.remove_block(b);
                     });
                 }

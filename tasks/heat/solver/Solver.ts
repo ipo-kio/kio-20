@@ -3,12 +3,14 @@ import Body from "../Body";
 
 export type Layer = number[][];
 export type LayerFunction = (x: number, y: number) => number;
+export type LeftHeatFlowFunction = (y: number) => number;
 
 export class Solver {
 
     private a: Layer;
     private phi0: Layer;
     private heat: Layer;
+    private left_heat: number[];
     private xd: DimensionDescription;
     private yd: DimensionDescription;
     private td: DimensionDescription;
@@ -25,13 +27,12 @@ export class Solver {
         yd: DimensionDescription,
         td: DimensionDescription,
         phi0: LayerFunction,
-        heat: LayerFunction
+        heat: LayerFunction,
+        left_heat: LeftHeatFlowFunction
     ) {
-        console.log('here');
         this.xd = xd;
         this.yd = yd;
         this.td = td;
-        console.log('dx, dy, dz', this.xd.dx, this.yd.dx, this.td.dx);
 
         this.phi0 = this.lay_out(phi0);
         this.heat = this.lay_out(heat);
@@ -53,8 +54,10 @@ export class Solver {
 
             return body.a(xi, yi);
         });
-
-        console.log(this.a);
+        //left heat
+        this.left_heat = new Array(yd.n);
+        for (let y = 0; y < yd.n; y++)
+            this.left_heat[y] = left_heat(yd.v(y));
 
         this.A = new Array(xd.n);
         this.B = new Array(xd.n);
@@ -117,7 +120,7 @@ export class Solver {
                     sys[0][0] = 0;
                     sys[1][0] = -1;
                     sys[2][0] = 1;
-                    sys[3][0] = h * 1000;
+                    sys[3][0] = h * this.left_heat[y];
 
                     for (let x = 1; x < x_max; x++) {
                         let a = this.a[x][y];

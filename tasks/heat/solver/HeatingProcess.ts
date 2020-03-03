@@ -1,4 +1,4 @@
-import {Layer, Solver} from "./Solver";
+import {Layer, LayerFunction, Solver} from "./Solver";
 import {DimensionDescription} from "./DimensionDescription";
 import Body from "../Body";
 import {Slice} from "./Slice";
@@ -10,13 +10,19 @@ export default class HeatingProcess {
 
     constructor(body: Body) {
         console.log('here');
+
         let solver = new Solver(
             body,
             new DimensionDescription(0, 1, N_element * body.width + 2, true),
             new DimensionDescription(0, 1, N_element * body.height + 2, true),
             new DimensionDescription(0, 10, N_time + 1, false),
             (x: number, y: number) => 0,
-            phi0
+            sum_layer_functions(
+                create_point_heat(1 / 12, 3 / 12, 1 / 12, 100),
+                create_point_heat(1 / 12, 5 / 12, 1 / 12, 100),
+                create_point_heat(1 / 12, 9 / 12, 1 / 12, 100)
+            ),
+            y => 0
         );
 
         this.values = solver.u;
@@ -90,7 +96,7 @@ function log(m: any, title?: string) {
 
 
 const MAX_T = 100;
-const T_DIST = 0.1;/*
+const T_DIST = 0.1;
 const phi0 = (x: number, y: number) => {
     if (x < 0)
         return MAX_T;
@@ -101,5 +107,26 @@ const phi0 = (x: number, y: number) => {
     x = 1 - x;
 
     return (3 * x * x - 2 * x * x * x) * MAX_T;
-};*/
-const phi0 = (x: number, y: number) => 0;
+};
+const phi0_zero = (x: number, y: number) => 0;
+
+function create_point_heat(x0: number, y0: number, r: number, T: number): LayerFunction {
+    return (x: number, y: number) => {
+        let dx = x - x0;
+        let dy = y - y0;
+        let d = Math.sqrt(dx * dx + dy * dy);
+        let s = 1 - d / r;
+        if (s < 0)
+            return 0;
+        return T * s * s * (3 - 2 * s);
+    };
+}
+
+function sum_layer_functions(...lfs: LayerFunction[]): LayerFunction {
+    return (x, y) => {
+        let s = 0;
+        for (let lf of lfs)
+            s += lf(x, y);
+        return s;
+    }
+}
