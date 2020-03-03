@@ -65,6 +65,10 @@ export default class ProcessDrawer extends createjs.Shape {
         this.cache(0, 0, this.width, this.height);
     }
 
+    get process(): HeatingProcess {
+        return this._process;
+    }
+
     set process(value: HeatingProcess) {
         this._process = value;
         this.update_graphics();

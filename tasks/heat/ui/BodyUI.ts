@@ -19,7 +19,6 @@ export class BodyUI extends createjs.Container {
     private _timeController: TimeControl;
 
     constructor(kioapi: KioApi) {
-        console.log('create body ui');
         super();
         this.blocks = new Array<Block[]>(M);
         for (let i = 0; i < M; i++) {
@@ -65,10 +64,10 @@ export class BodyUI extends createjs.Container {
         );
 
         this._timeController = new TimeControl();
-
         this.update_process();
-
-        this._processDrawer.v0 = 40;
+        this._timeController.addEventListener("time changed", () => {
+            this._processDrawer.v0 = this._timeController.time_normalized;
+        });
     }
 
     get processDrawer(): ProcessDrawer {
@@ -193,11 +192,9 @@ export class BodyUI extends createjs.Container {
     }
 
     private update_process() {
-        console.log("start update");
         this._process = new HeatingProcess(this.body);
         this._processDrawer.process = this._process;
         this._timeController.process = this._process;
-        console.log("stop update");
         this.dispatchEvent("process changed");
         // download(this._process.debug, "values.json", "application/json");
     }
@@ -209,8 +206,8 @@ export const VIEW_DIVISION = 5;
 export const N_element = VIEW_DIVISION * 5;
 export const LENGTH = 1;
 export const TIME = 60 * 60;
-export const TIME_DIVISION = 4;
-export const N_time = TIME_DIVISION * 25;
+export const TIME_DIVISION = 1;
+export const N_time = TIME_DIVISION * 100;
 export const DEFAULT_MATERIAL: Material = "tree";
 
 function download(data:BlobPart, filename:string, type:string) {

@@ -9,8 +9,6 @@ export default class HeatingProcess {
     private values: Layer[];
 
     constructor(body: Body) {
-        console.log('here');
-
         let solver = new Solver(
             body,
             new DimensionDescription(0, 1, N_element * body.width + 2, true),
