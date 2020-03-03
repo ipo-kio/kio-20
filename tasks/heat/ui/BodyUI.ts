@@ -204,6 +204,7 @@ export class BodyUI extends createjs.Container {
         this._processDrawer.process = this._process;
         this._processDrawerTime.process = this._process;
         console.log("stop update");
+        this.dispatchEvent("process changed");
         // download(this._process.debug, "values.json", "application/json");
     }
 }
@@ -214,8 +215,8 @@ export const VIEW_DIVISION = 5;
 export const N_element = VIEW_DIVISION * 5;
 export const LENGTH = 1;
 export const TIME = 60 * 60;
-export const TIME_DIVISION = 10;
-export const N_time = TIME_DIVISION * 10;
+export const TIME_DIVISION = 4;
+export const N_time = TIME_DIVISION * 25;
 export const DEFAULT_MATERIAL: Material = "tree";
 
 function download(data:BlobPart, filename:string, type:string) {

@@ -90,7 +90,7 @@ function log(m: any, title?: string) {
 
 
 const MAX_T = 100;
-const T_DIST = 0.1;
+const T_DIST = 0.1;/*
 const phi0 = (x: number, y: number) => {
     if (x < 0)
         return MAX_T;
@@ -101,4 +101,5 @@ const phi0 = (x: number, y: number) => {
     x = 1 - x;
 
     return (3 * x * x - 2 * x * x * x) * MAX_T;
-};
+};*/
+const phi0 = (x: number, y: number) => 0;

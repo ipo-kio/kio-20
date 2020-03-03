@@ -8,8 +8,6 @@ import {ProcessDebugger} from "./ProcessDebugger";
 export default class BlocksRegistry extends createjs.Container {
 
     private bodyUI: BodyUI;
-    private processDrawer: ProcessDrawer;
-    private processDrawerTime: ProcessDrawer;
     private processDebugger: ProcessDebugger;
 
     constructor(kioapi: KioApi, amount: { [key in Material]: number }) {
@@ -66,6 +64,10 @@ export default class BlocksRegistry extends createjs.Container {
         this.addChild(this.bodyUI.processDrawerTime);
         this.bodyUI.processDrawerTime.x = 0;
         this.bodyUI.processDrawerTime.y = 8 + this.bodyUI.height;
+
+        this.bodyUI.addEventListener("process changed", () => {
+            this.processDebugger.process = this.bodyUI.process;
+        });
 
         this.processDebugger.process = this.bodyUI.process;
     }

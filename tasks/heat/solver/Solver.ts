@@ -114,6 +114,11 @@ export class Solver {
 
             if (t % 2 == 1) {
                 for (let y = 1; y < y_max; y++) {
+                    sys[0][0] = 0;
+                    sys[1][0] = -1;
+                    sys[2][0] = 1;
+                    sys[3][0] = h * 1000;
+
                     for (let x = 1; x < x_max; x++) {
                         let a = this.a[x][y];
                         //v1[x-1, y]

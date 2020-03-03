@@ -22,7 +22,7 @@ export default class Body {
 
 export type Material = "glass" | "air" | "tree" | "aluminium" | "sand";
 
-const MUL = 1e7;
+const MUL = 1e5;
 const A = {
     "aluminium": 8.418e-5 * MUL,
     "air": 1.9e-5 * MUL,
