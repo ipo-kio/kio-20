@@ -196,7 +196,6 @@ export class BodyUI extends createjs.Container {
         this._processDrawer.process = this._process;
         this._timeController.process = this._process;
         this.dispatchEvent("process changed");
-        // download(this._process.debug, "values.json", "application/json");
     }
 }
 
@@ -210,7 +209,7 @@ export const TIME_DIVISION = 1;
 export const N_time = TIME_DIVISION * 100;
 export const DEFAULT_MATERIAL: Material = "tree";
 
-function download(data:BlobPart, filename:string, type:string) {
+export function download(data:BlobPart, filename:string, type:string) {
     let file = new Blob([data], {type: type});
     if (window.navigator.msSaveOrOpenBlob) // IE10+
         window.navigator.msSaveOrOpenBlob(file, filename);

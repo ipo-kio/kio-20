@@ -21,7 +21,7 @@ export default class ProcessDrawer extends createjs.Shape {
         this.height = height;
 
         this.update_graphics();
-        this.alpha = 0.4;
+        this.alpha = 1;
     }
 
     get v0(): number {
