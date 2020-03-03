@@ -42,7 +42,7 @@ export class Heat { //TODO название класса должно совпа
 
         this.canvas = document.createElement('canvas');
         this.canvas.width = 900;
-        this.canvas.height = 4800;
+        this.canvas.height = 540;
 
         this.stage = new createjs.Stage(this.canvas);
         this.stage.enableMouseOver();

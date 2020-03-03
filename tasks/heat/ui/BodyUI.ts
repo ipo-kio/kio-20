@@ -5,6 +5,7 @@ import HeatingProcess from "../solver/HeatingProcess";
 import Grid from "../Grid";
 import ProcessDrawer, {SliceType} from "./ProcessDrawer";
 import Rectangle = createjs.Rectangle;
+import TimeControl from "./TimeControl";
 
 export class BodyUI extends createjs.Container {
 
@@ -15,7 +16,7 @@ export class BodyUI extends createjs.Container {
     private grid: createjs.Shape;
     private _process: HeatingProcess;
     private _processDrawer: ProcessDrawer;
-    private _processDrawerTime: ProcessDrawer;
+    private _timeController: TimeControl;
 
     constructor(kioapi: KioApi) {
         console.log('create body ui');
@@ -63,26 +64,19 @@ export class BodyUI extends createjs.Container {
             this.height
         );
 
-        this._processDrawerTime = new ProcessDrawer(
-            SliceType.TY,
-            TIME_DIVISION,
-            VIEW_DIVISION,
-            640,
-            100
-        );
+        this._timeController = new TimeControl();
 
         this.update_process();
 
         this._processDrawer.v0 = 40;
-        this._processDrawerTime.v0 = this.process.x_max - 1;
     }
 
     get processDrawer(): ProcessDrawer {
         return this._processDrawer;
     }
 
-    get processDrawerTime(): ProcessDrawer {
-        return this._processDrawerTime;
+    get timeController(): TimeControl {
+        return this._timeController;
     }
 
     get body(): Body {
@@ -202,7 +196,7 @@ export class BodyUI extends createjs.Container {
         console.log("start update");
         this._process = new HeatingProcess(this.body);
         this._processDrawer.process = this._process;
-        this._processDrawerTime.process = this._process;
+        this._timeController.process = this._process;
         console.log("stop update");
         this.dispatchEvent("process changed");
         // download(this._process.debug, "values.json", "application/json");

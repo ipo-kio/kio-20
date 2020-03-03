@@ -9,7 +9,7 @@ export default class BlocksRegistry extends createjs.Container {
     private bodyUI: BodyUI;
     private processDebugger: ProcessDebugger;
 
-    constructor(kioapi: KioApi, amount: { [key in Material]: number }) {
+    constructor(kioapi: KioApi, amount: { [key in Material]: number }, use_debugger: boolean = false) {
         super();
 
         this.bodyUI = new BodyUI(kioapi);
@@ -42,7 +42,7 @@ export default class BlocksRegistry extends createjs.Container {
                             b.move_home();
                     });
                     b.addEventListener("mousedown", () => {
-                        this.setChildIndex(b, this.children.length - 1 - 3); // 3 extra children
+                        this.setChildIndex(b, this.children.length - 1 - (use_debugger ? 3 : 2)); // 3 extra children
                         this.bodyUI.remove_block(b);
                     });
                 }
@@ -51,24 +51,27 @@ export default class BlocksRegistry extends createjs.Container {
         this.bodyUI.x = 0;
         this.bodyUI.y = 0;
 
-        this.processDebugger = new ProcessDebugger();
-        this.addChild(this.processDebugger);
-        this.processDebugger.x = 0;
-        this.processDebugger.y = this.bodyUI.height + 8 + 100 + 8; // 100 is the height of processDrawerTime
+        if (use_debugger) {
+            this.processDebugger = new ProcessDebugger();
+            this.addChild(this.processDebugger);
+            this.processDebugger.x = 0;
+            this.processDebugger.y = this.bodyUI.height + 8 + 100 + 8; // 100 is the height of processDrawerTime
+        }
 
         this.addChild(this.bodyUI.processDrawer);
         this.bodyUI.processDrawer.x = this.bodyUI.x;
         this.bodyUI.processDrawer.y = this.bodyUI.y;
 
-        this.addChild(this.bodyUI.processDrawerTime);
-        this.bodyUI.processDrawerTime.x = 0;
-        this.bodyUI.processDrawerTime.y = 8 + this.bodyUI.height;
+        this.addChild(this.bodyUI.timeController);
+        this.bodyUI.timeController.x = 0;
+        this.bodyUI.timeController.y = 8 + this.bodyUI.height;
 
-        this.bodyUI.addEventListener("process changed", () => {
+        if (use_debugger) {
+            this.bodyUI.addEventListener("process changed", () => {
+                this.processDebugger.process = this.bodyUI.process;
+            });
             this.processDebugger.process = this.bodyUI.process;
-        });
-
-        this.processDebugger.process = this.bodyUI.process;
+        }
     }
 }
 
