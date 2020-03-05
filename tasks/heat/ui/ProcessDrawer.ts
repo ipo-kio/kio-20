@@ -12,6 +12,8 @@ export default class ProcessDrawer extends createjs.Shape {
     private width: number;
     private height: number;
 
+    private _update_listener: () => void;
+
     constructor(sliceType: SliceType, dx: number, dy: number, width: number, height: number) {
         super();
         this.sliceType = sliceType;
@@ -19,6 +21,10 @@ export default class ProcessDrawer extends createjs.Shape {
         this.dy = dy;
         this.width = width;
         this.height = height;
+
+        this._update_listener = () => {
+            this.update_graphics();
+        };
 
         this.update_graphics();
         this.alpha = 1;
@@ -71,7 +77,15 @@ export default class ProcessDrawer extends createjs.Shape {
 
     set process(value: HeatingProcess) {
         this._process = value;
+
+        if (this._process) {
+            this._process.removeEventListener("heat update", this._update_listener);
+            this._process.stop_update();
+        }
+
         this.update_graphics();
+
+        this._process.addEventListener("heat update", this._update_listener);
     }
 }
 

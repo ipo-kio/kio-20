@@ -4,12 +4,14 @@ import Body from "../Body";
 import {Slice} from "./Slice";
 import {N_element, N_time} from "../ui/BodyUI";
 
-export default class HeatingProcess {
+export default class HeatingProcess extends createjs.EventDispatcher {
 
     private values: Layer[];
     private _heat_position: number;
+    private solver: Solver;
 
     constructor(body: Body) {
+        super();
         let solver = new Solver(
             body,
             new DimensionDescription(0, 1, N_element * body.width + 2, true),
@@ -23,7 +25,11 @@ export default class HeatingProcess {
             ),
             y => 0
         );
+        this.solver = solver;
 
+        solver.addEventListener("heat update", () => {
+            this.dispatchEvent("heat update");
+        });
         this.values = solver.u;
         this._heat_position = this.find_heat_position();
         console.log('hp', this._heat_position);
@@ -100,6 +106,10 @@ export default class HeatingProcess {
             s += this.values[t][this.values[0].length - 1][y];
 
         return s / n;
+    }
+
+    stop_update() {
+        this.solver.stop_update();
     }
 }
 

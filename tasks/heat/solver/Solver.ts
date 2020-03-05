@@ -5,7 +5,7 @@ export type Layer = number[][];
 export type LayerFunction = (x: number, y: number) => number;
 export type LeftHeatFlowFunction = (y: number) => number;
 
-export class Solver {
+export class Solver extends createjs.EventDispatcher {
 
     private a: Layer;
     private phi0: Layer;
@@ -16,10 +16,12 @@ export class Solver {
     private td: DimensionDescription;
 
     private _u: Layer[];
+    private last_layer = 0; //exclusive
 
     //for tridiagonal matrix algorithm
     private A: number[];
     private B: number[];
+    private raf_handle: number;
 
     constructor(
         body: Body,
@@ -30,6 +32,7 @@ export class Solver {
         heat: LayerFunction,
         left_heat: LeftHeatFlowFunction
     ) {
+        super();
         this.xd = xd;
         this.yd = yd;
         this.td = td;
@@ -64,16 +67,18 @@ export class Solver {
 
         this.pre_solve();
 
-        let t0 = 1;
         let do_next = () => {
-            if (t0 === this.td.n)
+            if (this.last_layer === this.td.n)
                 return;
-            let t1 = t0 + 10;
+
+            let t1 = this.last_layer + 4;
             if (t1 > this.td.n)
                 t1 = this.td.n;
-            this.solve(t0, t1);
-            requestAnimationFrame(do_next);
-        }
+            this.solve(t1);
+            this.dispatchEvent("heat update");
+
+            this.raf_handle = requestAnimationFrame(do_next);
+        };
         requestAnimationFrame(do_next);
     }
 
@@ -101,7 +106,10 @@ export class Solver {
     }
 
 
-    private solve(from: number, to: number) {
+    private solve(to: number) {
+        if (this.last_layer >= to)
+            return;
+
         let x_max = this.xd.n - 1;
         let y_max = this.yd.n - 1;
         let tau = this.td.dx;
@@ -121,7 +129,7 @@ export class Solver {
         sys[2][x_max] = 0;
         sys[3][x_max] = 0;
 
-        for (let t = from; t < to; t++) {
+        for (let t = this.last_layer; t < to; t++) {
             let v0 = this._u[t - 1];
             let v1 = this._u[t];
 
@@ -171,6 +179,8 @@ export class Solver {
                 }
             }
         }
+
+        this.last_layer = to;
     }
 
     private solve_3sys(sys: number[][], v1: Layer, x: number, y: number) {
@@ -219,5 +229,9 @@ export class Solver {
 
     get u(): Layer[] {
         return this._u;
+    }
+
+    stop_update() {
+        clearTimeout(this.raf_handle);
     }
 }
