@@ -5,6 +5,7 @@ import HeatingProcess from "../solver/HeatingProcess";
 import Grid from "../Grid";
 import ProcessDrawer, {SliceType} from "./ProcessDrawer";
 import Rectangle = createjs.Rectangle;
+import TimeControl from "./TimeControl";
 
 export class BodyUI extends createjs.Container {
 
@@ -15,7 +16,7 @@ export class BodyUI extends createjs.Container {
     private grid: createjs.Shape;
     private _process: HeatingProcess;
     private _processDrawer: ProcessDrawer;
-    private _processDrawerTime: ProcessDrawer;
+    private _timeController: TimeControl;
 
     constructor(kioapi: KioApi) {
         super();
@@ -62,26 +63,19 @@ export class BodyUI extends createjs.Container {
             this.height
         );
 
-        this._processDrawerTime = new ProcessDrawer(
-            SliceType.TY,
-            TIME_DIVISION,
-            VIEW_DIVISION,
-            640,
-            100
-        );
-
+        this._timeController = new TimeControl();
         this.update_process();
-
-        this._processDrawer.v0 = 50;
-        this._processDrawerTime.v0 = this.process.x_max - 1;
+        this._timeController.addEventListener("time changed", () => {
+            this._processDrawer.v0 = this._timeController.time_normalized;
+        });
     }
 
     get processDrawer(): ProcessDrawer {
         return this._processDrawer;
     }
 
-    get processDrawerTime(): ProcessDrawer {
-        return this._processDrawerTime;
+    get timeController(): TimeControl {
+        return this._timeController;
     }
 
     get body(): Body {
@@ -198,11 +192,10 @@ export class BodyUI extends createjs.Container {
     }
 
     private update_process() {
-        console.log("start update");
         this._process = new HeatingProcess(this.body);
         this._processDrawer.process = this._process;
-        this._processDrawerTime.process = this._process;
-        console.log("stop update");
+        this._timeController.process = this._process;
+        this.dispatchEvent("process changed");
     }
 }
 
@@ -212,6 +205,24 @@ export const VIEW_DIVISION = 5;
 export const N_element = VIEW_DIVISION * 5;
 export const LENGTH = 1;
 export const TIME = 60 * 60;
-export const TIME_DIVISION = 10;
-export const N_time = TIME_DIVISION * 10;
+export const TIME_DIVISION = 1;
+export const N_time = TIME_DIVISION * 1000;
 export const DEFAULT_MATERIAL: Material = "tree";
+
+export function download(data:BlobPart, filename:string, type:string) {
+    let file = new Blob([data], {type: type});
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+    else { // Others
+        var a = document.createElement("a"),
+            url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 0);
+    }
+}

@@ -2,17 +2,14 @@ import {Material} from "../Body";
 import {BodyUI, DEFAULT_MATERIAL} from "./BodyUI";
 import Block from "./Block";
 import {KioApi} from "../../KioApi";
-import ProcessDrawer from "./ProcessDrawer";
 import {ProcessDebugger} from "./ProcessDebugger";
 
 export default class BlocksRegistry extends createjs.Container {
 
     private bodyUI: BodyUI;
-    private processDrawer: ProcessDrawer;
-    private processDrawerTime: ProcessDrawer;
     private processDebugger: ProcessDebugger;
 
-    constructor(kioapi: KioApi, amount: { [key in Material]: number }) {
+    constructor(kioapi: KioApi, amount: { [key in Material]: number }, use_debugger: boolean = false) {
         super();
 
         this.bodyUI = new BodyUI(kioapi);
@@ -25,7 +22,7 @@ export default class BlocksRegistry extends createjs.Container {
                 let material = m as Material;
                 let a = amount[material];
                 for (let i = 0; i < a; i++) {
-                    let x0 = this.bodyUI.width + 24 + row_element * (Block.WIDTH + DW);
+                    let x0 = this.bodyUI.width + 12 + row_element * (Block.WIDTH + DW);
                     let y0 = row_index * (Block.HEIGHT + DH);
                     let b = new Block(kioapi, material, x0, y0);
                     this.addChild(b);
@@ -45,7 +42,7 @@ export default class BlocksRegistry extends createjs.Container {
                             b.move_home();
                     });
                     b.addEventListener("mousedown", () => {
-                        this.setChildIndex(b, this.children.length - 1);
+                        this.setChildIndex(b, this.children.length - 1 - (use_debugger ? 3 : 2)); // 3 extra children
                         this.bodyUI.remove_block(b);
                     });
                 }
@@ -54,23 +51,30 @@ export default class BlocksRegistry extends createjs.Container {
         this.bodyUI.x = 0;
         this.bodyUI.y = 0;
 
-        this.processDebugger = new ProcessDebugger();
-        this.addChild(this.processDebugger);
-        this.processDebugger.x = 0;
-        this.processDebugger.y = this.bodyUI.height + 8 + 100 + 8; // 100 is the height of processDrawerTime
+        if (use_debugger) {
+            this.processDebugger = new ProcessDebugger();
+            this.addChild(this.processDebugger);
+            this.processDebugger.x = 0;
+            this.processDebugger.y = this.bodyUI.height + 4 + 100 + 4; // 100 is the height of processDrawerTime
+        }
 
         this.addChild(this.bodyUI.processDrawer);
-        this.bodyUI.processDrawer.x = this.bodyUI.x;
+        this.bodyUI.processDrawer.x = this.bodyUI.x + this.bodyUI.width + 12  + (DW + Block.WIDTH) * ROW + 4;
         this.bodyUI.processDrawer.y = this.bodyUI.y;
 
-        this.addChild(this.bodyUI.processDrawerTime);
-        this.bodyUI.processDrawerTime.x = 0;
-        this.bodyUI.processDrawerTime.y = 8 + this.bodyUI.height;
+        this.addChild(this.bodyUI.timeController);
+        this.bodyUI.timeController.x = 0;
+        this.bodyUI.timeController.y = 24 + this.bodyUI.height;
 
-        this.processDebugger.process = this.bodyUI.process;
+        if (use_debugger) {
+            this.bodyUI.addEventListener("process changed", () => {
+                this.processDebugger.process = this.bodyUI.process;
+            });
+            this.processDebugger.process = this.bodyUI.process;
+        }
     }
 }
 
 const DW = 4;
 const DH = 4;
-const ROW = 5;
+const ROW = 4;

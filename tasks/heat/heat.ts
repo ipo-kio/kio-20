@@ -42,16 +42,16 @@ export class Heat { //TODO название класса должно совпа
 
         this.canvas = document.createElement('canvas');
         this.canvas.width = 900;
-        this.canvas.height = 4800;
+        this.canvas.height = 540;
 
         this.stage = new createjs.Stage(this.canvas);
         this.stage.enableMouseOver();
         this.blocksRegistry = new BlocksRegistry(kioapi, {
-            "glass": 5,
-            "air": 5,
-            "aluminium": 5,
-            "sand": 5,
-            "tree": 16
+            "glass": 6,
+            "air": 6,
+            "aluminium": 6,
+            "sand": 6,
+            "tree": 12
         });
         this.stage.addChild(this.blocksRegistry);
 

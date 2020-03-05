@@ -21,7 +21,7 @@ export default class ProcessDrawer extends createjs.Shape {
         this.height = height;
 
         this.update_graphics();
-        this.alpha = 0.4;
+        this.alpha = 1;
     }
 
     get v0(): number {
@@ -61,6 +61,12 @@ export default class ProcessDrawer extends createjs.Shape {
                 let color = Palette.palette0100.get(slice.get(x + 1, y + 1));
                 g.beginFill(color).rect(x * w, y * h, w, h);
             }
+
+        this.cache(0, 0, this.width, this.height);
+    }
+
+    get process(): HeatingProcess {
+        return this._process;
     }
 
     set process(value: HeatingProcess) {

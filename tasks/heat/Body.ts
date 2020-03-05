@@ -22,19 +22,11 @@ export default class Body {
 
 export type Material = "glass" | "air" | "tree" | "aluminium" | "sand";
 
-/*
+const MUL = 1e5;
 const A = {
-    "aluminium": 8.418e-5,
-    "air": 1.9e-5,
-    "sand": 1.15e-6,
-    "glass": 3.4e-7,
-    "tree": 8.2e-8
-};
- */
-const A = {
-    "aluminium": 80,
-    "air": 20,
-    "sand": 1,
-    "glass": 0.3,
-    "tree": 0.04
+    "aluminium": 8.418e-5 * MUL,
+    "air": 1.9e-5 * MUL,
+    "sand": 1.15e-6 * MUL,
+    "glass": 3.4e-7 * MUL,
+    "tree": 8.2e-8  * MUL
 };

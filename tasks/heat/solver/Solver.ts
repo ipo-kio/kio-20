@@ -3,12 +3,14 @@ import Body from "../Body";
 
 export type Layer = number[][];
 export type LayerFunction = (x: number, y: number) => number;
+export type LeftHeatFlowFunction = (y: number) => number;
 
 export class Solver {
 
     private a: Layer;
     private phi0: Layer;
     private heat: Layer;
+    private left_heat: number[];
     private xd: DimensionDescription;
     private yd: DimensionDescription;
     private td: DimensionDescription;
@@ -25,7 +27,8 @@ export class Solver {
         yd: DimensionDescription,
         td: DimensionDescription,
         phi0: LayerFunction,
-        heat: LayerFunction
+        heat: LayerFunction,
+        left_heat: LeftHeatFlowFunction
     ) {
         this.xd = xd;
         this.yd = yd;
@@ -35,7 +38,7 @@ export class Solver {
         this.heat = this.lay_out(heat);
         this.a = this.lay_out((x: number, y: number) => {
             let xx = (x - xd.min) / (xd.max - xd.min);
-            let yy = (x - xd.min) / (yd.max - yd.min);
+            let yy = (y - yd.min) / (yd.max - yd.min);
 
             let xi = Math.floor(xx * body.width);
             if (xi < 0)
@@ -51,11 +54,27 @@ export class Solver {
 
             return body.a(xi, yi);
         });
+        //left heat
+        this.left_heat = new Array(yd.n);
+        for (let y = 0; y < yd.n; y++)
+            this.left_heat[y] = left_heat(yd.v(y));
 
         this.A = new Array(xd.n);
         this.B = new Array(xd.n);
 
-        this.solve();
+        this.pre_solve();
+
+        let t0 = 1;
+        let do_next = () => {
+            if (t0 === this.td.n)
+                return;
+            let t1 = t0 + 10;
+            if (t1 > this.td.n)
+                t1 = this.td.n;
+            this.solve(t0, t1);
+            requestAnimationFrame(do_next);
+        }
+        requestAnimationFrame(do_next);
     }
 
     lay_out(f: LayerFunction): Layer {
@@ -72,10 +91,17 @@ export class Solver {
         return result;
     }
 
-    private solve() {
+    private pre_solve() {
         let u = new Array(this.td.n);
         this._u = u;
         u[0] = this.phi0;
+
+        for (let t = 1; t < this.td.n; t++)
+            u[t] = this.lay_out((x, y) => 0);
+    }
+
+
+    private solve(from: number, to: number) {
         let x_max = this.xd.n - 1;
         let y_max = this.yd.n - 1;
         let tau = this.td.dx;
@@ -95,10 +121,9 @@ export class Solver {
         sys[2][x_max] = 0;
         sys[3][x_max] = 0;
 
-        for (let t = 1; t < this.td.n; t++) {
-            let v0 = u[t - 1];
-            let v1 = this.lay_out((x, y) => 0);
-            u[t] = v1;
+        for (let t = from; t < to; t++) {
+            let v0 = this._u[t - 1];
+            let v1 = this._u[t];
 
             //(v1[x,y]-v0[x,y]) / tau - a (
             //      v1[x-1,y]-2v1[x,y]+v1[x+1,y] +
@@ -110,6 +135,11 @@ export class Solver {
 
             if (t % 2 == 1) {
                 for (let y = 1; y < y_max; y++) {
+                    // sys[0][0] = 0;
+                    // sys[1][0] = -1;
+                    // sys[2][0] = 1;
+                    // sys[3][0] = h * this.left_heat[y];
+
                     for (let x = 1; x < x_max; x++) {
                         let a = this.a[x][y];
                         //v1[x-1, y]
@@ -172,6 +202,18 @@ export class Solver {
                 v1[ind][y] = value;
             else
                 v1[x][ind] = value;
+        }
+
+        if (x !== -1) {
+            let n = sys[0].length;
+            for (let y = 0; y < n; y++) {
+                let s = v1[x][y] * sys[1][y];
+                if (y - 1 >= 0) s += v1[x][y - 1] * sys[0][y];
+                if (y + 1 < n) s += v1[x][y + 1] * sys[2][y];
+                s -= sys[3][y];
+                if (Math.abs(s) > 1e-3)
+                    console.log("err", s, y, v1[x], sys[0][y], sys[1][y], sys[2][y], sys[3][y]);
+            }
         }
     }
 
