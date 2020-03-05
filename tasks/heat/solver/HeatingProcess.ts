@@ -85,9 +85,11 @@ export default class HeatingProcess {
     }
 
     private find_heat_position() {
-        for (let t = 0; t < this.values.length; t++)
-            if (this.mean_temperature(t) >= 100)
+        for (let t = 0; t < this.values.length; t++) {
+            let mean = this.mean_temperature(t);
+            if (mean >= 50)
                 return t;
+        }
         return -1;
     }
 

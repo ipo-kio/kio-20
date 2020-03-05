@@ -34,8 +34,6 @@ export class Solver {
         this.yd = yd;
         this.td = td;
 
-        console.log('asdf', xd.dx, yd.dx, td.dx);
-
         this.phi0 = this.lay_out(phi0);
         this.heat = this.lay_out(heat);
         this.a = this.lay_out((x: number, y: number) => {
@@ -64,7 +62,19 @@ export class Solver {
         this.A = new Array(xd.n);
         this.B = new Array(xd.n);
 
-        this.solve();
+        this.pre_solve();
+
+        let t0 = 1;
+        let do_next = () => {
+            if (t0 === this.td.n)
+                return;
+            let t1 = t0 + 10;
+            if (t1 > this.td.n)
+                t1 = this.td.n;
+            this.solve(t0, t1);
+            requestAnimationFrame(do_next);
+        }
+        requestAnimationFrame(do_next);
     }
 
     lay_out(f: LayerFunction): Layer {
@@ -81,10 +91,17 @@ export class Solver {
         return result;
     }
 
-    private solve() {
+    private pre_solve() {
         let u = new Array(this.td.n);
         this._u = u;
         u[0] = this.phi0;
+
+        for (let t = 1; t < this.td.n; t++)
+            u[t] = this.lay_out((x, y) => 0);
+    }
+
+
+    private solve(from: number, to: number) {
         let x_max = this.xd.n - 1;
         let y_max = this.yd.n - 1;
         let tau = this.td.dx;
@@ -104,10 +121,9 @@ export class Solver {
         sys[2][x_max] = 0;
         sys[3][x_max] = 0;
 
-        for (let t = 1; t < this.td.n; t++) {
-            let v0 = u[t - 1];
-            let v1 = this.lay_out((x, y) => 0);
-            u[t] = v1;
+        for (let t = from; t < to; t++) {
+            let v0 = this._u[t - 1];
+            let v1 = this._u[t];
 
             //(v1[x,y]-v0[x,y]) / tau - a (
             //      v1[x-1,y]-2v1[x,y]+v1[x+1,y] +
