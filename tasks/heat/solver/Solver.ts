@@ -17,11 +17,11 @@ export class Solver extends createjs.EventDispatcher {
 
     private _u: Layer[];
     private _last_layer = 0; //exclusive
+    private cancel_evaluations = false;
 
     //for tridiagonal matrix algorithm
     private A: number[];
     private B: number[];
-    private raf_handle: number;
 
     constructor(
         body: Body,
@@ -68,7 +68,7 @@ export class Solver extends createjs.EventDispatcher {
         this.pre_solve();
 
         let do_next = () => {
-            if (this._last_layer === this.td.n)
+            if (this._last_layer === this.td.n || this.cancel_evaluations)
                 return;
 
             let t1 = this._last_layer + 14;
@@ -77,7 +77,7 @@ export class Solver extends createjs.EventDispatcher {
             this.solve(t1);
             this.dispatchEvent("heat update");
 
-            this.raf_handle = requestAnimationFrame(do_next);
+            requestAnimationFrame(do_next);
         };
         requestAnimationFrame(do_next);
     }
@@ -237,7 +237,7 @@ export class Solver extends createjs.EventDispatcher {
     }
 
     stop_update() {
-        clearTimeout(this.raf_handle);
+        this.cancel_evaluations = true;
     }
 
 }
