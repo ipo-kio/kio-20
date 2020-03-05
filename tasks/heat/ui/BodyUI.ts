@@ -206,7 +206,7 @@ export const N_element = VIEW_DIVISION * 5;
 export const LENGTH = 1;
 export const TIME = 60 * 60;
 export const TIME_DIVISION = 1;
-export const N_time = TIME_DIVISION * 100;
+export const N_time = TIME_DIVISION * 1000;
 export const DEFAULT_MATERIAL: Material = "tree";
 
 export function download(data:BlobPart, filename:string, type:string) {

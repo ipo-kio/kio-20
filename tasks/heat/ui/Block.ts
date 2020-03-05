@@ -2,9 +2,9 @@ import {Material} from "../Body";
 import {KioApi} from "../../KioApi";
 
 export default class Block extends createjs.Container {
-    public static readonly WIDTH = 64;
+    public static readonly WIDTH = 48;
     private kioapi: KioApi;
-    public static readonly HEIGHT = 64;
+    public static readonly HEIGHT = 48;
 
     private readonly _material: Material;
     private _mouseover: boolean;

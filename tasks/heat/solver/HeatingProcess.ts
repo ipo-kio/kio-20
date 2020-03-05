@@ -7,13 +7,14 @@ import {N_element, N_time} from "../ui/BodyUI";
 export default class HeatingProcess {
 
     private values: Layer[];
+    private _heat_position: number;
 
     constructor(body: Body) {
         let solver = new Solver(
             body,
             new DimensionDescription(0, 1, N_element * body.width + 2, true),
             new DimensionDescription(0, 1, N_element * body.height + 2, true),
-            new DimensionDescription(0, 10, N_time + 1, false),
+            new DimensionDescription(0, 50, N_time + 1, false),
             (x: number, y: number) => 0,
             sum_layer_functions(
                 create_point_heat(1 / 12, 3 / 12, 1 / 12, 100),
@@ -24,6 +25,8 @@ export default class HeatingProcess {
         );
 
         this.values = solver.u;
+        this._heat_position = this.find_heat_position();
+        console.log('hp', this._heat_position);
     }
 
     get x_max(): number {
@@ -36,6 +39,10 @@ export default class HeatingProcess {
 
     get t_max(): number {
         return this.values.length - 1;
+    }
+
+    get heat_position(): number {
+        return this._heat_position;
     }
 
     xy_slice(t: number, dx: number, dy: number): Slice {
@@ -75,6 +82,22 @@ export default class HeatingProcess {
 
     get debug() {
         return JSON.stringify(this.values);
+    }
+
+    private find_heat_position() {
+        for (let t = 0; t < this.values.length; t++)
+            if (this.mean_temperature(t) >= 100)
+                return t;
+        return -1;
+    }
+
+    private mean_temperature(t: number): number {
+        let n = this.values[0][0].length - 2;
+        let s = 0;
+        for (let y = 1; y < this.values[0][0].length - 1; y++)
+            s += this.values[t][this.values[0].length - 1][y];
+
+        return s / n;
     }
 }
 

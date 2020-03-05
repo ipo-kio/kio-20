@@ -44,16 +44,15 @@ export default class TimeControl extends createjs.Container {
         this.mouseEnabled = true;
 
         let time_change_listener = (e: Object) => {
-            console.log("tcl");
             let me = e as MouseEvent;
             this.time = (me.localX / W) * (this.process.t_max + 1);
         };
         this.addEventListener("pressmove", time_change_listener);
         this.addEventListener("mousedown", time_change_listener);
-        this.addEventListener("pressup", () => {
-            console.log("mouse up");
-            download(this.process.debug, "values.json", "application/json");
-        })
+        // this.addEventListener("pressup", () => {
+        //     console.log("mouse up");
+            // download(this.process.debug, "values.json", "application/json");
+        // })
     }
 
     get time_normalized(): number {

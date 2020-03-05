@@ -34,6 +34,8 @@ export class Solver {
         this.yd = yd;
         this.td = td;
 
+        console.log('asdf', xd.dx, yd.dx, td.dx);
+
         this.phi0 = this.lay_out(phi0);
         this.heat = this.lay_out(heat);
         this.a = this.lay_out((x: number, y: number) => {
@@ -117,10 +119,10 @@ export class Solver {
 
             if (t % 2 == 1) {
                 for (let y = 1; y < y_max; y++) {
-                    sys[0][0] = 0;
-                    sys[1][0] = -1;
-                    sys[2][0] = 1;
-                    sys[3][0] = h * this.left_heat[y];
+                    // sys[0][0] = 0;
+                    // sys[1][0] = -1;
+                    // sys[2][0] = 1;
+                    // sys[3][0] = h * this.left_heat[y];
 
                     for (let x = 1; x < x_max; x++) {
                         let a = this.a[x][y];
@@ -184,6 +186,18 @@ export class Solver {
                 v1[ind][y] = value;
             else
                 v1[x][ind] = value;
+        }
+
+        if (x !== -1) {
+            let n = sys[0].length;
+            for (let y = 0; y < n; y++) {
+                let s = v1[x][y] * sys[1][y];
+                if (y - 1 >= 0) s += v1[x][y - 1] * sys[0][y];
+                if (y + 1 < n) s += v1[x][y + 1] * sys[2][y];
+                s -= sys[3][y];
+                if (Math.abs(s) > 1e-3)
+                    console.log("err", s, y, v1[x], sys[0][y], sys[1][y], sys[2][y], sys[3][y]);
+            }
         }
     }
 

@@ -22,7 +22,7 @@ export default class BlocksRegistry extends createjs.Container {
                 let material = m as Material;
                 let a = amount[material];
                 for (let i = 0; i < a; i++) {
-                    let x0 = this.bodyUI.width + 24 + row_element * (Block.WIDTH + DW);
+                    let x0 = this.bodyUI.width + 12 + row_element * (Block.WIDTH + DW);
                     let y0 = row_index * (Block.HEIGHT + DH);
                     let b = new Block(kioapi, material, x0, y0);
                     this.addChild(b);
@@ -55,16 +55,16 @@ export default class BlocksRegistry extends createjs.Container {
             this.processDebugger = new ProcessDebugger();
             this.addChild(this.processDebugger);
             this.processDebugger.x = 0;
-            this.processDebugger.y = this.bodyUI.height + 8 + 100 + 8; // 100 is the height of processDrawerTime
+            this.processDebugger.y = this.bodyUI.height + 4 + 100 + 4; // 100 is the height of processDrawerTime
         }
 
         this.addChild(this.bodyUI.processDrawer);
-        this.bodyUI.processDrawer.x = this.bodyUI.x;
+        this.bodyUI.processDrawer.x = this.bodyUI.x + this.bodyUI.width + 12  + (DW + Block.WIDTH) * ROW + 4;
         this.bodyUI.processDrawer.y = this.bodyUI.y;
 
         this.addChild(this.bodyUI.timeController);
         this.bodyUI.timeController.x = 0;
-        this.bodyUI.timeController.y = 8 + this.bodyUI.height;
+        this.bodyUI.timeController.y = 24 + this.bodyUI.height;
 
         if (use_debugger) {
             this.bodyUI.addEventListener("process changed", () => {
@@ -77,4 +77,4 @@ export default class BlocksRegistry extends createjs.Container {
 
 const DW = 4;
 const DH = 4;
-const ROW = 5;
+const ROW = 4;

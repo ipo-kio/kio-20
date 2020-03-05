@@ -24,7 +24,7 @@ export type Material = "glass" | "air" | "tree" | "aluminium" | "sand";
 
 const MUL = 1e5;
 const A = {
-    "aluminium": 8.418/*e-5*/ * MUL,
+    "aluminium": 8.418e-5 * MUL,
     "air": 1.9e-5 * MUL,
     "sand": 1.15e-6 * MUL,
     "glass": 3.4e-7 * MUL,
