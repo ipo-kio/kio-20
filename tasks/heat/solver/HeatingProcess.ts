@@ -51,6 +51,10 @@ export default class HeatingProcess extends createjs.EventDispatcher {
         return this._heat_position;
     }
 
+    get last_layer(): number {
+        return this.solver.last_layer;
+    }
+
     xy_slice(t: number, dx: number, dy: number): Slice {
         // *0 1 *2 3 *4
         let x_max = this.x_max;

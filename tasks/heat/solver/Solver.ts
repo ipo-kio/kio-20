@@ -16,7 +16,7 @@ export class Solver extends createjs.EventDispatcher {
     private td: DimensionDescription;
 
     private _u: Layer[];
-    private last_layer = 0; //exclusive
+    private _last_layer = 0; //exclusive
 
     //for tridiagonal matrix algorithm
     private A: number[];
@@ -68,10 +68,10 @@ export class Solver extends createjs.EventDispatcher {
         this.pre_solve();
 
         let do_next = () => {
-            if (this.last_layer === this.td.n)
+            if (this._last_layer === this.td.n)
                 return;
 
-            let t1 = this.last_layer + 4;
+            let t1 = this._last_layer + 14;
             if (t1 > this.td.n)
                 t1 = this.td.n;
             this.solve(t1);
@@ -100,14 +100,15 @@ export class Solver extends createjs.EventDispatcher {
         let u = new Array(this.td.n);
         this._u = u;
         u[0] = this.phi0;
+        this._last_layer = 1;
 
         for (let t = 1; t < this.td.n; t++)
-            u[t] = this.lay_out((x, y) => 0);
+            u[t] = this.lay_out(() => 0);
     }
 
 
     private solve(to: number) {
-        if (this.last_layer >= to)
+        if (this._last_layer >= to)
             return;
 
         let x_max = this.xd.n - 1;
@@ -129,7 +130,7 @@ export class Solver extends createjs.EventDispatcher {
         sys[2][x_max] = 0;
         sys[3][x_max] = 0;
 
-        for (let t = this.last_layer; t < to; t++) {
+        for (let t = this._last_layer; t < to; t++) {
             let v0 = this._u[t - 1];
             let v1 = this._u[t];
 
@@ -180,7 +181,7 @@ export class Solver extends createjs.EventDispatcher {
             }
         }
 
-        this.last_layer = to;
+        this._last_layer = to;
     }
 
     private solve_3sys(sys: number[][], v1: Layer, x: number, y: number) {
@@ -231,7 +232,12 @@ export class Solver extends createjs.EventDispatcher {
         return this._u;
     }
 
+    get last_layer(): number {
+        return this._last_layer;
+    }
+
     stop_update() {
         clearTimeout(this.raf_handle);
     }
+
 }

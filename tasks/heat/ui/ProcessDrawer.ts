@@ -68,6 +68,9 @@ export default class ProcessDrawer extends createjs.Shape {
                 g.beginFill(color).rect(x * w, y * h, w, h);
             }
 
+        let x = w * this._process.last_layer / 5;
+        g.beginStroke('white').setStrokeStyle(1).moveTo(x, 0).lineTo(x, this.height).endStroke();
+
         this.cache(0, 0, this.width, this.height);
     }
 
