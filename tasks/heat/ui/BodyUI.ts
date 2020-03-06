@@ -2,7 +2,6 @@ import Body, {Material} from "../Body";
 import Block from "./Block";
 import {KioApi} from "../../KioApi";
 import HeatingProcess from "../solver/HeatingProcess";
-import Grid from "../Grid";
 import ProcessDrawer, {SliceType} from "./ProcessDrawer";
 import Rectangle = createjs.Rectangle;
 import TimeControl from "./TimeControl";
