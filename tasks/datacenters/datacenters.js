@@ -39,7 +39,10 @@ export class Datacenters
 	static preloadManifest ()
 	{
 		return [
-			{ id: 'bg', src: 'datacenters-resources/bg1.jpg' },
+			{ id: 'bg', src: 'datacenters-resources/karta-fon-all.jpg' },
+			{ id: 'dc_sel', src: 'datacenters-resources/dom1.png' },
+			{ id: 'dc_red', src: 'datacenters-resources/dom2.png' },
+			{ id: 'dc_green', src: 'datacenters-resources/dom3.png' },
 		] // TODO перечислить загружаемые ресурсы. Они находятся в каталоге taskid-resources
 	}
 

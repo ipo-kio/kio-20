@@ -3,6 +3,7 @@ import { Global } from "./Global.js"
 import { Helper } from "./Helper.js"
 import { Relay } from "./Relay.js"
 import { Datacenters } from "../datacenters.js"
+import { InterfaceHelper } from './InterfaceHelper.js'
 
 export class Process{
 
@@ -187,6 +188,8 @@ export class Process{
 		Datacenters._currentSolution._dcPoints2 = points2Count
 
 		Datacenters.saveCurrentSolution()
+
+
 
 		Global._stageTop.update();
 

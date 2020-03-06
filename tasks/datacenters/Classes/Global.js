@@ -51,21 +51,25 @@ export class Global
 		{
 			if(lenShape.name == Global._relArr[i]._name)
 			{
-				//text = Global._stageTop.getChildByName(lenShape.name + '_text')
+				text = Global._stageTop.getChildByName(lenShape.name + '_text')
 				line = Global._stageTop.getChildByName(Global._relArr[i]._name)
 
 				if(Global._relArr[i]._selected )
 				{
-					lenShape.fillCmd.style =  "yellow";
-					//text.color = 'yellow'
+					lenShape.fillCmd.style =  "white";
+					text.color = '#027202'
 
-					line.strokeCmd.style =  "yellow";
+					line.strokeCmd.style =  "#027202";
+					line.dotCmd.segments = null
 				}
 				else{
-					lenShape.fillCmd.style =  "white";
-					//text.color = 'black'
-					line.strokeCmd.style =  "brown";
+					lenShape.fillCmd.style =  "#979797";
+					text.color = 'white'
+					line.strokeCmd.style =  "#c00000";
+					line.dotCmd.segments =  [12,5]
+
 				}
+
 			}
 		}
 	}
@@ -76,6 +80,9 @@ export class Global
 
 		let cont = Global._stageTop.getChildByName(dc._name + '_cont')
 		let text = cont.getChildByName(dc._name + '_text')
+		let imgSel = cont.getChildByName(dc._name + '_img_sel')
+		let imgRed = cont.getChildByName(dc._name + '_img_red')
+		let imgGreen = cont.getChildByName(dc._name + '_img_green')
 
 		if(dc._selected)
 		{
@@ -90,16 +97,21 @@ export class Global
 			*/
 			dcShape.fillCmd.style =  "yellow";
 
-
-
-			text.color =  "red";
+			imgSel.visible = true
+			imgRed.visible = false
+			imgGreen.visible = false
+			text.color =  "white";
 		}
 		else
 		{
 			if(Helper.hasKey(Global._dcBadDic, dcShape.name))
 			{
 				//-- не охваченные
-				dcShape.fillCmd.style =  "red";
+				//dcShape.fillCmd.style =  "red";
+				imgSel.visible = false
+				imgRed.visible = true
+				imgGreen.visible = false
+				text.color =  "#5c5c5c";
 			}
 			else{
 				//--охваченные
@@ -112,11 +124,19 @@ export class Global
 					dcShape.strokeCmd.style =  "black";
 				}
 
-				dcShape.fillCmd.style =  "green";
+				//dcShape.fillCmd.style =  "green";
+				imgSel.visible = false
+				imgRed.visible = false
+				imgGreen.visible = true
+
+				text.color =  "#5c5c5c";
 			}
 
-			text.color =  "yellow";
+		
+
+
 		}
+
 	}
 
 	static tick(){

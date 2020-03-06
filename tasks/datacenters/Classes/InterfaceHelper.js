@@ -24,6 +24,8 @@ export class InterfaceHelper
 			canvasContDiv.innerHTML = ''
 			canvasContDiv.id = 'canvasContDiv'
 			canvasContDiv.className = 'canvas_cont_div'
+			canvasContDiv.style.backgroundImage = 'url("./datacenters-resources/karta-fon-all.jpg")'
+			canvasContDiv.style.backgroundPositionX = '-180px';
 			superDiv.appendChild(canvasContDiv)
 
 
@@ -35,7 +37,10 @@ export class InterfaceHelper
 		}
 	}
 
+
 	static prepareAll(){
+
+
 		log('prepareAll()')
 		Global._stageTop = new createjs.Stage(Global._canvasTop)
 		//Global._stageTop.removeAllEventListeners();
@@ -50,31 +55,20 @@ export class InterfaceHelper
 		let i, dc, dc1, dc2, dcObj, rel;
 
 		let levelData = Config.getLevelData()
-
-		//log(levelData)
-
 		Global._dcDic = levelData._dcDic
 		Global._relArr = levelData._relArr
-
 
 		let x1, x2, y1, y2, a, b,c
 		let line, relName
 
+
+
 		for(i=0; i < Global._relArr.length; i++)
 		{
 			rel = Global._relArr[i]
-			//log(rel._dc1Name)
-
-			//dc1 = Global._stageTop.getChildByName(rel._dc1Name + '_cont')
-			//dc2 = Global._stageTop.getChildByName(rel._dc2Name + '_cont')
 
 			dc1 = levelData._dcDic[rel._dc1Name]
 			dc2 = levelData._dcDic[rel._dc2Name]
-
-
-
-			//log('x1=' + dc1.x)
-			//log('x2=' + dc2.x)
 
 			line = new createjs.Shape();
 			line.name = rel._name
@@ -82,6 +76,8 @@ export class InterfaceHelper
 			line.graphics.setStrokeStyle(3).beginStroke("brown");
 			line.fillCmd = line.graphics.beginFill("brown").command;
 			line.strokeCmd = line.graphics.beginStroke("brown").command;
+			line.dotCmd = line.graphics.setStrokeDash([2,2]).command;
+			//line.graphics.setStrokeDash([6,2])
 
 			line.graphics.moveTo(dc1._x, dc1._y);
 			line.graphics.lineTo(dc2._x, dc2._y);
@@ -96,24 +92,19 @@ export class InterfaceHelper
 			b = Math.abs(dc1._y - dc2._y)
 			c = Math.round(Math.sqrt((a*a) + (b*b)))
 
-			//log(rel._dc1Name + '-' + rel._dc2Name + '=' + c)
-
-
 			rel._len = c
 
-			let text = new createjs.Text(c, "14px Arial", "blue");
+			let text = new createjs.Text(c, "italic bold 12pt Verdana", "blue");
 			text.name = rel._name + '_text'
+			//text.strokeCmd = text.graphics.beginStroke("black").command;
 			if(dc1._x < dc2._x)
 			{
-				text.x = dc1._x + a/2
+				text.x = dc1._x + a/2 - 20
 			}
 			else
 			{
-				text.x = dc1._x - a/2
+				text.x = dc1._x - a/2 - 20
 			}
-
-
-
 
 			if(dc1._y < dc2._y){
 				text.y = dc1._y + b/2
@@ -122,28 +113,30 @@ export class InterfaceHelper
 				text.y = dc1._y - b/2
 			}
 
-			/*
-			Можно попробовать рисовать текст не на прямоугольниках, они очень явные, а сам по себе. Чтобы было контрастно, делать fillText,
-			белым а потом сразу strokeText черным.
-			*/
+
+			//Можно попробовать рисовать текст не на прямоугольниках, они очень явные, а сам по себе. Чтобы было контрастно, делать fillText,
+			//белым а потом сразу strokeText черным.
+
 
 			var shape = new createjs.Shape();
 			shape.name = rel._name
 			shape.graphics.append({exec: Global.setLenColor});
 			shape.fillCmd = shape.graphics.beginFill("white").command;
-			shape.strokeCmd = shape.graphics.beginStroke("black").command;
+			//shape.strokeCmd = shape.graphics.beginStroke("black").command;
 			//shape.graphics.beginFill("white").beginStroke(1).setStrokeStyle('black').drawRect(0, 0, 32, 20);
 
 			if(c > 999){
-				x1 = 40
+				x1 = 60
 			}
 			else{
-				x1 = 32
+				x1 = 42
 			}
 
-			shape.graphics.beginStroke(1).setStrokeStyle('black').drawRect(0, 0, x1, 20);
+			//shape.graphics.beginStroke(1).setStrokeStyle('black').drawRect(0, 0, x1, 20);
+			//shape.graphics.drawRect(0, 0, x1, 20);
+			shape.graphics.drawRoundRectComplex (0, 0, x1, 20, 4,4,4,4)
 			//shape.graphics.endFill()
-			shape.graphics.endStroke()
+			//shape.graphics.endStroke()
 
 
 			if(rel._len < 100)
@@ -155,7 +148,7 @@ export class InterfaceHelper
 			}
 
 
-			shape.y = text.y - 4
+			shape.y = text.y - 3
 			Global._stageTop.addChild(shape)
 
 
@@ -164,6 +157,7 @@ export class InterfaceHelper
 		}
 
 		i = 0
+		let image
 
 		for (var name in levelData._dcDic)
 		{
@@ -180,6 +174,7 @@ export class InterfaceHelper
 
 			if(Global._ggg == 0){
 				dc.on('click', function (event) {
+					log('ccc')
 					Global.clickDC(this.name)
 				  })
 			}
@@ -189,16 +184,46 @@ export class InterfaceHelper
 			dc1.graphics.append({exec: Global.setPoweredState});
 			dc1.strokeCmd = dc1.graphics.beginStroke("black").command;
 			dc1.fillCmd = dc1.graphics.beginFill("white").command;
-			dc1.graphics.drawCircle(0, 0, 15)
-			//dc1.graphics.endFill()
+
+
 			dc1.alpha = 1;
 			dc1.x = 0
 			dc1.y = 0
 
 			dc.addChild(dc1)
 
+			image = new createjs.Bitmap(Datacenters.kioapi.getResource('dc_sel'));
+			image.visible = false;
+			image.dcname = dc1.name
+			image.name = dcObj._name + '_img_sel'
+			image.scaleX=0.6
+			image.scaleY=0.6
+			image.x = -24
+			image.y = -22
+			dc.addChild(image);
 
-			let text = new createjs.Text(i, "14px Arial", "yellow");
+			image = new createjs.Bitmap(Datacenters.kioapi.getResource('dc_red'));
+			image.visible = true;
+			image.dcname = dc1.name
+			image.name = dcObj._name + '_img_red'
+			image.scaleX=0.9
+			image.scaleY=0.9
+			image.x = -22
+			image.y = -16
+			dc.addChild(image);
+
+			image = new createjs.Bitmap(Datacenters.kioapi.getResource('dc_green'));
+			image.visible = true;
+			image.dcname = dc1.name
+			image.name = dcObj._name + '_img_green'
+			image.scaleX=0.8
+			image.scaleY=0.8
+			image.x = -22
+			image.y = -24
+			dc.addChild(image);
+
+
+			let text = new createjs.Text(i, "bold 12pt Verdana", "yellow");
 			text.name = dc1.name + '_text'
 
 			if(i > 9){
@@ -217,7 +242,12 @@ export class InterfaceHelper
 		Global._ggg = 1
 		//Global._stageTop.update()
 
+
+
 	}
+
+
+
 }
 
 function log(s){
