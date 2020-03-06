@@ -3,6 +3,7 @@ import {DimensionDescription} from "./DimensionDescription";
 import Body from "../Body";
 import {Slice} from "./Slice";
 import {N_element, N_time} from "../ui/BodyUI";
+import SolverUpdateEvent from "./SolverUpdateEvent";
 
 export default class HeatingProcess extends createjs.EventDispatcher {
 
@@ -27,12 +28,12 @@ export default class HeatingProcess extends createjs.EventDispatcher {
         );
         this.solver = solver;
 
-        solver.addEventListener("heat update", () => {
-            this.dispatchEvent("heat update");
+        solver.addEventListener("heat update", (sue: SolverUpdateEvent) => {
+            this.dispatchEvent(new SolverUpdateEvent(sue.from, sue.to));
+            this._heat_position = this.find_heat_position();
         });
         this.values = solver.u;
         this._heat_position = this.find_heat_position();
-        console.log('hp', this._heat_position);
     }
 
     get x_max(): number {
@@ -76,7 +77,7 @@ export default class HeatingProcess extends createjs.EventDispatcher {
         };
     }
 
-    ty_slice(x: number, dy: number, dt: number): Slice {
+    ty_slice(x: number, dt: number, dy: number): Slice {
         let nt = Math.floor(this.t_max / dt);
         let ny = Math.floor(this.y_max / dy);
         let values = this.values;

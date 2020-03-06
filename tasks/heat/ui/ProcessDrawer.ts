@@ -1,6 +1,8 @@
 import HeatingProcess from "../solver/HeatingProcess";
 import {Palette} from "./Palette";
 import {Slice} from "../solver/Slice";
+import {TIME_DIVISION} from "./BodyUI";
+import SolverUpdateEvent from "../solver/SolverUpdateEvent";
 
 export default class ProcessDrawer extends createjs.Bitmap {
 
@@ -14,7 +16,7 @@ export default class ProcessDrawer extends createjs.Bitmap {
 
     private _canvas: HTMLCanvasElement;
 
-    private _update_listener: () => void;
+    private _update_listener: (sue: SolverUpdateEvent) => void;
 
     constructor(sliceType: SliceType, dx: number, dy: number, width: number, height: number) {
         super(document.createElement("canvas"));
@@ -28,8 +30,8 @@ export default class ProcessDrawer extends createjs.Bitmap {
         this._canvas.width = width;
         this._canvas.height = height;
 
-        this._update_listener = () => {
-            this.update_graphics();
+        this._update_listener = sue => {
+            this.update_graphics(sue.from, sue.to);
         };
 
         this.update_graphics();
@@ -57,18 +59,27 @@ export default class ProcessDrawer extends createjs.Bitmap {
             return this._process.ty_slice(this._v0, this.dx, this.dy);
     }
 
-    private update_graphics() {
-        let ctx = this.canvas.getContext('2d');
-        ctx.clearRect(0, 0, this.width, this.height);
+    private update_graphics(from: number = 0, to: number = -1) {
         if (!this._process)
             return;
+
+        if (to === -1)
+            to = this._process.t_max + 1;
+
+        if (this.sliceType == SliceType.XY && (this.v0 < from || this.v0 >= to))
+            return;
+
+        let ctx = this.canvas.getContext('2d');
 
         let slice = this.slice;
         let a = slice.width - 2; //for x
         let b = slice.height - 2; //for y
         let w = this.width / a;
         let h = this.height / b;
-        for (let x = 0; x < a; x += 1)
+        for (let x = 0; x < a; x += 1) {
+            //TODO x * TIME_DIVISION is taken from internals of slice, so this is not the best place
+            if (this.sliceType == SliceType.TY && (x * TIME_DIVISION < from - 1 || x * TIME_DIVISION >= to))
+                continue;
             for (let y = 0; y < b; y += 1) {
                 // let color = this.palette.get(color_index++); //slice[x][y]);
                 // if (color_index > 200)
@@ -76,11 +87,23 @@ export default class ProcessDrawer extends createjs.Bitmap {
                 ctx.fillStyle = Palette.palette0100.get(slice.get(x + 1, y + 1));
                 ctx.fillRect(x * w, y * h, w, h);
             }
+        }
 
-        if (this.sliceType === SliceType.TY && this.process.last_layer <= this.process.t_max) {
-            let x = w * this._process.last_layer / 5;
+        /*if (this.sliceType === SliceType.TY && this.process.last_layer <= this.process.t_max) {
+            let x = w * this._process.last_layer / TIME_DIVISION;
             ctx.strokeStyle = 'white';
             ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, this.height);
+            ctx.stroke();
+        }*/
+
+        if (this.sliceType === SliceType.TY && this.process.heat_position !== -1) {
+            let x = w * this._process.heat_position / TIME_DIVISION;
+            ctx.strokeStyle = 'rgb(128, 255, 128)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
             ctx.moveTo(x, 0);
             ctx.lineTo(x, this.height);
             ctx.stroke();
@@ -92,12 +115,15 @@ export default class ProcessDrawer extends createjs.Bitmap {
     }
 
     set process(value: HeatingProcess) {
-        this._process = value;
+        if (value === this._process)
+            return;
 
         if (this._process) {
             this._process.removeEventListener("heat update", this._update_listener);
             this._process.stop_update();
         }
+
+        this._process = value;
 
         this.update_graphics();
 

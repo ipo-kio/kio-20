@@ -1,5 +1,6 @@
 import {DimensionDescription} from "./DimensionDescription";
 import Body from "../Body";
+import SolverUpdateEvent from "./SolverUpdateEvent";
 
 export type Layer = number[][];
 export type LayerFunction = (x: number, y: number) => number;
@@ -71,11 +72,12 @@ export class Solver extends createjs.EventDispatcher {
             if (this._last_layer === this.td.n || this.cancel_evaluations)
                 return;
 
-            let t1 = this._last_layer + 14;
+            let t0 = this._last_layer;
+            let t1 = t0 + 14;
             if (t1 > this.td.n)
                 t1 = this.td.n;
             this.solve(t1);
-            this.dispatchEvent("heat update");
+            this.dispatchEvent(new SolverUpdateEvent(t0, t1));
 
             requestAnimationFrame(do_next);
         };
