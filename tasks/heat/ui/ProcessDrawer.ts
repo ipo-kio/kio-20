@@ -2,7 +2,7 @@ import HeatingProcess from "../solver/HeatingProcess";
 import {Palette} from "./Palette";
 import {Slice} from "../solver/Slice";
 
-export default class ProcessDrawer extends createjs.Shape {
+export default class ProcessDrawer extends createjs.Bitmap {
 
     private _process: HeatingProcess = null;
     private sliceType: SliceType;
@@ -12,22 +12,31 @@ export default class ProcessDrawer extends createjs.Shape {
     private width: number;
     private height: number;
 
+    private _canvas: HTMLCanvasElement;
+
     private _update_listener: () => void;
 
     constructor(sliceType: SliceType, dx: number, dy: number, width: number, height: number) {
-        super();
+        super(document.createElement("canvas"));
+        this._canvas = this.image as HTMLCanvasElement;
         this.sliceType = sliceType;
         this.dx = dx;
         this.dy = dy;
         this.width = width;
         this.height = height;
 
+        this._canvas.width = width;
+        this._canvas.height = height;
+
         this._update_listener = () => {
             this.update_graphics();
         };
 
         this.update_graphics();
-        this.alpha = 1;
+    }
+
+    get canvas(): HTMLCanvasElement {
+        return this._canvas;
     }
 
     get v0(): number {
@@ -49,8 +58,8 @@ export default class ProcessDrawer extends createjs.Shape {
     }
 
     private update_graphics() {
-        let g = this.graphics;
-        g.clear();
+        let ctx = this.canvas.getContext('2d');
+        ctx.clearRect(0, 0, this.width, this.height);
         if (!this._process)
             return;
 
@@ -64,16 +73,18 @@ export default class ProcessDrawer extends createjs.Shape {
                 // let color = this.palette.get(color_index++); //slice[x][y]);
                 // if (color_index > 200)
                 //     color_index = 0;
-                let color = Palette.palette0100.get(slice.get(x + 1, y + 1));
-                g.beginFill(color).rect(x * w, y * h, w, h);
+                ctx.fillStyle = Palette.palette0100.get(slice.get(x + 1, y + 1));
+                ctx.fillRect(x * w, y * h, w, h);
             }
 
         if (this.sliceType === SliceType.TY && this.process.last_layer <= this.process.t_max) {
             let x = w * this._process.last_layer / 5;
-            g.beginStroke('white').setStrokeStyle(1).moveTo(x, 0).lineTo(x, this.height).endStroke();
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 1;
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, this.height);
+            ctx.stroke();
         }
-
-        this.cache(0, 0, this.width, this.height);
     }
 
     get process(): HeatingProcess {
