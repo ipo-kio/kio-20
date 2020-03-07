@@ -1,6 +1,7 @@
 import {DimensionDescription} from "./DimensionDescription";
-import Body from "../Body";
+import Body, {A_DEBUG, Material} from "../Body";
 import SolverUpdateEvent from "./SolverUpdateEvent";
+import {Palette} from "../ui/Palette";
 
 export type Layer = number[][];
 export type LayerFunction = (x: number, y: number) => number;
@@ -58,6 +59,7 @@ export class Solver extends createjs.EventDispatcher {
 
             return body.a(xi, yi);
         });
+        this.debug_a();
         //left heat
         this.left_heat = new Array(yd.n);
         for (let y = 0; y < yd.n; y++)
@@ -72,16 +74,21 @@ export class Solver extends createjs.EventDispatcher {
             if (this._last_layer === this.td.n || this.cancel_evaluations)
                 return;
 
+            // console.time("solver step");
+
             let t0 = this._last_layer;
-            let t1 = t0 + 14;
+            let t1 = t0 + 4;
             if (t1 > this.td.n)
                 t1 = this.td.n;
             this.solve(t1);
             this.dispatchEvent(new SolverUpdateEvent(t0, t1));
 
             requestAnimationFrame(do_next);
+
+            // console.timeEnd("solver step");
         };
         requestAnimationFrame(do_next);
+
     }
 
     lay_out(f: LayerFunction): Layer {
@@ -104,8 +111,30 @@ export class Solver extends createjs.EventDispatcher {
         u[0] = this.phi0;
         this._last_layer = 1;
 
-        for (let t = 1; t < this.td.n; t++)
+        /*console.time("ps");
+        for (let t = 1; t < this.td.n; t++) {
             u[t] = this.lay_out(() => 0);
+        }
+        console.timeEnd("ps");*/
+
+        let def = Palette.DEFAULT_VALUE;
+
+        console.time("ps 2");
+        let tn = this.td.n;
+        let xn = this.xd.n;
+        let yn = this.yd.n;
+        for (let t = 1; t < tn; t++) {
+            let v = Array(xn);
+            u[t] = v;
+            for (let x = 0; x < xn; x++) {
+                // let vv = new Float64Array(10).fill(0); //Array(yn);
+                let vv = Array(yn);
+                v[x] = vv;
+                for (let y = 0; y < yn; y++)
+                    vv[y] = def;
+            }
+        }
+        console.timeEnd("ps 2");
     }
 
 
@@ -242,4 +271,19 @@ export class Solver extends createjs.EventDispatcher {
         this.cancel_evaluations = true;
     }
 
+    private debug_a() {
+        let s = '';
+        for (let y = 0; y < this.a.length; y++) {
+            for (let x = 0; x < this.a[y].length; x++) {
+                let a = this.a[x][y];
+                let c = '?';
+                for (let av in A_DEBUG)
+                    if (A_DEBUG[av as Material] === a)
+                        c = av[av.length - 1];
+                s += c;
+            }
+            s += '\n';
+        }
+        console.log('a=', s);
+    }
 }

@@ -1,7 +1,7 @@
 import HeatingProcess from "../solver/HeatingProcess";
 import {Palette} from "./Palette";
 import {Slice} from "../solver/Slice";
-import {TIME_DIVISION} from "./BodyUI";
+import {TIME, TIME_DIVISION} from "./BodyUI";
 import SolverUpdateEvent from "../solver/SolverUpdateEvent";
 
 export default class ProcessDrawer extends createjs.Bitmap {
@@ -80,6 +80,11 @@ export default class ProcessDrawer extends createjs.Bitmap {
             //TODO x * TIME_DIVISION is taken from internals of slice, so this is not the best place
             if (this.sliceType == SliceType.TY && (x * TIME_DIVISION < from - 1 || x * TIME_DIVISION >= to))
                 continue;
+            if (this.sliceType == SliceType.TY && x * TIME_DIVISION > this._process.last_layer) {
+                ctx.fillStyle = Palette.DEFAULT_COLOR;
+                ctx.fillRect(x * w, 0, this.width - x * w, this.height);
+                break;
+            }
             for (let y = 0; y < b; y += 1) {
                 // let color = this.palette.get(color_index++); //slice[x][y]);
                 // if (color_index > 200)

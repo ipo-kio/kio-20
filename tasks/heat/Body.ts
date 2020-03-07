@@ -27,6 +27,8 @@ const A = {
     "aluminium": 8.418e-5 * MUL,
     "air": 1.9e-5 * MUL,
     "sand": 1.15e-6 * MUL,
-    "glass": 3.4e-7 * MUL,
+    "glass": 3.4e-10 * MUL,
     "tree": 8.2e-8  * MUL
 };
+
+export const A_DEBUG = A;

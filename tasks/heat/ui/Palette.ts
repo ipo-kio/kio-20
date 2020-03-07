@@ -212,6 +212,8 @@ export class Palette {
 
     private min: number;
     private max: number;
+    static readonly DEFAULT_VALUE: number = -100;
+    static readonly DEFAULT_COLOR: string = 'rgb(200, 200, 200)';
 
     constructor(min: number, max: number) {
         this.min = min;
@@ -224,6 +226,9 @@ export class Palette {
     }
 
     get(v: number): string {
+        if (v === Palette.DEFAULT_VALUE)
+            return Palette.DEFAULT_COLOR;
+
         if (v < this.min)
             v = this.min;
         if (v > this.max)

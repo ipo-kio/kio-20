@@ -49,10 +49,6 @@ export default class TimeControl extends createjs.Container {
         };
         this.addEventListener("pressmove", time_change_listener);
         this.addEventListener("mousedown", time_change_listener);
-        // this.addEventListener("pressup", () => {
-        //     console.log("mouse up");
-            // download(this.process.debug, "values.json", "application/json");
-        // })
     }
 
     get time_normalized(): number {

@@ -191,10 +191,18 @@ export class BodyUI extends createjs.Container {
     }
 
     private update_process() {
+        console.time("up 1");
         this._process = new HeatingProcess(this.body);
+        console.timeEnd("up 1");
+        console.time("up 2");
         this._processDrawer.process = this._process;
+        console.timeEnd("up 2");
+        console.time("up 3");
         this._timeController.process = this._process;
+        console.timeEnd("up 3");
+        console.time("up 4");
         this.dispatchEvent("process changed");
+        console.timeEnd("up 4");
     }
 }
 
@@ -204,8 +212,8 @@ export const VIEW_DIVISION = 5;
 export const N_element = VIEW_DIVISION * 5;
 export const LENGTH = 1;
 export const TIME = 60 * 60;
-export const TIME_DIVISION = 1;
-export const N_time = TIME_DIVISION * 1000;
+export const TIME_DIVISION = 2;
+export const N_time = TIME_DIVISION * 500;
 export const DEFAULT_MATERIAL: Material = "tree";
 
 export function download(data:BlobPart, filename:string, type:string) {

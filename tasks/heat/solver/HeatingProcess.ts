@@ -96,7 +96,8 @@ export default class HeatingProcess extends createjs.EventDispatcher {
     }
 
     private find_heat_position() {
-        for (let t = 0; t < this.values.length; t++) {
+        let lastLayer = this.last_layer;
+        for (let t = 0; t < lastLayer; t++) {
             let mean = this.mean_temperature(t);
             if (mean >= 50)
                 return t;
