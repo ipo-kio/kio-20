@@ -191,18 +191,10 @@ export class BodyUI extends createjs.Container {
     }
 
     private update_process() {
-        console.time("up 1");
         this._process = new HeatingProcess(this.body);
-        console.timeEnd("up 1");
-        console.time("up 2");
         this._processDrawer.process = this._process;
-        console.timeEnd("up 2");
-        console.time("up 3");
         this._timeController.process = this._process;
-        console.timeEnd("up 3");
-        console.time("up 4");
         this.dispatchEvent("process changed");
-        console.timeEnd("up 4");
     }
 }
 

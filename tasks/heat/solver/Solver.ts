@@ -10,6 +10,7 @@ export type LeftHeatFlowFunction = (y: number) => number;
 export class Solver extends createjs.EventDispatcher {
 
     private a: Layer;
+    private k: Layer;
     private phi0: Layer;
     private heat: Layer;
     private left_heat: number[];
@@ -41,7 +42,7 @@ export class Solver extends createjs.EventDispatcher {
 
         this.phi0 = this.lay_out(phi0);
         this.heat = this.lay_out(heat);
-        this.a = this.lay_out((x: number, y: number) => {
+        let lay_function = (a_or_k: number) => (x: number, y: number) => {
             let xx = (x - xd.min) / (xd.max - xd.min);
             let yy = (y - yd.min) / (yd.max - yd.min);
 
@@ -57,9 +58,10 @@ export class Solver extends createjs.EventDispatcher {
             if (yi >= body.height)
                 yi = body.height - 1;
 
-            return body.a(xi, yi);
-        });
-        this.debug_a();
+            return a_or_k == 0 ? body.a(xi, yi) : body.k(xi, yi);
+        };
+        this.a = this.lay_out(lay_function(0));
+        this.k = this.lay_out(lay_function(1));
         //left heat
         this.left_heat = new Array(yd.n);
         for (let y = 0; y < yd.n; y++)
@@ -119,7 +121,6 @@ export class Solver extends createjs.EventDispatcher {
 
         let def = Palette.DEFAULT_VALUE;
 
-        console.time("ps 2");
         let tn = this.td.n;
         let xn = this.xd.n;
         let yn = this.yd.n;
@@ -134,7 +135,6 @@ export class Solver extends createjs.EventDispatcher {
                     vv[y] = def;
             }
         }
-        console.timeEnd("ps 2");
     }
 
 
@@ -182,6 +182,7 @@ export class Solver extends createjs.EventDispatcher {
 
                     for (let x = 1; x < x_max; x++) {
                         let a = this.a[x][y];
+                        let k = this.k[x][y];
                         //v1[x-1, y]
                         sys[0][x] = -a / h2;
 
@@ -192,10 +193,8 @@ export class Solver extends createjs.EventDispatcher {
                         sys[2][x] = -a / h2;
 
                         //----
-                        sys[3][x] = v0[x][y] / tau + a * (v0[x][y - 1] - 2 * v0[x][y] + v0[x][y + 1]) / h2;
-
-                        // if (t * 3 <= this.td.n)
-                            sys[3][x] += this.heat[x][y];
+                        let heat = this.heat[x][y] * a / k;
+                        sys[3][x] = v0[x][y] / tau + a * (v0[x][y - 1] - 2 * v0[x][y] + v0[x][y + 1]) / h2 + heat;
                     }
 
                     this.solve_3sys(sys, v1, -1, y);
@@ -204,10 +203,12 @@ export class Solver extends createjs.EventDispatcher {
                 for (let x = 1; x < x_max; x++) {
                     for (let y = 1; y < y_max; y++) {
                         let a = this.a[x][y];
+                        let k = this.k[x][y];
                         sys[0][y] = -a / h2;
                         sys[1][y] = 1 / tau + 2 * a / h2;
                         sys[2][y] = -a / h2;
-                        sys[3][y] = v0[x][y] / tau + a * (v0[x - 1][y] - 2 * v0[x][y] + v0[x + 1][y]) / h2 + this.heat[x][y];
+                        let heat = this.heat[x][y] * a / k;
+                        sys[3][y] = v0[x][y] / tau + a * (v0[x - 1][y] - 2 * v0[x][y] + v0[x + 1][y]) / h2 + heat;
                     }
 
                     this.solve_3sys(sys, v1, x, -1);
