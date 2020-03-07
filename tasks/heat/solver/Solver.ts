@@ -192,7 +192,10 @@ export class Solver extends createjs.EventDispatcher {
                         sys[2][x] = -a / h2;
 
                         //----
-                        sys[3][x] = v0[x][y] / tau + a * (v0[x][y - 1] - 2 * v0[x][y] + v0[x][y + 1]) / h2 + this.heat[x][y];
+                        sys[3][x] = v0[x][y] / tau + a * (v0[x][y - 1] - 2 * v0[x][y] + v0[x][y + 1]) / h2;
+
+                        // if (t * 3 <= this.td.n)
+                            sys[3][x] += this.heat[x][y];
                     }
 
                     this.solve_3sys(sys, v1, -1, y);

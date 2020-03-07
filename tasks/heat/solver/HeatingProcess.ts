@@ -98,7 +98,7 @@ export default class HeatingProcess extends createjs.EventDispatcher {
     private find_heat_position() {
         let lastLayer = this.last_layer;
         for (let t = 0; t < lastLayer; t++) {
-            let mean = this.mean_temperature(t);
+            let mean = this.min_temperature(t);
             if (mean >= 50)
                 return t;
         }
@@ -112,6 +112,18 @@ export default class HeatingProcess extends createjs.EventDispatcher {
             s += this.values[t][this.values[0].length - 1][y];
 
         return s / n;
+    }
+
+    private min_temperature(t: number): number {
+        let n = this.values[0][0].length - 2;
+        let s = 1e100;
+        for (let y = 1; y <= n; y++) {
+            let v = this.values[t][this.values[0].length - 1][y];
+            if (v < s)
+                s = v;
+        }
+
+        return s;
     }
 
     stop_update() {
