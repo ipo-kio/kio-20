@@ -206,17 +206,7 @@ export class BodyUI extends createjs.Container {
         console.timeEnd("up4");
     }
 }
-/*
-export const M = 6;
-export const N = 6;
-export const VIEW_DIVISION = 5;
-export const N_element = VIEW_DIVISION * 5;
-export const LENGTH = 1;
-export const TIME = 60 * 60;
-export const TIME_DIVISION = 2;
-export const N_time = TIME_DIVISION * 500;
-export const DEFAULT_MATERIAL: Material = "aluminium";
-*/
+
 export function download(data:BlobPart, filename:string, type:string) {
     let file = new Blob([data], {type: type});
     if (window.navigator.msSaveOrOpenBlob) // IE10+

@@ -1,5 +1,5 @@
 import {DimensionDescription} from "./DimensionDescription";
-import {A_DEBUG, Material} from "./Consts";
+import {A, Material} from "./Consts";
 import SolverUpdateEvent from "./SolverUpdateEvent";
 import {Palette} from "../ui/Palette";
 import Body from "../Body";
@@ -40,6 +40,7 @@ export class Solver extends createjs.EventDispatcher {
         this.xd = xd;
         this.yd = yd;
         this.td = td;
+        console.log("afsdfd", xd.n, yd.n);
 
         this.phi0 = this.lay_out(phi0);
         this.heat = this.lay_out(heat);
@@ -59,7 +60,7 @@ export class Solver extends createjs.EventDispatcher {
             if (yi >= body.height)
                 yi = body.height - 1;
 
-            return a_or_k == 0 ? body.a(xi, yi) : body.k(xi, yi);
+            return a_or_k == 0 ? body.a(xi, yi) : 1; //body.k(xi, yi);
         };
         this.a = this.lay_out(lay_function(0));
         this.k = this.lay_out(lay_function(1));
@@ -287,8 +288,8 @@ export class Solver extends createjs.EventDispatcher {
             for (let x = 0; x < this.a[y].length; x++) {
                 let a = this.a[x][y];
                 let c = '?';
-                for (let av in A_DEBUG)
-                    if (A_DEBUG[av as Material] === a)
+                for (let av in A)
+                    if (A[av as Material] === a)
                         c = av[av.length - 1];
                 s += c;
             }

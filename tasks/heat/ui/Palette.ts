@@ -208,7 +208,7 @@ const ind2color: string[] = new Array(colors.length);
 
 export class Palette {
 
-    static palette0100 = new Palette(0, 1);
+    static palette0100 = new Palette(0, 100);
 
     private min: number;
     private max: number;
@@ -216,6 +216,7 @@ export class Palette {
     static readonly DEFAULT_COLOR: string = 'rgb(200, 200, 200)';
 
     constructor(min: number, max: number) {
+        console.log(`created palette from ${min} to ${max}`);
         this.min = min;
         this.max = max;
 
