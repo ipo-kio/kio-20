@@ -179,6 +179,17 @@ export class BodyUI extends createjs.Container {
                 }
     }
 
+    get serialize(): string {
+        let res = '';
+        for (let i = 0; i < this.blocks.length; i++)
+            res += this.blocks[i].join('');
+        return res;
+    }
+
+    set serialize(value: string) {
+
+    }
+
     get width(): number {
         return N * Block.WIDTH;
     }

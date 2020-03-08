@@ -7,12 +7,12 @@ export const LENGTH = 1;
 export const TIME = 60 * 60;
 export const TIME_DIVISION = 2;
 export const N_time = TIME_DIVISION * 500;
-export const DEFAULT_MATERIAL: Material = "air";
+export const DEFAULT_MATERIAL: Material = "tree";
 
 export type Material = "glass" | "air" | "tree" | "aluminium" | "sand";
 
 // http://scask.ru/q_book_emp.php?id=35
-const MUL_A = 1e2;
+const MUL_A = 1e3;
 const MUL_K = 1e-2;
 export const A = {
     "aluminium": 8.418e-5 * MUL_A,
