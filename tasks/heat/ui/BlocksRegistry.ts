@@ -1,8 +1,8 @@
-import {Material} from "../Body";
-import {BodyUI, DEFAULT_MATERIAL} from "./BodyUI";
+import {BodyUI} from "./BodyUI";
 import Block from "./Block";
 import {KioApi} from "../../KioApi";
 import {ProcessDebugger} from "./ProcessDebugger";
+import {DEFAULT_MATERIAL, Material} from "../solver/Consts";
 
 export default class BlocksRegistry extends createjs.Container {
 

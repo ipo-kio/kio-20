@@ -1,10 +1,11 @@
-import Body, {Material} from "../Body";
+import Body from "../Body";
 import Block from "./Block";
 import {KioApi} from "../../KioApi";
 import HeatingProcess from "../solver/HeatingProcess";
 import ProcessDrawer, {SliceType} from "./ProcessDrawer";
 import Rectangle = createjs.Rectangle;
 import TimeControl from "./TimeControl";
+import {DEFAULT_MATERIAL, M, Material, N, VIEW_DIVISION} from "../solver/Consts";
 
 export class BodyUI extends createjs.Container {
 
@@ -191,13 +192,21 @@ export class BodyUI extends createjs.Container {
     }
 
     private update_process() {
+        console.time("up1");
         this._process = new HeatingProcess(this.body);
+        console.timeEnd("up1");
+        console.time("up2");
         this._processDrawer.process = this._process;
+        console.timeEnd("up2");
+        console.time("up3");
         this._timeController.process = this._process;
+        console.timeEnd("up3");
+        console.time("up4");
         this.dispatchEvent("process changed");
+        console.timeEnd("up4");
     }
 }
-
+/*
 export const M = 6;
 export const N = 6;
 export const VIEW_DIVISION = 5;
@@ -206,8 +215,8 @@ export const LENGTH = 1;
 export const TIME = 60 * 60;
 export const TIME_DIVISION = 2;
 export const N_time = TIME_DIVISION * 500;
-export const DEFAULT_MATERIAL: Material = "tree";
-
+export const DEFAULT_MATERIAL: Material = "aluminium";
+*/
 export function download(data:BlobPart, filename:string, type:string) {
     let file = new Blob([data], {type: type});
     if (window.navigator.msSaveOrOpenBlob) // IE10+

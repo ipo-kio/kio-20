@@ -1,7 +1,7 @@
 import HeatingProcess from "../solver/HeatingProcess";
 import {Palette} from "./Palette";
 import {Slice} from "../solver/Slice";
-import {TIME, TIME_DIVISION} from "./BodyUI";
+import {TIME, TIME_DIVISION} from "../solver/Consts";
 import SolverUpdateEvent from "../solver/SolverUpdateEvent";
 
 export default class ProcessDrawer extends createjs.Bitmap {

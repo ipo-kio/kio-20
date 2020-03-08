@@ -1,3 +1,5 @@
+import {A, K, Material} from "./solver/Consts";
+
 export default class Body {
 
     private readonly elements: Material[][];
@@ -24,7 +26,7 @@ export default class Body {
         return this.elements.length;
     }
 }
-
+/*
 export type Material = "glass" | "air" | "tree" | "aluminium" | "sand";
 
 // http://scask.ru/q_book_emp.php?id=35
@@ -37,11 +39,10 @@ const A = {
     "tree": 8.2e-8  * MUL
 };
 const K = {
-    "aluminium": 239 * MUL,
-    "air": 0.02 * MUL,
+    "aluminium": 239,
+    "air": 0.02,
     "sand": 1.01 * MUL,
     "glass": 1.01 * MUL,
     "tree": 0.15  * MUL
 };
-
-export const A_DEBUG = A;
+*/

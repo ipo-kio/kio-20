@@ -1,6 +1,6 @@
 import HeatingProcess from "../solver/HeatingProcess";
 import ProcessDrawer, {SliceType} from "./ProcessDrawer";
-import {N_time, VIEW_DIVISION} from "./BodyUI";
+import {N_time, VIEW_DIVISION} from "../solver/Consts";
 
 export class ProcessDebugger extends createjs.Container {
 

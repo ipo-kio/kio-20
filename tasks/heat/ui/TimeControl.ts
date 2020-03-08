@@ -1,5 +1,6 @@
 import ProcessDrawer, {SliceType} from "./ProcessDrawer";
-import {download, TIME_DIVISION, VIEW_DIVISION} from "./BodyUI";
+import {download} from "./BodyUI";
+import {TIME_DIVISION, VIEW_DIVISION} from "../solver/Consts";
 import HeatingProcess from "../solver/HeatingProcess";
 import MouseEvent = createjs.MouseEvent;
 

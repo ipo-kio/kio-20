@@ -1,7 +1,8 @@
 import {DimensionDescription} from "./DimensionDescription";
-import Body, {A_DEBUG, Material} from "../Body";
+import {A_DEBUG, Material} from "./Consts";
 import SolverUpdateEvent from "./SolverUpdateEvent";
 import {Palette} from "../ui/Palette";
+import Body from "../Body";
 
 export type Layer = number[][];
 export type LayerFunction = (x: number, y: number) => number;
@@ -193,6 +194,11 @@ export class Solver extends createjs.EventDispatcher {
                         sys[2][x] = -a / h2;
 
                         //----
+                        //a: m^2/s
+                        //k: Bt/(m K)
+                        //a/k: m^3 K / Bt s = m K s s / kg
+                        //Bt = kg m m / s s s
+
                         let heat = this.heat[x][y] * a / k;
                         sys[3][x] = v0[x][y] / tau + a * (v0[x][y - 1] - 2 * v0[x][y] + v0[x][y + 1]) / h2 + heat;
                     }
