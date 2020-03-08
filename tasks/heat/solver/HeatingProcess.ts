@@ -2,8 +2,8 @@ import {Layer, LayerFunction, Solver} from "./Solver";
 import {DimensionDescription} from "./DimensionDescription";
 import Body from "../Body";
 import {Slice} from "./Slice";
-import {N_element, N_time} from "../ui/BodyUI";
 import SolverUpdateEvent from "./SolverUpdateEvent";
+import {N_element, N_time, T_MAX} from "./Consts";
 
 export default class HeatingProcess extends createjs.EventDispatcher {
 
@@ -20,9 +20,9 @@ export default class HeatingProcess extends createjs.EventDispatcher {
             new DimensionDescription(0, 50, N_time + 1, false),
             (x: number, y: number) => 0,
             sum_layer_functions(
-                create_point_heat(1 / 12, 3 / 12, 1 / 12, 100),
-                create_point_heat(1 / 12, 5 / 12, 1 / 12, 100),
-                create_point_heat(1 / 12, 9 / 12, 1 / 12, 100)
+                create_point_heat(1 / 12, 3 / 12, 1 / 12, T_MAX),
+                create_point_heat(1 / 12, 5 / 12, 1 / 12, T_MAX),
+                create_point_heat(1 / 12, 9 / 12, 1 / 12, T_MAX)
             ),
             y => 0
         );

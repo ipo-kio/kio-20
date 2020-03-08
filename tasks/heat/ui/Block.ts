@@ -1,4 +1,4 @@
-import {Material} from "../Body";
+import {Material} from "../solver/Consts";
 import {KioApi} from "../../KioApi";
 
 export default class Block extends createjs.Container {

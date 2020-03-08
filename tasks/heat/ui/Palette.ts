@@ -208,7 +208,7 @@ const ind2color: string[] = new Array(colors.length);
 
 export class Palette {
 
-    static palette0100 = new Palette(0, 100);
+    static palette0100 = new Palette(0, 1);
 
     private min: number;
     private max: number;
