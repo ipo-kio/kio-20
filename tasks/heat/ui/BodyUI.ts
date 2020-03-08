@@ -206,7 +206,7 @@ export const LENGTH = 1;
 export const TIME = 60 * 60;
 export const TIME_DIVISION = 2;
 export const N_time = TIME_DIVISION * 500;
-export const DEFAULT_MATERIAL: Material = "aluminium";
+export const DEFAULT_MATERIAL: Material = "tree";
 
 export function download(data:BlobPart, filename:string, type:string) {
     let file = new Blob([data], {type: type});

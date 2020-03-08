@@ -37,8 +37,8 @@ const A = {
     "tree": 8.2e-8  * MUL
 };
 const K = {
-    "aluminium": 239,
-    "air": 0.02,
+    "aluminium": 239 * MUL,
+    "air": 0.02 * MUL,
     "sand": 1.01 * MUL,
     "glass": 1.01 * MUL,
     "tree": 0.15  * MUL

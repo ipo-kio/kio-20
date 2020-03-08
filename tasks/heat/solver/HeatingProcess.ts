@@ -20,9 +20,9 @@ export default class HeatingProcess extends createjs.EventDispatcher {
             new DimensionDescription(0, 50, N_time + 1, false),
             (x: number, y: number) => 0,
             sum_layer_functions(
-                create_point_heat(1 / 12, 3 / 12, 1 / 12, 100),
-                create_point_heat(1 / 12, 5 / 12, 1 / 12, 100),
-                create_point_heat(1 / 12, 9 / 12, 1 / 12, 100)
+                create_point_heat(1 / 12, 3 / 12, 1 / 12, 1e10),
+                create_point_heat(1 / 12, 5 / 12, 1 / 12, 1e10),
+                create_point_heat(1 / 12, 9 / 12, 1 / 12, 1e10)
             ),
             y => 0
         );
