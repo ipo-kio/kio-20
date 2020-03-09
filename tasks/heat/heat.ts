@@ -89,7 +89,7 @@ export class Heat { //TODO название класса должно совпа
             {
                 name: 't',
                 title: 'Время',
-                ordering: 'maximize',
+                ordering: 'minimize',
                 view(v: number) {
                     if (v == -1)
                         return "?";

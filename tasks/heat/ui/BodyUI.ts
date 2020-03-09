@@ -180,7 +180,7 @@ export class BodyUI extends createjs.Container {
         this.update_process();
     }
 
-    get_block(i: number, j : number) {
+    get_block(i: number, j: number) {
         return this.blocks[i][j];
     }
 
@@ -197,14 +197,13 @@ export class BodyUI extends createjs.Container {
     get serialize(): string {
         let res = '';
         for (let i = 0; i < this.blocks.length; i++)
-            for (let j = 0; j < this.blocks[i].length; j++)
-                {
-                    let b = this.blocks[i][j];
-                    if (b == null)
-                        res += '-';
-                    else
-                        res += b.index.toString(36);
-                }
+            for (let j = 0; j < this.blocks[i].length; j++) {
+                let b = this.blocks[i][j];
+                if (b == null)
+                    res += '-';
+                else
+                    res += b.index.toString(36);
+            }
         return res;
     }
 
@@ -230,6 +229,7 @@ export class BodyUI extends createjs.Container {
                     this.blocks[i][j] = null;
             }
         this.update_process();
+        this.highlight.visible = false;
     }
 
     get width(): number {
@@ -250,21 +250,20 @@ export class BodyUI extends createjs.Container {
         this._timeController.process = this._process;
         this.dispatchEvent("process changed");
 
-        if (!this.body_ui_initialization)
-            {
-                let result = {
-                    "e": 0,
-                    "t": this.process.heat_position
-                };
-                this.kioapi.submitResult(result);
-                console.log('submitted in BodyUI.ts', result);
-            }
+        if (!this.body_ui_initialization) {
+            let result = {
+                "e": 0,
+                "t": this.process.heat_position
+            };
+            this.kioapi.submitResult(result);
+            console.log('submitted in BodyUI.ts', result);
+        }
 
         this._timeController.followEvaluation();
     }
 }
 
-export function download(data:BlobPart, filename:string, type:string) {
+export function download(data: BlobPart, filename: string, type: string) {
     let file = new Blob([data], {type: type});
     if (window.navigator.msSaveOrOpenBlob) // IE10+
         window.navigator.msSaveOrOpenBlob(file, filename);
@@ -275,7 +274,7 @@ export function download(data:BlobPart, filename:string, type:string) {
         a.download = filename;
         document.body.appendChild(a);
         a.click();
-        setTimeout(function() {
+        setTimeout(function () {
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
         }, 0);
