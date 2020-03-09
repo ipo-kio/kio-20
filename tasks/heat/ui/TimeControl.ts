@@ -12,6 +12,7 @@ export default class TimeControl extends createjs.Container {
     private processDrawerTime: ProcessDrawer;
     private tick: createjs.Shape;
     private _time: number = 0;
+    private follow_evaluation: boolean = false;
 
     constructor() {
         super();
@@ -47,9 +48,17 @@ export default class TimeControl extends createjs.Container {
         let time_change_listener = (e: Object) => {
             let me = e as MouseEvent;
             this.time = (me.localX / W) * (this.process.t_max + 1);
+            this.follow_evaluation = false;
         };
         this.addEventListener("pressmove", time_change_listener);
         this.addEventListener("mousedown", time_change_listener);
+        this.processDrawerTime.addEventListener("heat update", () => {
+            if (this.follow_evaluation) {
+                let new_time = this.processDrawerTime.process.last_layer - 1;
+                if (new_time -= new_time % TIME_DIVISION)
+                    this.time = new_time;
+            }
+        });
     }
 
     get time_normalized(): number {
@@ -90,5 +99,9 @@ export default class TimeControl extends createjs.Container {
     set process(process: HeatingProcess) {
         this.processDrawerTime.process = process;
         this.processDrawerTime.v0 = process.x_max - 1;
+    }
+
+    followEvaluation() {
+        this.follow_evaluation = true;
     }
 };

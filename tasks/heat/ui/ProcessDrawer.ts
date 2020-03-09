@@ -32,6 +32,7 @@ export default class ProcessDrawer extends createjs.Bitmap {
 
         this._update_listener = sue => {
             this.update_graphics(sue.from, sue.to);
+            this.dispatchEvent("heat update");
         };
 
         this.update_graphics();
@@ -94,7 +95,8 @@ export default class ProcessDrawer extends createjs.Bitmap {
                 // let color = this.palette.get(color_index++); //slice[x][y]);
                 // if (color_index > 200)
                 //     color_index = 0;
-                ctx.fillStyle = Palette.palette0100.get(slice.get(x + 1, y + 1));
+                let x1 = this.sliceType == SliceType.TY ? x : x + 1;
+                ctx.fillStyle = Palette.palette0100.get(slice.get(x1, y + 1));
                 ctx.fillRect(x * w, y * h, w, h);
             }
         }

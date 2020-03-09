@@ -257,6 +257,8 @@ export class BodyUI extends createjs.Container {
                 "e": 0,
                 "t": this.process.heat_position
             });
+
+        this._timeController.followEvaluation();
     }
 }
 
