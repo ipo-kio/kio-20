@@ -3,21 +3,24 @@ import {DimensionDescription} from "./DimensionDescription";
 import Body from "../Body";
 import {Slice} from "./Slice";
 import SolverUpdateEvent from "./SolverUpdateEvent";
-import {N_element, N_time, T_MAX} from "./Consts";
+import {N_element, N_time, T_MAX, TIME} from "./Consts";
+import {KioApi} from "../../KioApi";
 
 export default class HeatingProcess extends createjs.EventDispatcher {
 
     private values: Layer[];
     private _heat_position: number;
     private solver: Solver;
+    private kioapi: KioApi;
 
-    constructor(body: Body) {
+    constructor(body: Body, kioapi: KioApi) {
         super();
+        this.kioapi = kioapi;
         let solver = new Solver(
             body,
             new DimensionDescription(0, 1, N_element * body.width + 2, true),
             new DimensionDescription(0, 1, N_element * body.height + 2, true),
-            new DimensionDescription(0, 50, N_time + 1, false),
+            new DimensionDescription(0, TIME, N_time + 1, false),
             (x: number, y: number) => 0,
             sum_layer_functions(
                 create_point_heat(1 / 12, 3 / 12, 1 / 12, T_MAX),
@@ -31,9 +34,19 @@ export default class HeatingProcess extends createjs.EventDispatcher {
         solver.addEventListener("heat update", (sue: SolverUpdateEvent) => {
             this.dispatchEvent(new SolverUpdateEvent(sue.from, sue.to));
             this._heat_position = this.find_heat_position();
+
+            this.kioapi.submitResult({
+                "e": this._heat_position == -1 ? 0 : 1,
+                "t": this._heat_position
+            });
         });
         this.values = solver.u;
         this._heat_position = this.find_heat_position();
+
+        this.kioapi.submitResult({
+            "e": 0,
+            "t": this._heat_position
+        });
     }
 
     get x_max(): number {

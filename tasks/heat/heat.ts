@@ -72,18 +72,35 @@ export class Heat { //TODO название класса должно совпа
 
     parameters() {
         return [
-            {name: 'num', title: 'num'}
+            {
+                name: 'e',
+                title: 'Вычисление',
+                view(v: number) {
+                    if (v == 0)
+                        return "...";
+                    return "вычислено";
+                }
+            },
+            {
+                name: 't',
+                title: 'Время',
+                order: 'maximize',
+                view(v: number) {
+                    if (v == -1)
+                        return "?";
+                    return v.toString()
+                }
+            }
         ];
     }
 
     loadSolution(solution: string) {
         // Все объекты, которые сюда передаются, были ранее возвращены методом solution,
         // но проверять их все равно необходимо.
-        //TODO загрузить объект с решением участника.
+        this.blocksRegistry.bodyUI.deserialize = solution;
     }
 
     solution() {
-        return "";
-        //TODO вернуть объект с описанием решения участника
+        return this.blocksRegistry.bodyUI.serialize;
     }
 }

@@ -22,6 +22,7 @@ export class Solver extends createjs.EventDispatcher {
     private _u: Layer[];
     private _last_layer = 0; //exclusive
     private cancel_evaluations = false;
+    private DEBUG_DEL_ME = Math.random();
 
     //for tridiagonal matrix algorithm
     private A: number[];
@@ -40,7 +41,6 @@ export class Solver extends createjs.EventDispatcher {
         this.xd = xd;
         this.yd = yd;
         this.td = td;
-        console.log("afsdfd", xd.n, yd.n);
 
         this.phi0 = this.lay_out(phi0);
         this.heat = this.lay_out(heat);

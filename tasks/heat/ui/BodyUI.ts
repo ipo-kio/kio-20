@@ -16,12 +16,14 @@ export class BodyUI extends createjs.Container {
     private bg: createjs.Bitmap;
     private grid: createjs.Shape;
     private _process: HeatingProcess;
+    private kioapi: KioApi;
     private _processDrawer: ProcessDrawer;
     private _timeController: TimeControl;
     private blocks_registry: BlocksRegistry;
 
     constructor(kioapi: KioApi, blocks_registry: BlocksRegistry) {
         super();
+        this.kioapi = kioapi;
         this.blocks_registry = blocks_registry;
         this.blocks = new Array<Block[]>(M);
         for (let i = 0; i < M; i++) {
@@ -67,7 +69,7 @@ export class BodyUI extends createjs.Container {
         );
 
         this._timeController = new TimeControl();
-        this.update_process();
+        // this.update_process();
         this._timeController.addEventListener("time changed", () => {
             this._processDrawer.v0 = this._timeController.time_normalized;
         });
@@ -186,7 +188,13 @@ export class BodyUI extends createjs.Container {
         let res = '';
         for (let i = 0; i < this.blocks.length; i++)
             for (let j = 0; j < this.blocks[i].length; j++)
-                res += this.blocks[i][j].index.toString(36);
+                {
+                    let b = this.blocks[i][j];
+                    if (b == null)
+                        res += '-';
+                    else
+                        res += b.index.toString(36);
+                }
         return res;
     }
 
@@ -198,11 +206,19 @@ export class BodyUI extends createjs.Container {
         for (let i = 0; i < this.blocks.length; i++)
             for (let j = 0; j < this.blocks[i].length; j++) {
                 let c = value[ind];
-                let b = this.blocks_registry.block_by_index(parseInt(c, 36));
+                let b;
+                if (c == '-')
+                    b = null;
+                else
+                    b = this.blocks_registry.block_by_index(parseInt(c, 36));
 
+                //TODO code dup from set block
                 this.blocks[i][j] = b;
-                b.x = this.x + j * Block.WIDTH;
-                b.y = this.y + i * Block.HEIGHT;
+
+                if (b !== null) {
+                    b.x = this.x + j * Block.WIDTH;
+                    b.y = this.y + i * Block.HEIGHT;
+                }
             }
         this.update_process();
     }
@@ -221,7 +237,7 @@ export class BodyUI extends createjs.Container {
 
     private update_process() {
         console.time("up1");
-        this._process = new HeatingProcess(this.body);
+        this._process = new HeatingProcess(this.body, this.kioapi);
         console.timeEnd("up1");
         console.time("up2");
         this._processDrawer.process = this._process;
