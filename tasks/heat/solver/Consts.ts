@@ -11,6 +11,16 @@ export const DEFAULT_MATERIAL: Material = "tree";
 
 export type Material = "glass" | "air" | "tree" | "aluminium" | "sand";
 
+export const material2index = {
+    "aluminium": 0,
+    "air": 1,
+    "sand": 2,
+    "glass": 3,
+    "tree": 4
+};
+export const index2material: Material[] = ["aluminium", "air", "sand", "glass", "tree"];
+
+
 // http://scask.ru/q_book_emp.php?id=35
 const MUL_A = 1e3;
 const MUL_K = 1e-2;

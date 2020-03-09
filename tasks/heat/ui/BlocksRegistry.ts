@@ -8,6 +8,7 @@ export default class BlocksRegistry extends createjs.Container {
 
     private bodyUI: BodyUI;
     private processDebugger: ProcessDebugger;
+    private readonly index2block: Block[];
 
     constructor(kioapi: KioApi, amount: { [key in Material]: number }, use_debugger: boolean = false) {
         super();
@@ -15,6 +16,9 @@ export default class BlocksRegistry extends createjs.Container {
         this.bodyUI = new BodyUI(kioapi);
         this.addChild(this.bodyUI);
 
+        this.index2block = [];
+
+        let index = 0;
         let row_element = 0;
         let row_index = 0;
         for (let m in amount)
@@ -24,7 +28,8 @@ export default class BlocksRegistry extends createjs.Container {
                 for (let i = 0; i < a; i++) {
                     let x0 = this.bodyUI.width + 12 + row_element * (Block.WIDTH + DW);
                     let y0 = row_index * (Block.HEIGHT + DH);
-                    let b = new Block(kioapi, material, x0, y0);
+                    let b = new Block(kioapi, material, x0, y0, index++);
+                    this.index2block.push(b);
                     this.addChild(b);
                     row_element++;
                     if (row_element === ROW) {
@@ -72,6 +77,10 @@ export default class BlocksRegistry extends createjs.Container {
             });
             this.processDebugger.process = this.bodyUI.process;
         }
+    }
+
+    block_by_index(index: number) {
+        return this.index2block[index];
     }
 }
 

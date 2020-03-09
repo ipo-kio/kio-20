@@ -5,7 +5,8 @@ import HeatingProcess from "../solver/HeatingProcess";
 import ProcessDrawer, {SliceType} from "./ProcessDrawer";
 import Rectangle = createjs.Rectangle;
 import TimeControl from "./TimeControl";
-import {DEFAULT_MATERIAL, M, Material, N, VIEW_DIVISION} from "../solver/Consts";
+import {DEFAULT_MATERIAL, M, Material, material2index, N, VIEW_DIVISION} from "../solver/Consts";
+import BlocksRegistry from "./BlocksRegistry";
 
 export class BodyUI extends createjs.Container {
 
@@ -17,9 +18,11 @@ export class BodyUI extends createjs.Container {
     private _process: HeatingProcess;
     private _processDrawer: ProcessDrawer;
     private _timeController: TimeControl;
+    private blocks_registry: BlocksRegistry;
 
-    constructor(kioapi: KioApi) {
+    constructor(kioapi: KioApi, blocks_registry: BlocksRegistry) {
         super();
+        this.blocks_registry = blocks_registry;
         this.blocks = new Array<Block[]>(M);
         for (let i = 0; i < M; i++) {
             this.blocks[i] = new Array<Block>(N);
@@ -182,12 +185,26 @@ export class BodyUI extends createjs.Container {
     get serialize(): string {
         let res = '';
         for (let i = 0; i < this.blocks.length; i++)
-            res += this.blocks[i].join('');
+            for (let j = 0; j < this.blocks[i].length; j++)
+                res += this.blocks[i][j].index.toString(36);
         return res;
     }
 
-    set serialize(value: string) {
+    set deserialize(value: string) {
+        if (!value || value.length != 36)
+            return;
 
+        let ind = 0;
+        for (let i = 0; i < this.blocks.length; i++)
+            for (let j = 0; j < this.blocks[i].length; j++) {
+                let c = value[ind];
+                let b = this.blocks_registry.block_by_index(parseInt(c, 36));
+
+                this.blocks[i][j] = b;
+                b.x = this.x + j * Block.WIDTH;
+                b.y = this.y + i * Block.HEIGHT;
+            }
+        this.update_process();
     }
 
     get width(): number {

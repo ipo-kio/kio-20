@@ -14,14 +14,16 @@ export default class Block extends createjs.Container {
     private readonly y0: number;
     private press_x: number;
     private press_y: number;
+    private readonly _index: number;
 
-    constructor(kioapi: KioApi, material: Material, x0: number, y0: number) {
+    constructor(kioapi: KioApi, material: Material, x0: number, y0: number, index: number) {
         super();
         this.kioapi = kioapi;
 
         this._material = material;
         this.x0 = x0;
         this.y0 = y0;
+        this._index = index;
 
         this.x = x0;
         this.y = y0;
@@ -80,6 +82,10 @@ export default class Block extends createjs.Container {
             return;
         this._mouseover = value;
         this.border.visible = this._mouseover;
+    }
+
+    get index(): number {
+        return this._index;
     }
 
     move_home() {
