@@ -20,6 +20,7 @@ export class BodyUI extends createjs.Container {
     private _processDrawer: ProcessDrawer;
     private _timeController: TimeControl;
     private blocks_registry: BlocksRegistry;
+    private body_ui_initialization: boolean = true;
 
     constructor(kioapi: KioApi, blocks_registry: BlocksRegistry) {
         super();
@@ -69,10 +70,12 @@ export class BodyUI extends createjs.Container {
         );
 
         this._timeController = new TimeControl();
-        // this.update_process();
+        this.update_process();
         this._timeController.addEventListener("time changed", () => {
             this._processDrawer.v0 = this._timeController.time_normalized;
         });
+
+        this.body_ui_initialization = false;
     }
 
     get processDrawer(): ProcessDrawer {
@@ -248,6 +251,12 @@ export class BodyUI extends createjs.Container {
         console.time("up4");
         this.dispatchEvent("process changed");
         console.timeEnd("up4");
+
+        if (!this.body_ui_initialization)
+            this.kioapi.submitResult({
+                "e": 0,
+                "t": this.process.heat_position
+            });
     }
 }
 

@@ -40,11 +40,6 @@ export default class HeatingProcess extends createjs.EventDispatcher {
             });
         });
         this.values = solver.u;
-
-        this.kioapi.submitResult({
-            "e": 0,
-            "t": this.heat_position
-        });
     }
 
     get x_max(): number {

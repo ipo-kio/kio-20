@@ -7,11 +7,13 @@ import {DEFAULT_MATERIAL, Material} from "../solver/Consts";
 export default class BlocksRegistry extends createjs.Container {
 
     private _bodyUI: BodyUI;
+    private kioapi: KioApi;
     private processDebugger: ProcessDebugger;
     private readonly index2block: Block[];
 
     constructor(kioapi: KioApi, amount: { [key in Material]: number }, use_debugger: boolean = false) {
         super();
+        this.kioapi = kioapi;
 
         this._bodyUI = new BodyUI(kioapi, this);
         this.addChild(this._bodyUI);
