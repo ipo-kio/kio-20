@@ -57,9 +57,11 @@ export default class TimeControl extends createjs.Container {
             if (this.follow_evaluation) {
                 let now = new Date().getTime();
                 let elapsed = now - this.last_redraw_time;
-                if (elapsed > FOLLOW_EVALUATION_REDRAW_MS) {
+                let process = this.processDrawerTime.process;
+                let lastLayer = process.last_layer;
+                if (elapsed > FOLLOW_EVALUATION_REDRAW_MS || lastLayer == process.t_max + 1) {
                     this.last_redraw_time = now;
-                    let new_time = this.processDrawerTime.process.last_layer - 1;
+                    let new_time = lastLayer - 1;
                     if (new_time -= new_time % TIME_DIVISION)
                         this.time = new_time;
                 }
