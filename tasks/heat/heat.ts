@@ -79,7 +79,8 @@ export class Heat { //TODO название класса должно совпа
                     if (v == 0)
                         return "...";
                     return "вычислено";
-                }
+                },
+                order:'maximize'
             },
             {
                 name: 't',
@@ -101,6 +102,8 @@ export class Heat { //TODO название класса должно совпа
     }
 
     solution() {
-        return this.blocksRegistry.bodyUI.serialize;
+        let solution = this.blocksRegistry.bodyUI.serialize;
+        console.log("returned solution", solution);
+        return solution;
     }
 }

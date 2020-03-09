@@ -216,7 +216,6 @@ export class Palette {
     static readonly DEFAULT_COLOR: string = 'rgb(200, 200, 200)';
 
     constructor(min: number, max: number) {
-        console.log(`created palette from ${min} to ${max}`);
         this.min = min;
         this.max = max;
 

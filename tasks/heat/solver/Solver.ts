@@ -86,8 +86,10 @@ export class Solver extends createjs.EventDispatcher {
             let t1 = t0 + 4;
             if (t1 > this.td.n)
                 t1 = this.td.n;
+            let heat_position_before = this._heat_position;
             this.solve(t1);
-            this.dispatchEvent(new SolverUpdateEvent(t0, t1));
+            let heat_position_after = this._heat_position;
+            this.dispatchEvent(new SolverUpdateEvent(t0, t1, heat_position_before != heat_position_after));
 
             requestAnimationFrame(do_next);
 
@@ -329,6 +331,5 @@ export class Solver extends createjs.EventDispatcher {
             }
             s += '\n';
         }
-        console.log('a=', s);
     }
 }

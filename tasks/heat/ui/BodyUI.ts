@@ -208,7 +208,7 @@ export class BodyUI extends createjs.Container {
         let ind = 0;
         for (let i = 0; i < this.blocks.length; i++)
             for (let j = 0; j < this.blocks[i].length; j++) {
-                let c = value[ind];
+                let c = value[ind++];
                 let b;
                 if (c == '-')
                     b = null;
@@ -239,24 +239,20 @@ export class BodyUI extends createjs.Container {
     }
 
     private update_process() {
-        console.time("up1");
         this._process = new HeatingProcess(this.body, this.kioapi);
-        console.timeEnd("up1");
-        console.time("up2");
         this._processDrawer.process = this._process;
-        console.timeEnd("up2");
-        console.time("up3");
         this._timeController.process = this._process;
-        console.timeEnd("up3");
-        console.time("up4");
         this.dispatchEvent("process changed");
-        console.timeEnd("up4");
 
         if (!this.body_ui_initialization)
-            this.kioapi.submitResult({
-                "e": 0,
-                "t": this.process.heat_position
-            });
+            {
+                let result = {
+                    "e": 0,
+                    "t": this.process.heat_position
+                };
+                this.kioapi.submitResult(result);
+                console.log('submitted in BodyUI.ts', result);
+            }
 
         this._timeController.followEvaluation();
     }

@@ -10,9 +10,8 @@ export const N_time = TIME_DIVISION * 250;
 export const DEFAULT_MATERIAL: Material = "tree";
 
 export const FOLLOW_EVALUATION_REDRAW_MS = 300;
-// export const DESIRED_MIN_TEMPERATURE = 50;
+export const DESIRED_MIN_TEMPERATURE = 50;
 // export const DESIRED_MIN_TEMPERATURE = 1;
-export const DESIRED_MIN_TEMPERATURE = 100;
 
 export type Material = "glass" | "air" | "tree" | "aluminium" | "sand";
 
@@ -24,7 +23,6 @@ export const material2index = {
     "tree": 4
 };
 export const index2material: Material[] = ["aluminium", "air", "sand", "glass", "tree"];
-
 
 // http://scask.ru/q_book_emp.php?id=35
 const MUL_A = 1e3;
@@ -43,5 +41,3 @@ export const K = {
     "glass": 1.01 * MUL_K,
     "tree": 0.15  * MUL_K
 };
-
-console.log('consts', A, K, T_MAX);

@@ -77,6 +77,9 @@ export default class ProcessDrawer extends createjs.Bitmap {
 
         let ctx = this.canvas.getContext('2d');
 
+        if (this.sliceType == SliceType.XY)
+            ctx.clearRect(0, 0, this.width, this.height);
+
         let slice = this.slice;
         let a = slice.width - 2; //for x
         let b = slice.height - 2; //for y
@@ -97,7 +100,7 @@ export default class ProcessDrawer extends createjs.Bitmap {
                 //     color_index = 0;
                 let x1 = this.sliceType == SliceType.TY ? x : x + 1;
                 ctx.fillStyle = Palette.palette0100.get(slice.get(x1, y + 1));
-                ctx.fillRect(x * w, y * h, w, h);
+                ctx.fillRect(x * w, y * h, w + 0.5, h + 0.5);
             }
         }
 
@@ -114,8 +117,8 @@ export default class ProcessDrawer extends createjs.Bitmap {
         if (this.sliceType === SliceType.TY && this.process.heat_position !== -1) {
             let x = w * this._process.heat_position / TIME_DIVISION;
             ctx.beginPath();
-            ctx.moveTo(x, -16);
-            ctx.lineTo(x, this.height + 16 * 2);
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, this.height);
 
             ctx.save();
             ctx.strokeStyle = 'rgb(50, 50, 50)';

@@ -32,12 +32,17 @@ export default class HeatingProcess extends createjs.EventDispatcher {
         this.solver = solver;
 
         solver.addEventListener("heat update", (sue: SolverUpdateEvent) => {
-            this.dispatchEvent(new SolverUpdateEvent(sue.from, sue.to));
+            this.dispatchEvent(new SolverUpdateEvent(sue.from, sue.to, sue.heat_time_updated));
 
-            this.kioapi.submitResult({
-                "e": this.heat_position == -1 ? 0 : 1,
-                "t": this.heat_position
-            });
+            if (sue.heat_time_updated)
+                {
+                    let result = {
+                        "e": this.heat_position == -1 ? 0 : 1,
+                        "t": this.heat_position
+                    };
+                    this.kioapi.submitResult(result);
+                    console.log('submitted in HeatingProcess.ts', result);
+                }
         });
         this.values = solver.u;
     }
