@@ -1,4 +1,5 @@
 import {ind2color} from "./Palette";
+import Ticks from "./Ticks";
 
 export default class Legend extends createjs.Container {
     constructor() {
@@ -18,6 +19,10 @@ export default class Legend extends createjs.Container {
         let temperature_map = new createjs.Bitmap(temperature_map_canvas);
 
         this.addChild(temperature_map);
+
+        let temperature_tick = new Ticks(ind2color.length, 0, 100, 20, '°');
+        this.addChild(temperature_tick);
+        temperature_tick.y = temperature_map_canvas.height;
     }
 
 }

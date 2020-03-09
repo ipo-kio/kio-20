@@ -43,7 +43,7 @@ export class BodyUI extends createjs.Container {
         this._selected_cell = null;
 
         this.grid = new createjs.Shape();
-        this.grid.graphics.beginStroke("grey");
+        this.grid.graphics.beginStroke("rgba(255, 255, 255, 0.8)");
         for (let i = 0; i <= M; i++) {
             this.grid.graphics.moveTo(0, i * Block.HEIGHT);
             this.grid.graphics.lineTo(N * Block.WIDTH, i * Block.HEIGHT);

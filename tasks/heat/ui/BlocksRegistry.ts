@@ -2,6 +2,7 @@ import {BodyUI} from "./BodyUI";
 import Block from "./Block";
 import {KioApi} from "../../KioApi";
 import {DEFAULT_MATERIAL, Material} from "../solver/Consts";
+import {TIME_CONTROL_W} from "./TimeControl";
 
 export default class BlocksRegistry extends createjs.Container {
 
@@ -16,6 +17,15 @@ export default class BlocksRegistry extends createjs.Container {
         this._bodyUI = new BodyUI(kioapi, this);
         this.addChild(this._bodyUI);
 
+        let under_blocks = new createjs.Shape();
+        this.addChild(under_blocks);
+        under_blocks
+            .graphics
+            .beginFill('rgba(255, 255, 255, 0.5)')
+            .rect(0, 0, (DW + Block.WIDTH) * ROW + 4 + 6 + 12, (DW + Block.HEIGHT) * 6 + 4 + 12)
+            .endFill();
+        under_blocks.x = this._bodyUI.width + 6 + 12;
+
         this.index2block = [];
 
         let index = 0;
@@ -26,8 +36,8 @@ export default class BlocksRegistry extends createjs.Container {
                 let material = m as Material;
                 let a = amount[material];
                 for (let i = 0; i < a; i++) {
-                    let x0 = this._bodyUI.width + 12 + row_element * (Block.WIDTH + DW);
-                    let y0 = row_index * (Block.HEIGHT + DH);
+                    let x0 = this._bodyUI.width + 12 + row_element * (Block.WIDTH + DW) + 6 + 12;
+                    let y0 = row_index * (Block.HEIGHT + DH) + 12;
                     let b = new Block(kioapi, material, x0, y0, index++);
                     this.index2block.push(b);
                     this.addChild(b);
@@ -56,13 +66,14 @@ export default class BlocksRegistry extends createjs.Container {
         this._bodyUI.x = 0;
         this._bodyUI.y = 0;
 
-        this.addChild(this._bodyUI.processDrawer);
-        this._bodyUI.processDrawer.x = this._bodyUI.x + this._bodyUI.width + 12  + (DW + Block.WIDTH) * ROW + 4;
-        this._bodyUI.processDrawer.y = this._bodyUI.y;
+        let pd = this._bodyUI.processDrawer;
+        this.addChild(pd);
+        pd.x = this._bodyUI.x + this._bodyUI.width + 12 + (DW + Block.WIDTH) * ROW + 12 - DW + 2 + 24 + 12;
+        pd.y = this._bodyUI.y;
 
         this.addChild(this._bodyUI.timeController);
-        this._bodyUI.timeController.x = 0;
-        this._bodyUI.timeController.y = 24 + this._bodyUI.height;
+        this._bodyUI.timeController.x = (pd.x + this._bodyUI.width - TIME_CONTROL_W) / 2;
+        this._bodyUI.timeController.y = 24 + this._bodyUI.height + 24;
     }
 
     block_by_index(index: number) {

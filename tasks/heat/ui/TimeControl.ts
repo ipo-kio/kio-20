@@ -1,10 +1,11 @@
 import ProcessDrawer, {SliceType} from "./ProcessDrawer";
 import {download} from "./BodyUI";
-import {FOLLOW_EVALUATION_REDRAW_MS, TIME_DIVISION, VIEW_DIVISION} from "../solver/Consts";
+import {FOLLOW_EVALUATION_REDRAW_MS, N_time, TIME_DIVISION, VIEW_DIVISION} from "../solver/Consts";
 import HeatingProcess from "../solver/HeatingProcess";
 import MouseEvent = createjs.MouseEvent;
+import Ticks from "./Ticks";
 
-const W = 640;
+export const TIME_CONTROL_W = 640;
 const H = 100;
 const L = 5;
 
@@ -21,7 +22,7 @@ export default class TimeControl extends createjs.Container {
             SliceType.TY,
             TIME_DIVISION,
             VIEW_DIVISION,
-            W,
+            TIME_CONTROL_W,
             H
         );
         this.processDrawerTime.alpha = 1;
@@ -48,7 +49,7 @@ export default class TimeControl extends createjs.Container {
 
         let time_change_listener = (e: Object) => {
             let me = e as MouseEvent;
-            this.time = (me.localX / W) * (this.process.t_max + 1);
+            this.time = (me.localX / TIME_CONTROL_W) * (this.process.t_max + 1);
             this.follow_evaluation = false;
         };
         this.addEventListener("pressmove", time_change_listener);
@@ -67,6 +68,10 @@ export default class TimeControl extends createjs.Container {
                 }
             }
         });
+
+        let ticks = new Ticks(TIME_CONTROL_W, 0, N_time, 500);
+        this.addChild(ticks);
+        ticks.y = H;
     }
 
     get time_normalized(): number {
@@ -94,7 +99,7 @@ export default class TimeControl extends createjs.Container {
         //
         // time = 0     => tick.x = 0
         // time = t_max => tick.x =
-        let l = W / t;
+        let l = TIME_CONTROL_W / t;
         this.tick.x = value * l;
 
         this.dispatchEvent("time changed");

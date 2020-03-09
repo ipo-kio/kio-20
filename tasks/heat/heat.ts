@@ -57,11 +57,12 @@ export class Heat { //TODO название класса должно совпа
         this.stage.addChild(this.blocksRegistry);
         let legend = new Legend();
         this.stage.addChild(legend);
-        legend.y = 430;
+        legend.y = 450;
 
         createjs.Ticker.addEventListener('tick', this.stage);
 
         domNode.appendChild(this.canvas);
+        domNode.classList.add('heat-task-container');
     }
 
     static preloadManifest(): KioResourceDescription[] {
@@ -111,3 +112,7 @@ export class Heat { //TODO название класса должно совпа
         return solution;
     }
 }
+
+//TODO дополнительные параметры
+//TODO легенда
+//TODO подписи ко времени

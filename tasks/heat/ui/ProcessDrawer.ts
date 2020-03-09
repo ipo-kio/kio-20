@@ -1,7 +1,7 @@
 import HeatingProcess from "../solver/HeatingProcess";
 import {Palette} from "./Palette";
 import {Slice} from "../solver/Slice";
-import {TIME_DIVISION} from "../solver/Consts";
+import {M, N, TIME_DIVISION} from "../solver/Consts";
 import SolverUpdateEvent from "../solver/SolverUpdateEvent";
 
 export default class ProcessDrawer extends createjs.Bitmap {
@@ -126,6 +126,23 @@ export default class ProcessDrawer extends createjs.Bitmap {
             ctx.setLineDash([8, 8]);
             ctx.stroke();
             ctx.restore();
+        }
+
+        if (this.sliceType === SliceType.XY) {
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(200, 200, 200, 0.6)';
+            ctx.beginPath();
+            for (let i = 1; i < M; i++) {
+                let y = this.height * i / M;
+                ctx.moveTo(0, y);
+                ctx.lineTo(this.width, y);
+            }
+            for (let j = 1; j < N; j++) {
+                let x = this.width * j / N;
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, this.height);
+            }
+            ctx.stroke();
         }
     }
 
