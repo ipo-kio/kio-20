@@ -113,12 +113,16 @@ export default class ProcessDrawer extends createjs.Bitmap {
 
         if (this.sliceType === SliceType.TY && this.process.heat_position !== -1) {
             let x = w * this._process.heat_position / TIME_DIVISION;
-            ctx.strokeStyle = 'rgb(128, 255, 128)';
-            ctx.lineWidth = 1;
             ctx.beginPath();
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, this.height);
+            ctx.moveTo(x, -16);
+            ctx.lineTo(x, this.height + 16 * 2);
+
+            ctx.save();
+            ctx.strokeStyle = 'rgb(50, 50, 50)';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([8, 8]);
             ctx.stroke();
+            ctx.restore();
         }
     }
 

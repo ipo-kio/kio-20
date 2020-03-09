@@ -1,6 +1,6 @@
 import ProcessDrawer, {SliceType} from "./ProcessDrawer";
 import {download} from "./BodyUI";
-import {TIME_DIVISION, VIEW_DIVISION} from "../solver/Consts";
+import {FOLLOW_EVALUATION_REDRAW_MS, TIME_DIVISION, VIEW_DIVISION} from "../solver/Consts";
 import HeatingProcess from "../solver/HeatingProcess";
 import MouseEvent = createjs.MouseEvent;
 
@@ -13,6 +13,7 @@ export default class TimeControl extends createjs.Container {
     private tick: createjs.Shape;
     private _time: number = 0;
     private follow_evaluation: boolean = false;
+    private last_redraw_time: number;
 
     constructor() {
         super();
@@ -54,9 +55,14 @@ export default class TimeControl extends createjs.Container {
         this.addEventListener("mousedown", time_change_listener);
         this.processDrawerTime.addEventListener("heat update", () => {
             if (this.follow_evaluation) {
-                let new_time = this.processDrawerTime.process.last_layer - 1;
-                if (new_time -= new_time % TIME_DIVISION)
-                    this.time = new_time;
+                let now = new Date().getTime();
+                let elapsed = now - this.last_redraw_time;
+                if (elapsed > FOLLOW_EVALUATION_REDRAW_MS) {
+                    this.last_redraw_time = now;
+                    let new_time = this.processDrawerTime.process.last_layer - 1;
+                    if (new_time -= new_time % TIME_DIVISION)
+                        this.time = new_time;
+                }
             }
         });
     }
@@ -103,5 +109,6 @@ export default class TimeControl extends createjs.Container {
 
     followEvaluation() {
         this.follow_evaluation = true;
+        this.last_redraw_time = 0;
     }
 };
