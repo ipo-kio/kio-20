@@ -53,10 +53,15 @@ export default class ProcessDrawer extends createjs.Bitmap {
     }
 
     get slice(): Slice {
+        let v0 = this._v0;
+        v0 = Math.round(v0 / TIME_DIVISION) * TIME_DIVISION;
+        if (v0 > this._process.t_max)
+            v0 -= TIME_DIVISION;
+
         if (this.sliceType === SliceType.XY)
-            return this._process.xy_slice(this._v0, this.dx, this.dy);
+            return this._process.xy_slice(v0, this.dx, this.dy);
         else
-            return this._process.ty_slice(this._v0, this.dx, this.dy);
+            return this._process.ty_slice(v0, this.dx, this.dy);
     }
 
     private update_graphics(from: number = 0, to: number = -1) {

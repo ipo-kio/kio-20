@@ -5,11 +5,11 @@ import {Slice} from "./Slice";
 import SolverUpdateEvent from "./SolverUpdateEvent";
 import {N_element, N_time, T_MAX, TIME} from "./Consts";
 import {KioApi} from "../../KioApi";
+import {Palette} from "../ui/Palette";
 
 export default class HeatingProcess extends createjs.EventDispatcher {
 
     private values: Layer[];
-    private _heat_position: number;
     private solver: Solver;
     private kioapi: KioApi;
 
@@ -33,19 +33,17 @@ export default class HeatingProcess extends createjs.EventDispatcher {
 
         solver.addEventListener("heat update", (sue: SolverUpdateEvent) => {
             this.dispatchEvent(new SolverUpdateEvent(sue.from, sue.to));
-            this._heat_position = this.find_heat_position();
 
             this.kioapi.submitResult({
-                "e": this._heat_position == -1 ? 0 : 1,
-                "t": this._heat_position
+                "e": this.heat_position == -1 ? 0 : 1,
+                "t": this.heat_position
             });
         });
         this.values = solver.u;
-        this._heat_position = this.find_heat_position();
 
         this.kioapi.submitResult({
             "e": 0,
-            "t": this._heat_position
+            "t": this.heat_position
         });
     }
 
@@ -62,7 +60,7 @@ export default class HeatingProcess extends createjs.EventDispatcher {
     }
 
     get heat_position(): number {
-        return this._heat_position;
+        return this.solver.heat_position;
     }
 
     get last_layer(): number {
@@ -85,6 +83,8 @@ export default class HeatingProcess extends createjs.EventDispatcher {
             width: nx + 1,
             height: ny + 1,
             get(x, y) {
+                if (!time)
+                    return Palette.DEFAULT_VALUE;
                 return time[x * dx][y * dy];
             }
         };
@@ -99,44 +99,16 @@ export default class HeatingProcess extends createjs.EventDispatcher {
             width: nt + 1,
             height: ny + 1,
             get(t, y) {
-                return values[t * dt][x][y * dy];
+                let layer = values[t * dt];
+                if (!layer)
+                    return Palette.DEFAULT_VALUE;
+                return layer[x][y * dy];
             }
         };
     }
 
     get debug() {
         return JSON.stringify(this.values);
-    }
-
-    private find_heat_position() {
-        let lastLayer = this.last_layer;
-        for (let t = 0; t < lastLayer; t++) {
-            let mean = this.min_temperature(t);
-            if (mean >= 50)
-                return t;
-        }
-        return -1;
-    }
-
-    private mean_temperature(t: number): number {
-        let n = this.values[0][0].length - 2;
-        let s = 0;
-        for (let y = 1; y < this.values[0][0].length - 1; y++)
-            s += this.values[t][this.values[0].length - 1][y];
-
-        return s / n;
-    }
-
-    private min_temperature(t: number): number {
-        let n = this.values[0][0].length - 2;
-        let s = 1e100;
-        for (let y = 1; y <= n; y++) {
-            let v = this.values[t][this.values[0].length - 1][y];
-            if (v < s)
-                s = v;
-        }
-
-        return s;
     }
 
     stop_update() {

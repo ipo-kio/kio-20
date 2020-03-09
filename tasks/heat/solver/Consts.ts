@@ -4,10 +4,12 @@ export const N = 6;
 export const VIEW_DIVISION = 1;
 export const N_element = VIEW_DIVISION * 25;
 export const LENGTH = 1;
-export const TIME = 1000;
-export const TIME_DIVISION = 2;
+export const TIME = 500;
+export const TIME_DIVISION = 10;
 export const N_time = TIME_DIVISION * 500;
 export const DEFAULT_MATERIAL: Material = "tree";
+
+export const DESIRED_MIN_TEMPERATURE = 50;
 
 export type Material = "glass" | "air" | "tree" | "aluminium" | "sand";
 

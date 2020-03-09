@@ -1,5 +1,5 @@
 import {DimensionDescription} from "./DimensionDescription";
-import {A, Material} from "./Consts";
+import {A, DESIRED_MIN_TEMPERATURE, Material, TIME_DIVISION} from "./Consts";
 import SolverUpdateEvent from "./SolverUpdateEvent";
 import {Palette} from "../ui/Palette";
 import Body from "../Body";
@@ -18,6 +18,8 @@ export class Solver extends createjs.EventDispatcher {
     private xd: DimensionDescription;
     private yd: DimensionDescription;
     private td: DimensionDescription;
+
+    private _heat_position: number = -1;
 
     private _u: Layer[];
     private _last_layer = 0; //exclusive
@@ -92,7 +94,6 @@ export class Solver extends createjs.EventDispatcher {
             // console.timeEnd("solver step");
         };
         requestAnimationFrame(do_next);
-
     }
 
     lay_out(f: LayerFunction): Layer {
@@ -121,9 +122,7 @@ export class Solver extends createjs.EventDispatcher {
         }
         console.timeEnd("ps");*/
 
-        let def = Palette.DEFAULT_VALUE;
-
-        let tn = this.td.n;
+        /*let tn = this.td.n;
         let xn = this.xd.n;
         let yn = this.yd.n;
         for (let t = 1; t < tn; t++) {
@@ -136,13 +135,15 @@ export class Solver extends createjs.EventDispatcher {
                 for (let y = 0; y < yn; y++)
                     vv[y] = def;
             }
-        }
+        }*/
     }
 
 
     private solve(to: number) {
         if (this._last_layer >= to)
             return;
+
+        let def = Palette.DEFAULT_VALUE;
 
         let x_max = this.xd.n - 1;
         let y_max = this.yd.n - 1;
@@ -165,7 +166,19 @@ export class Solver extends createjs.EventDispatcher {
 
         for (let t = this._last_layer; t < to; t++) {
             let v0 = this._u[t - 1];
-            let v1 = this._u[t];
+
+            let v1 = Array(x_max + 1);
+            for (let x = 0; x <= x_max; x++) {
+                // let vv = new Float64Array(10).fill(0); //Array(yn);
+                let vv = Array(y_max + 1);
+                v1[x] = vv;
+                for (let y = 0; y <= y_max; y++)
+                    vv[y] = def;
+            }
+            this._u[t] = v1;
+
+            if ((t - 2) % TIME_DIVISION !== 0)
+                this._u[t - 2] = null;
 
             //(v1[x,y]-v0[x,y]) / tau - a (
             //      v1[x-1,y]-2v1[x,y]+v1[x+1,y] +
@@ -174,7 +187,6 @@ export class Solver extends createjs.EventDispatcher {
             //
             //x = 1 .. max_x - 1
             //y = 1 .. max_y - 1
-
             if (t % 2 == 1) {
                 for (let y = 1; y < y_max; y++) {
                     // sys[0][0] = 0;
@@ -220,6 +232,12 @@ export class Solver extends createjs.EventDispatcher {
 
                     this.solve_3sys(sys, v1, x, -1);
                 }
+            }
+
+            if (this._heat_position === -1) {
+                let mt = Solver.min_temperature(v1);
+                if (mt >= DESIRED_MIN_TEMPERATURE)
+                    this._heat_position = t;
             }
         }
 
@@ -280,6 +298,22 @@ export class Solver extends createjs.EventDispatcher {
 
     stop_update() {
         this.cancel_evaluations = true;
+    }
+
+    private static min_temperature(l: Layer): number {
+        let n = l.length - 2;
+        let s = 1e100;
+        for (let y = 1; y <= n; y++) {
+            let v = l[n][y];
+            if (v < s)
+                s = v;
+        }
+
+        return s;
+    }
+
+    get heat_position(): number {
+        return this._heat_position;
     }
 
     private debug_a() {
