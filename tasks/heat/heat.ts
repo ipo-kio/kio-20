@@ -2,6 +2,7 @@ import './heat.scss'; //TODO заменить имя файла со стиля�
 import {KioApi, KioResourceDescription, KioTaskSettings} from "../KioApi";
 import BlocksRegistry from "./ui/BlocksRegistry";
 import Block from "./ui/Block";
+import Legend from "./ui/Legend";
 
 export class Heat { //TODO название класса должно совпадать с id задачи, но с заглавной буквы
     private settings: KioTaskSettings;
@@ -54,6 +55,9 @@ export class Heat { //TODO название класса должно совпа
             "tree": 12
         });
         this.stage.addChild(this.blocksRegistry);
+        let legend = new Legend();
+        this.stage.addChild(legend);
+        legend.y = 430;
 
         createjs.Ticker.addEventListener('tick', this.stage);
 
@@ -80,12 +84,12 @@ export class Heat { //TODO название класса должно совпа
                         return "...";
                     return "вычислено";
                 },
-                order:'maximize'
+                ordering:'maximize'
             },
             {
                 name: 't',
                 title: 'Время',
-                order: 'maximize',
+                ordering: 'maximize',
                 view(v: number) {
                     if (v == -1)
                         return "?";

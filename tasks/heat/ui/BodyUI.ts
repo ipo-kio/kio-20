@@ -169,12 +169,19 @@ export class BodyUI extends createjs.Container {
         }
     }
 
-    set_block({i, j}: { i: number; j: number }, b: Block) {
+    private set_block_no_update(i: number, j: number, b: Block) {
         this.blocks[i][j] = b;
         b.x = this.x + j * Block.WIDTH;
         b.y = this.y + i * Block.HEIGHT;
+    }
 
+    set_block({i, j}: { i: number; j: number }, b: Block) {
+        this.set_block_no_update(i, j, b);
         this.update_process();
+    }
+
+    get_block(i: number, j : number) {
+        return this.blocks[i][j];
     }
 
     remove_block(b: Block) {
@@ -205,6 +212,8 @@ export class BodyUI extends createjs.Container {
         if (!value || value.length != 36)
             return;
 
+        this.blocks_registry.move_blocks_home();
+
         let ind = 0;
         for (let i = 0; i < this.blocks.length; i++)
             for (let j = 0; j < this.blocks[i].length; j++) {
@@ -215,13 +224,10 @@ export class BodyUI extends createjs.Container {
                 else
                     b = this.blocks_registry.block_by_index(parseInt(c, 36));
 
-                //TODO code dup from set block
-                this.blocks[i][j] = b;
-
-                if (b !== null) {
-                    b.x = this.x + j * Block.WIDTH;
-                    b.y = this.y + i * Block.HEIGHT;
-                }
+                if (b != null)
+                    this.set_block_no_update(i, j, b);
+                else
+                    this.blocks[i][j] = null;
             }
         this.update_process();
     }

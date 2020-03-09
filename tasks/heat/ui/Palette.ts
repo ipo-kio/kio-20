@@ -204,7 +204,7 @@ const colors = [
     [0.81978416, 0.15307530000000003, 0.16657864],
     [0.817319, 0.134127, 0.164218]
 ];
-const ind2color: string[] = new Array(colors.length);
+export const ind2color: string[] = new Array(colors.length);
 
 export class Palette {
 

@@ -1,17 +1,15 @@
 import {BodyUI} from "./BodyUI";
 import Block from "./Block";
 import {KioApi} from "../../KioApi";
-import {ProcessDebugger} from "./ProcessDebugger";
 import {DEFAULT_MATERIAL, Material} from "../solver/Consts";
 
 export default class BlocksRegistry extends createjs.Container {
 
     private _bodyUI: BodyUI;
     private kioapi: KioApi;
-    private processDebugger: ProcessDebugger;
     private readonly index2block: Block[];
 
-    constructor(kioapi: KioApi, amount: { [key in Material]: number }, use_debugger: boolean = false) {
+    constructor(kioapi: KioApi, amount: { [key in Material]: number }) {
         super();
         this.kioapi = kioapi;
 
@@ -43,13 +41,13 @@ export default class BlocksRegistry extends createjs.Container {
                     });
                     b.addEventListener("block stop move", () => {
                         let ij = this._bodyUI.selected_cell;
-                        if (ij !== null)
+                        if (ij !== null && !this._bodyUI.get_block(ij.i, ij.j))
                             this._bodyUI.set_block(ij, b);
                         else
                             b.move_home();
                     });
                     b.addEventListener("mousedown", () => {
-                        this.setChildIndex(b, this.children.length - 1 - (use_debugger ? 3 : 2)); // 3 extra children
+                        this.setChildIndex(b, this.children.length - 3); // 2 extra children
                         this._bodyUI.remove_block(b);
                     });
                 }
@@ -58,13 +56,6 @@ export default class BlocksRegistry extends createjs.Container {
         this._bodyUI.x = 0;
         this._bodyUI.y = 0;
 
-        if (use_debugger) {
-            this.processDebugger = new ProcessDebugger();
-            this.addChild(this.processDebugger);
-            this.processDebugger.x = 0;
-            this.processDebugger.y = this._bodyUI.height + 4 + 100 + 4; // 100 is the height of processDrawerTime
-        }
-
         this.addChild(this._bodyUI.processDrawer);
         this._bodyUI.processDrawer.x = this._bodyUI.x + this._bodyUI.width + 12  + (DW + Block.WIDTH) * ROW + 4;
         this._bodyUI.processDrawer.y = this._bodyUI.y;
@@ -72,13 +63,6 @@ export default class BlocksRegistry extends createjs.Container {
         this.addChild(this._bodyUI.timeController);
         this._bodyUI.timeController.x = 0;
         this._bodyUI.timeController.y = 24 + this._bodyUI.height;
-
-        if (use_debugger) {
-            this._bodyUI.addEventListener("process changed", () => {
-                this.processDebugger.process = this._bodyUI.process;
-            });
-            this.processDebugger.process = this._bodyUI.process;
-        }
     }
 
     block_by_index(index: number) {
@@ -87,6 +71,11 @@ export default class BlocksRegistry extends createjs.Container {
 
     get bodyUI(): BodyUI {
         return this._bodyUI;
+    }
+
+    move_blocks_home() {
+        for (let b of this.index2block)
+            b.move_home();
     }
 }
 

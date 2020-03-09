@@ -8,6 +8,8 @@ export default class Body {
         this.elements = elements;
     }
 
+
+
     a(x: number, y: number): number {
         let m = this.elements[y][x];
         return A[m];
