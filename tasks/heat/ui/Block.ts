@@ -9,6 +9,7 @@ export default class Block extends createjs.Container {
     private readonly _material: Material;
     private _mouseover: boolean;
     private readonly border: createjs.Shape;
+    private readonly light_border: createjs.Shape;
 
     private readonly x0: number;
     private readonly y0: number;
@@ -36,7 +37,14 @@ export default class Block extends createjs.Container {
             .setStrokeStyle(3)
             .rect(1, 1, Block.WIDTH - 1, Block.HEIGHT - 1)
             .endStroke();
+        this.light_border = new createjs.Shape();
+        this.light_border.graphics
+            .beginStroke('rgba(255, 255, 255, 1)')
+            .setStrokeStyle(1)
+            .rect(0.5, 0.5, Block.WIDTH, Block.HEIGHT)
+            .endStroke();
         this.addChild(image);
+        this.addChild(this.light_border);
         this.addChild(this.border);
         this.mouseover = false;
 

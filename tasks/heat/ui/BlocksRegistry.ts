@@ -64,7 +64,7 @@ export default class BlocksRegistry extends createjs.Container {
             }
 
         this._bodyUI.x = 0;
-        this._bodyUI.y = 0;
+        this._bodyUI.y = 18;
 
         let pd = this._bodyUI.processDrawer;
         this.addChild(pd);
