@@ -1,7 +1,6 @@
 import './heat.scss'; //TODO заменить имя файла со стилями
 import {KioApi, KioResourceDescription, KioTaskSettings} from "../KioApi";
 import BlocksRegistry from "./ui/BlocksRegistry";
-import Block from "./ui/Block";
 import Legend from "./ui/Legend";
 import {HEAT_POSITION_DEFAULT_VALUE} from "./solver/Solver";
 
@@ -10,7 +9,6 @@ export class Heat { //TODO название класса должно совпа
     private kioapi: KioApi;
 
     private canvas: HTMLCanvasElement;
-    private stage: createjs.Stage;
     private blocksRegistry: BlocksRegistry;
 
     /**
@@ -44,8 +42,8 @@ export class Heat { //TODO название класса должно совпа
         this.canvas.width = 900;
         this.canvas.height = 610;
 
-        this.stage = new createjs.Stage(this.canvas);
-        this.stage.enableMouseOver();
+        let stage = new createjs.Stage(this.canvas);
+        stage.enableMouseOver();
         this.blocksRegistry = new BlocksRegistry(kioapi, +this.settings.level, {
             "glass": 6,
             "air": 6,
@@ -53,13 +51,13 @@ export class Heat { //TODO название класса должно совпа
             "sand": 6,
             "tree": 12
         });
-        this.stage.addChild(this.blocksRegistry);
+        stage.addChild(this.blocksRegistry);
         let legend = new Legend(kioapi);
-        this.stage.addChild(legend);
+        stage.addChild(legend);
         legend.x = 20;
         legend.y = 490;
 
-        createjs.Ticker.addEventListener('tick', this.stage);
+        createjs.Ticker.addEventListener('tick', stage);
 
         domNode.appendChild(this.canvas);
         domNode.classList.add('heat-task-container');
