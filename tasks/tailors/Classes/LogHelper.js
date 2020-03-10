@@ -28,7 +28,7 @@ export class LogHelper
 		}
 
 		cell  = row.insertCell(n+1);
-		cell.innerHTML = process._princessState 
+		//cell.innerHTML = process._princessState + ' ' + (process._moveCurrentIndex + 1)
 	}
 
 	static clearLog(tailorsArr)
