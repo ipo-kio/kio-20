@@ -1,5 +1,5 @@
 import {DimensionDescription} from "./DimensionDescription";
-import {A, DESIRED_MIN_TEMPERATURE, Material, TIME_DIVISION} from "./Consts";
+import {A, Material, TIME_DIVISION} from "./Consts";
 import SolverUpdateEvent from "./SolverUpdateEvent";
 import {Palette} from "../ui/Palette";
 import Body from "../Body";
@@ -8,7 +8,11 @@ export type Layer = number[][];
 export type LayerFunction = (x: number, y: number) => number;
 export type LeftHeatFlowFunction = (y: number) => number;
 
+export const HEAT_POSITION_DEFAULT_VALUE = 10000;
+
 export class Solver extends createjs.EventDispatcher {
+
+    private DESIRED_MIN_TEMPERATURE = 50;
 
     private a: Layer;
     private k: Layer;
@@ -19,12 +23,12 @@ export class Solver extends createjs.EventDispatcher {
     private yd: DimensionDescription;
     private td: DimensionDescription;
 
-    private _heat_position: number = -1;
+    private _heat_position: number = HEAT_POSITION_DEFAULT_VALUE;
+    private _heat_percent: number = -1;
 
     private _u: Layer[];
     private _last_layer = 0; //exclusive
     private cancel_evaluations = false;
-    private DEBUG_DEL_ME = Math.random();
 
     //for tridiagonal matrix algorithm
     private A: number[];
@@ -32,6 +36,7 @@ export class Solver extends createjs.EventDispatcher {
 
     constructor(
         body: Body,
+        desired_min_temperature: number,
         xd: DimensionDescription,
         yd: DimensionDescription,
         td: DimensionDescription,
@@ -43,6 +48,7 @@ export class Solver extends createjs.EventDispatcher {
         this.xd = xd;
         this.yd = yd;
         this.td = td;
+        this.DESIRED_MIN_TEMPERATURE = desired_min_temperature;
 
         this.phi0 = this.lay_out(phi0);
         this.heat = this.lay_out(heat);
@@ -87,9 +93,15 @@ export class Solver extends createjs.EventDispatcher {
             if (t1 > this.td.n)
                 t1 = this.td.n;
             let heat_position_before = this._heat_position;
+            let heat_percent_before = this._heat_percent;
             this.solve(t1);
             let heat_position_after = this._heat_position;
-            this.dispatchEvent(new SolverUpdateEvent(t0, t1, heat_position_before != heat_position_after));
+            let heat_percent_after = this._heat_percent;
+            this.dispatchEvent(new SolverUpdateEvent(
+                t0,
+                t1,
+                heat_position_before != heat_position_after || heat_percent_before !== heat_percent_after
+            ));
 
             requestAnimationFrame(do_next);
 
@@ -236,14 +248,19 @@ export class Solver extends createjs.EventDispatcher {
                 }
             }
 
-            if (this._heat_position === -1) {
+            if (this._heat_position === HEAT_POSITION_DEFAULT_VALUE) {
                 let mt = Solver.min_temperature(v1);
-                if (mt >= DESIRED_MIN_TEMPERATURE)
+                if (mt >= this.DESIRED_MIN_TEMPERATURE) {
                     this._heat_position = t;
+                    this._heat_percent = 100;
+                }
             }
         }
 
         this._last_layer = to;
+
+        if (to === this.td.n)
+            this._heat_percent = this.evaluate_heat_percent();
     }
 
     private solve_3sys(sys: number[][], v1: Layer, x: number, y: number) {
@@ -318,6 +335,10 @@ export class Solver extends createjs.EventDispatcher {
         return this._heat_position;
     }
 
+    get heat_percent(): number {
+        return this._heat_percent;
+    }
+
     private debug_a() {
         let s = '';
         for (let y = 0; y < this.a.length; y++) {
@@ -331,5 +352,16 @@ export class Solver extends createjs.EventDispatcher {
             }
             s += '\n';
         }
+    }
+
+    private evaluate_heat_percent() {
+        console.log("evaluating heat percent");
+        let u = this.u[this.td.n - 1];
+        let n = u.length - 2;
+        let cnt = 0;
+        for (let y = 1; y <= n; y++)
+            if (u[n][y] >= this.DESIRED_MIN_TEMPERATURE)
+                cnt++;
+        return Math.floor(100 * cnt / n);
     }
 }

@@ -3,6 +3,7 @@ import {KioApi, KioResourceDescription, KioTaskSettings} from "../KioApi";
 import BlocksRegistry from "./ui/BlocksRegistry";
 import Block from "./ui/Block";
 import Legend from "./ui/Legend";
+import {HEAT_POSITION_DEFAULT_VALUE} from "./solver/Solver";
 
 export class Heat { //TODO название класса должно совпадать с id задачи, но с заглавной буквы
     private settings: KioTaskSettings;
@@ -19,8 +20,6 @@ export class Heat { //TODO название класса должно совпа
      */
     constructor(settings: KioTaskSettings) {
         this.settings = settings;
-
-        //TODO здесь можно совершить инициализацию, которая не зависит от положения в DOM и kioapi
     }
 
     /**
@@ -47,7 +46,7 @@ export class Heat { //TODO название класса должно совпа
 
         this.stage = new createjs.Stage(this.canvas);
         this.stage.enableMouseOver();
-        this.blocksRegistry = new BlocksRegistry(kioapi, {
+        this.blocksRegistry = new BlocksRegistry(kioapi, +this.settings.level, {
             "glass": 6,
             "air": 6,
             "aluminium": 6,
@@ -89,6 +88,16 @@ export class Heat { //TODO название класса должно совпа
                 ordering:'maximize'
             },
             {
+                name: 'p',
+                title: 'Процент нагретого',
+                ordering: 'maximize',
+                view(v: number) {
+                    if (v == HEAT_POSITION_DEFAULT_VALUE)
+                        return "?";
+                    return v.toString()
+                }
+            },
+            {
                 name: 't',
                 title: 'Время',
                 ordering: 'minimize',
@@ -109,7 +118,6 @@ export class Heat { //TODO название класса должно совпа
 
     solution() {
         let solution = this.blocksRegistry.bodyUI.serialize;
-        console.log("returned solution", solution);
         return solution;
     }
 }

@@ -23,8 +23,6 @@ export default class Ticks extends createjs.Container {
             t.textBaseline = "top";
             t.x = l;
             t.y = H + 4;
-
-            console.log("ind", ind, l);
         }
         g.endStroke();
     }

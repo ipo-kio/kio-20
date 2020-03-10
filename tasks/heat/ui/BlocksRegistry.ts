@@ -10,11 +10,11 @@ export default class BlocksRegistry extends createjs.Container {
     private kioapi: KioApi;
     private readonly index2block: Block[];
 
-    constructor(kioapi: KioApi, amount: { [key in Material]: number }) {
+    constructor(kioapi: KioApi, level: number, amount: { [key in Material]: number }) {
         super();
         this.kioapi = kioapi;
 
-        this._bodyUI = new BodyUI(kioapi, this);
+        this._bodyUI = new BodyUI(kioapi, level, this);
         this.addChild(this._bodyUI);
 
         let under_blocks = new createjs.Shape();

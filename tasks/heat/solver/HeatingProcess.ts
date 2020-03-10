@@ -13,11 +13,12 @@ export default class HeatingProcess extends createjs.EventDispatcher {
     private solver: Solver;
     private kioapi: KioApi;
 
-    constructor(body: Body, kioapi: KioApi) {
+    constructor(body: Body, level: number, kioapi: KioApi) {
         super();
         this.kioapi = kioapi;
         let solver = new Solver(
             body,
+            40 + level * 5,
             new DimensionDescription(0, 1, N_element * body.width + 2, true),
             new DimensionDescription(0, 1, N_element * body.height + 2, true),
             new DimensionDescription(0, TIME, N_time + 1, false),
@@ -34,10 +35,11 @@ export default class HeatingProcess extends createjs.EventDispatcher {
         solver.addEventListener("heat update", (sue: SolverUpdateEvent) => {
             this.dispatchEvent(new SolverUpdateEvent(sue.from, sue.to, sue.heat_time_updated));
 
-            if (sue.heat_time_updated)
+            if (sue.heat_time_updated || sue.to == this.t_max + 1)
                 {
                     let result = {
                         "e": this.heat_position == -1 ? 0 : 1,
+                        "p": this.heat_percent,
                         "t": this.heat_position
                     };
                     this.kioapi.submitResult(result);
@@ -61,6 +63,10 @@ export default class HeatingProcess extends createjs.EventDispatcher {
 
     get heat_position(): number {
         return this.solver.heat_position;
+    }
+
+    get heat_percent(): number {
+        return this.solver.heat_percent;
     }
 
     get last_layer(): number {
@@ -129,7 +135,6 @@ function log(m: any, title?: string) {
 
     num_out++;
 }
-
 
 const MAX_T = 100;
 const T_DIST = 0.1;

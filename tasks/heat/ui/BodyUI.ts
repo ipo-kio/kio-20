@@ -16,14 +16,16 @@ export class BodyUI extends createjs.Container {
     private bg: createjs.Bitmap;
     private grid: createjs.Shape;
     private _process: HeatingProcess;
+    private level: number;
     private kioapi: KioApi;
     private _processDrawer: ProcessDrawer;
     private _timeController: TimeControl;
     private blocks_registry: BlocksRegistry;
     private body_ui_initialization: boolean = true;
 
-    constructor(kioapi: KioApi, blocks_registry: BlocksRegistry) {
+    constructor(kioapi: KioApi, level: number, blocks_registry: BlocksRegistry) {
         super();
+        this.level = level;
         this.kioapi = kioapi;
         this.blocks_registry = blocks_registry;
         this.blocks = new Array<Block[]>(M);
@@ -245,7 +247,7 @@ export class BodyUI extends createjs.Container {
     }
 
     private update_process() {
-        this._process = new HeatingProcess(this.body, this.kioapi);
+        this._process = new HeatingProcess(this.body, this.level, this.kioapi);
         this._processDrawer.process = this._process;
         this._timeController.process = this._process;
         this.dispatchEvent("process changed");
@@ -253,6 +255,7 @@ export class BodyUI extends createjs.Container {
         if (!this.body_ui_initialization) {
             let result = {
                 "e": 0,
+                "p": this.process.heat_percent,
                 "t": this.process.heat_position
             };
             this.kioapi.submitResult(result);
