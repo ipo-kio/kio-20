@@ -92,7 +92,7 @@ export class Heat { //TODO название класса должно совпа
                 title: 'Процент нагретого',
                 ordering: 'maximize',
                 view(v: number) {
-                    if (v == HEAT_POSITION_DEFAULT_VALUE)
+                    if (v == -1)
                         return "?";
                     return v.toString()
                 }
@@ -102,7 +102,7 @@ export class Heat { //TODO название класса должно совпа
                 title: 'Время',
                 ordering: 'minimize',
                 view(v: number) {
-                    if (v == -1)
+                    if (v == HEAT_POSITION_DEFAULT_VALUE)
                         return "?";
                     return v.toString()
                 }
