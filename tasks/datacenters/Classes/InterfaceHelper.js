@@ -24,8 +24,8 @@ export class InterfaceHelper
 			canvasContDiv.innerHTML = ''
 			canvasContDiv.id = 'canvasContDiv'
 			canvasContDiv.className = 'canvas_cont_div'
-			canvasContDiv.style.backgroundImage = 'url("./datacenters-resources/karta-fon-all.jpg")'
 			canvasContDiv.style.backgroundPositionX = '-180px';
+			canvasContDiv.classList.add('datacenters-task')
 			superDiv.appendChild(canvasContDiv)
 
 
