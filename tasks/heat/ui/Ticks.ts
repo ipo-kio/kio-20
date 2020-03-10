@@ -2,7 +2,7 @@ const H = 8;
 
 export default class Ticks extends createjs.Container {
 
-    constructor(W: number, ind0: number, ind1: number, step: number, postfix: string = '', font: string = '14px Arial') {
+    constructor(W: number, ind0: number, ind1: number, step: number, postfix: string = '', font: string = '14pt Arial') {
         super();
 
         let ticks = new createjs.Shape();

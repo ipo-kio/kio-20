@@ -23,6 +23,13 @@ export const material2index = {
     "tree": 4
 };
 export const index2material: Material[] = ["aluminium", "air", "sand", "glass", "tree"];
+export const material2name = {
+    "aluminium": 'Аллюминий',
+    "air": 'Воздух',
+    "sand": 'Песок',
+    "glass": 'Стекло',
+    "tree": 'Сосна'
+};
 
 // http://scask.ru/q_book_emp.php?id=35
 const MUL_A = 1e3;

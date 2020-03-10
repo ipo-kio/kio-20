@@ -43,7 +43,7 @@ export class Heat { //TODO название класса должно совпа
 
         this.canvas = document.createElement('canvas');
         this.canvas.width = 900;
-        this.canvas.height = 540;
+        this.canvas.height = 610;
 
         this.stage = new createjs.Stage(this.canvas);
         this.stage.enableMouseOver();
@@ -55,9 +55,10 @@ export class Heat { //TODO название класса должно совпа
             "tree": 12
         });
         this.stage.addChild(this.blocksRegistry);
-        let legend = new Legend();
+        let legend = new Legend(kioapi);
         this.stage.addChild(legend);
-        legend.y = 450;
+        legend.x = 20;
+        legend.y = 490;
 
         createjs.Ticker.addEventListener('tick', this.stage);
 
