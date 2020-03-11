@@ -3,6 +3,7 @@ import {KioApi, KioResourceDescription, KioTaskSettings} from "../KioApi";
 import BlocksRegistry from "./ui/BlocksRegistry";
 import Legend from "./ui/Legend";
 import {HEAT_POSITION_DEFAULT_VALUE} from "./solver/Solver";
+import Stage = createjs.Stage;
 
 export class Heat { //TODO название класса должно совпадать с id задачи, но с заглавной буквы
     private settings: KioTaskSettings;
@@ -42,7 +43,8 @@ export class Heat { //TODO название класса должно совпа
         this.canvas.width = 900;
         this.canvas.height = 610;
 
-        let stage = new createjs.Stage(this.canvas);
+        let stage: Stage = new Stage(this.canvas);
+
         stage.enableMouseOver();
         this.blocksRegistry = new BlocksRegistry(kioapi, +this.settings.level, {
             "glass": 6,

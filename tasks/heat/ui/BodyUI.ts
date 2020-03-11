@@ -7,8 +7,9 @@ import Rectangle = createjs.Rectangle;
 import TimeControl from "./TimeControl";
 import {DEFAULT_MATERIAL, M, Material, material2index, N, VIEW_DIVISION} from "../solver/Consts";
 import BlocksRegistry from "./BlocksRegistry";
+import Container = createjs.Container;
 
-export class BodyUI extends createjs.Container {
+export class BodyUI extends Container {
 
     private blocks: Block[][];
     private _selected_cell: { i: number, j: number } | null;

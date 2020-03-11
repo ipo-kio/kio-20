@@ -33,6 +33,7 @@ export class Tailors
 
 		Tailors._currentSolution = new Solution()
 		Tailors._currentSolution._level = settings.level
+		Tailors._currentLevel = settings.level
 
 		SettingsHelper.setSettings(this.settings)
 
@@ -126,11 +127,11 @@ export class Tailors
 			ordering: 'minimize'
 		}
 
-		if(Tailors._currentSolution._level == 1)
+		if(Tailors._currentLevel == 1)
 		{
 			return[_totalLenResult, _totalReloads, _tailorsCount];
 		}
-		else if(Tailors._currentSolution._level == 2)
+		else if(Tailors._currentLevel == 2)
 		{
 			return[_totalLenResult, _totalReloads, _tailorsCount, _waitCount];
 		}

@@ -3,8 +3,9 @@ import Block from "./Block";
 import {KioApi} from "../../KioApi";
 import {DEFAULT_MATERIAL, Material} from "../solver/Consts";
 import {TIME_CONTROL_W} from "./TimeControl";
+import Container = createjs.Container;
 
-export default class BlocksRegistry extends createjs.Container {
+export default class BlocksRegistry extends Container {
 
     private _bodyUI: BodyUI;
     private kioapi: KioApi;
