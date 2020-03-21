@@ -85,7 +85,7 @@ export class Heat { //TODO название класса должно совпа
                         return "...";
                     return "вычислено";
                 },
-                ordering:'maximize'
+                ordering: 'maximize'
             },
             {
                 name: 'p',
@@ -110,7 +110,7 @@ export class Heat { //TODO название класса должно совпа
         ];
     }
 
-    loadSolution(solution: string) {
+    /*loadSolution(solution: string) {
         // Все объекты, которые сюда передаются, были ранее возвращены методом solution,
         // но проверять их все равно необходимо.
         this.blocksRegistry.bodyUI.deserialize = solution;
@@ -119,9 +119,38 @@ export class Heat { //TODO название класса должно совпа
     solution() {
         let solution = this.blocksRegistry.bodyUI.serialize;
         return solution;
+    }*/
+
+    loadSolution(solution: any) {
+        // Все объекты, которые сюда передаются, были ранее возвращены методом solution,
+        // но проверять их все равно необходимо.
+
+        if (solution.f) {
+            this.blocksRegistry.bodyUI.deserialize = solution.f;
+            this.kioapi.submitResult({
+                e: solution.e,
+                p: solution.p,
+                t: solution.t
+            });
+        } else
+            this.blocksRegistry.bodyUI.deserialize = solution;
+    }
+
+    solution(): Solution {
+        let field = this.blocksRegistry.bodyUI.serialize;
+        let process = this.blocksRegistry.bodyUI.process;
+        return {
+            f: field,
+            e: process.heat_position == -1 ? 0 : 1,
+            p: process.heat_percent,
+            t: process.heat_position
+        };
     }
 }
 
-//TODO дополнительные параметры
-//TODO легенда
-//TODO подписи ко времени
+interface Solution {
+    f: string,
+    e: number,
+    p: number,
+    t: number
+}
