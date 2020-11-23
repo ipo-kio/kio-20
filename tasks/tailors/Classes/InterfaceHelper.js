@@ -11,7 +11,7 @@ export class InterfaceHelper
 	static _canvasBotHeight = 60
 	static _tailorsLeft = 130
 
-	static create(domNode, preferred_width)
+	static create(domNode, preferred_width, problem)
 	{
 		log('InterfaceHelper.create()')
 		log(domNode)
@@ -59,7 +59,7 @@ export class InterfaceHelper
 			btn = document.createElement('button')
 			btn.innerHTML = '&#10225;'
 			btn.id = 'btn_log_show'
-			btn.title = 'Показать протокол'
+			btn.title = problem.message('Показать протокол')
 			btn.className = 'btn_log_show'
 			btn.addEventListener('click', function (evt) {
 				LogHelper.openWindow()
@@ -73,7 +73,7 @@ export class InterfaceHelper
 				btn = document.createElement('button')
 				btn.innerHTML = '&#43;'
 				btn.id = 'btn_tailor_plus'
-				btn.title = 'Добавить'
+				btn.title = problem.message('Добавить')
 				btn.className = 'tailor_plusminus_btn'
 				btn.addEventListener('click', function (evt) {
 					Global.tailorPlus()
@@ -179,7 +179,7 @@ export class InterfaceHelper
 				domNode.appendChild(logDiv)
 
 				div = document.createElement('div')
-				div.innerHTML = 'Протокол'
+				div.innerHTML = problem.message('Протокол')
 				div.id = 'log_div_header'
 				div.className = 'log_div_header'
 				logDiv.appendChild(div)
@@ -299,7 +299,7 @@ export class InterfaceHelper
 				btn = document.createElement('button')
 				btn.innerHTML = '&#171;';// <<
 				btn.id = 'go_btn_tostart'
-				btn.title = 'В начало'
+				btn.title = problem.message('В начало');
 				btn.className = 'go_btn1'
 				btn.addEventListener('click', function (evt) {
 					Global.goToStart()
@@ -316,7 +316,7 @@ export class InterfaceHelper
 				btn = document.createElement('button')
 				btn.innerHTML = '&#187;';// >>
 				btn.id = 'go_btn_toend'
-				btn.title = 'В конец'
+				btn.title = problem.message('В конец')
 				btn.className = 'go_btn1'
 				btn.addEventListener('click', function (evt) {
 					Global.goToEnd()
@@ -333,7 +333,7 @@ export class InterfaceHelper
 				btn = document.createElement('button')
 				btn.innerHTML = '&#8250;';// >
 				btn.id = 'go_btn_play'
-				btn.title = 'Поехали'
+				btn.title = problem.message('Поехали');
 				btn.className = 'go_btn1'
 				btn.style.marginLeft = '20px'
 				btn.addEventListener('click', function (evt) {
@@ -359,7 +359,7 @@ export class InterfaceHelper
 			btn = document.createElement('button')
 			btn.innerHTML = '&#8722;'; //'&#8678;'
 			btn.id = 'go_btn_minus'
-			btn.title = 'Шаг назад'
+			btn.title = problem.message('Шаг назад');
 			btn.className = 'go_btn1'
 			btn.style.marginLeft = '20px'
 			btn.addEventListener('click', function (evt) {
@@ -370,7 +370,7 @@ export class InterfaceHelper
 			btn = document.createElement('button')
 			btn.innerHTML = '&#43;';//'&#8680;'
 			btn.id = 'go_btn_plus'
-			btn.title = 'Шаг вперед'
+			btn.title = problem.message('Шаг вперед');
 			btn.className = 'go_btn1'
 			btn.addEventListener('click', function (evt) {
 				Global.goStepPlus()

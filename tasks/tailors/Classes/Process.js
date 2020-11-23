@@ -76,9 +76,10 @@ export class Process
 		this._currentReloadId = 0;// this._qArr[0]; //-- текущий на перезагрузке
 		this._nextReloadId = this._qArr[0];  //-- id следующий в очереди на релоад
 
-		this._princessToTailorId = this._nextReloadId
+		this._princessToTailorId = this._nextReloadId  // тот, у кого находится принцесса в этом шаге  = this._nextReloadId
 		this._reloadSecStep = 1;  //-- тут накапливаем тики для текущего релоада
 		this._reloadCurrentIndex = 0;  //-- текущий индекс портного в очереди на перезагрузку
+		this._princessState = 1
 		this._moveCurrentIndex = 0 //-- текущий индекс портного, к которому будет двигаться принцесса
 		this._reloadSec = Tailors._levelSettings.timeReloadInSec
 		//this._maxTailorTotalResult = 0
@@ -140,6 +141,117 @@ export class Process
 
 	calcTik(tik)
 	{
+		//--все параметры определяются на конец секундного тика.
+		//-- Т.е. определяем состояние портного после завершения тика с этим номером
+		let i, tailor
+		let canReload = true; //-- можно ли делать релоад новому портному в этом Тике
+		if(tik == 1)
+		{
+			canReload = false
+		}
+
+		let canPrincessMoveNext = true  //-- может ли принцесса двигаться к следующему портному
+		let canNextReload = false
+
+		for(i = 0; i < this._tailorsArr.length; i++)
+		{
+			tailor = this._tailorsArr[i]
+
+			if(tailor._lenCurrent > 0)  // --предыдущее значение остатка нити
+			{
+
+
+				if(tailor._step == tailor._lenCurrent)
+				{
+					tailor._currentState = '+'; //-- завершает стежок
+					tailor._totalResult++;
+					tailor._step = 1
+					tailor._lenCurrent--  // новое значение остатка нити
+				}
+				else{
+
+					tailor._currentState = '-'; //-- протягивает
+					tailor._step++;
+				}
+
+				if((this._nextReloadId == tailor._id))
+				{
+					//this.setNextReloadId()  //-- была его очередь, но ему перезагрузка не требуется
+					//-- и принцесса должна пройти мимо не останавливаясь
+					canNextReload = true
+				}
+			}
+			else
+			{
+				//-- это ожидающие или на перезагрузке
+
+				if((this._nextReloadId == tailor._id) && canReload && (this._princessToTailorId ==  tailor._id))
+				{
+
+					//if(this._currentReloadId == tailor._id)
+					{
+						//-- принцесса подошла к нему в прошлом шаге. Перегружаем его
+						// и принцесса остается у него
+						tailor._lenCurrent = tailor._maxLen;
+						tailor._reloadCount++;
+						tailor._currentState = '@';
+
+						//this.setNextReloadId()
+						canReload = false; //-- запрет всем остальным делать релоад в этом цикле
+
+						canPrincessMoveNext = false
+						canNextReload = true
+					}
+					/*
+					else
+					{
+						//-- принцесса идет к нему, но еще не подошла
+						this._currentReloadId = tailor._id
+					}
+					*/
+				}
+				else
+				{
+					tailor._currentState = 'w';
+				}
+			}
+
+
+		}
+
+
+		if(tik == 1){
+
+		}
+		else
+		{
+
+			if(canNextReload)
+			{
+				this.setNextReloadId()
+			}
+
+			if(canPrincessMoveNext)
+			{
+
+				this._princessToTailorId = this.getNextTailorId() //-- это следующий, к кому подойдет принцесса в следующем шаге
+				this._princessState =  (this._moveCurrentIndex + 1)
+			}
+			else{
+				this._princessState = '@'
+			}
+
+			if(tailor._currentState == 'w'){
+				tailor._totalWait++;
+			}
+		}
+
+		//log('tik='+ tik + ' _princessToTailorId=' + this._princessToTailorId + ' nextReloadId=' + this._nextReloadId)
+
+	}
+
+	calcTik_old(tik)
+	{
 		//log('calcTik='+ tik)
 
 
@@ -162,7 +274,7 @@ export class Process
 		{
 			tailor = this._tailorsArr[i]
 
-			//log('STEP tailor._id=' + tailor._id)
+			log('STEP tailor._id=' + tailor._id + ' st=' + tailor._step + ' l=' + tailor._lenCurrent)
 
 			if(tailor._lenCurrent > 0)
 			{
@@ -183,6 +295,15 @@ export class Process
 					//log('STEP T-' + i + ' 111-2')
 					tailor._step++;
 					tailor._currentState = '-';  //-- протягивает нить
+				}
+
+
+				if(tailor._lenCurrent > 0)
+				{
+					tailor._currentState = '+';
+				}
+				else{
+					tailor._currentState = '-';
 				}
 
 				//-- если его очередь на Релоад, а релоад ему не нужен, то двигаем к следующему

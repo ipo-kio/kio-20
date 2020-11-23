@@ -6,11 +6,14 @@ import { Solution } from './Classes/Solution.js'
 import { SettingsHelper } from './Classes/SettingsHelper.js'
 import { InterfaceHelper } from './Classes/InterfaceHelper.js'
 import { TailorHelper } from './Classes/TailorHelper'
+import {LOCALIZATION} from "./localization";
 
 var _thisProblem = null
 
 export class Tailors
 {
+	static LOCALIZATION = LOCALIZATION;
+
 	static _stageDiv
 	static _tailorsDiv
 	static kioapi = null
@@ -105,25 +108,25 @@ export class Tailors
 
 		let _totalLenResult = {
 			name: '_totalLenResult',
-			title: 'Общая длина:',
+			title: this.message('Общая длина:'),
 			ordering: 'maximize'
 		}
 
 		let _totalReloads = {
 			name: '_totalReloads',
-			title: 'Количество перевдеваний:',
+			title: this.message('Количество перевдеваний:'),
 			ordering: 'minimize'
 		}
 
 		let _tailorsCount = {
 			name: '_tailorsCount',
-			title: 'Количество портных:',
+			title: this.message('Количество портных:'),
 			ordering: 'minimize'
 		}
 
 		let _waitCount = {
 			name: '_waitCount',
-			title: 'Количество ожиданий:',
+			title: this.message('Количество ожиданий:'),
 			ordering: 'minimize'
 		}
 
@@ -206,7 +209,7 @@ export class Tailors
 		console.log('initInterface')
 		_thisProblem = this
 
-		InterfaceHelper.create(domNode, preferred_width)
+		InterfaceHelper.create(domNode, preferred_width, this)
 
 		//this.start()
 	}
