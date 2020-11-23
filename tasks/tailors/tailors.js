@@ -105,6 +105,8 @@ export class Tailors
 	}
 
 	parameters () {
+		if (!this.message)
+			this.message = s => s;
 
 		let _totalLenResult = {
 			name: '_totalLenResult',

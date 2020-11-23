@@ -84,6 +84,9 @@ export class Heat { //TODO название класса должно совпа
     }
 
     parameters() {
+        if (!this.message)
+            this.message = s => s;
+
         return [
             {
                 name: 'e',
