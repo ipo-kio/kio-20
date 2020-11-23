@@ -18,7 +18,7 @@ export default class Legend extends createjs.Container {
         this.addChild(temperature_map);
         let temperature_tick = new Ticks(ind2color.length, 0, 100, 20, '°');
         this.addChild(temperature_tick);
-        let main_text = Legend.create_text('Цвет температуры:');
+        let main_text = Legend.create_text(kioapi.problem.message('Цвет температуры:'));
         this.addChild(main_text);
 
         temperature_map.x = 20;
@@ -39,7 +39,7 @@ export default class Legend extends createjs.Container {
             ind++;
             this.addChild(b);
 
-            let t = Legend.create_text(material2name[m]);
+            let t = Legend.create_text(kioapi.problem.message(material2name[m]));
             t.textAlign = "center";
             t.x = x0 + Block.WIDTH / 2;
             t.y = 10;

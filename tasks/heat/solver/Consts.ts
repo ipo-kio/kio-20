@@ -28,6 +28,13 @@ export const material2name = {
     "glass": 'Стекло',
     "tree": 'Сосна'
 };
+export const material2name_ = {
+    "aluminium": 'Aluminum',
+    "air": 'Air',
+    "sand": 'Sand',
+    "glass": 'Glass',
+    "tree": 'Pine-tree'
+};
 
 // http://scask.ru/q_book_emp.php?id=35
 const MUL_A = 1e3;

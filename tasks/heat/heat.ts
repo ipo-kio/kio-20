@@ -4,8 +4,12 @@ import BlocksRegistry from "./ui/BlocksRegistry";
 import Legend from "./ui/Legend";
 import {HEAT_POSITION_DEFAULT_VALUE} from "./solver/Solver";
 import Stage = createjs.Stage;
+import { LOCALIZATION } from './localization';
 
 export class Heat { //TODO название класса должно совпадать с id задачи, но с заглавной буквы
+
+    static LOCALIZATION = LOCALIZATION;
+
     private settings: KioTaskSettings;
     private kioapi: KioApi;
 
@@ -75,21 +79,25 @@ export class Heat { //TODO название класса должно совпа
         ]; //TODO перечислить загружаемые ресурсы. Они находятся в каталоге heat-resources
     }
 
+    message(msg: string): string {
+        return '--';
+    }
+
     parameters() {
         return [
             {
                 name: 'e',
-                title: 'Вычисление',
-                view(v: number) {
+                title: this.message('Вычисление'),
+                view: (v: number) => {
                     if (v == 0)
                         return "...";
-                    return "вычислено";
+                    return this.message("вычислено");
                 },
                 ordering: 'maximize'
             },
             {
                 name: 'p',
-                title: 'Процент нагретого',
+                title: this.message('Процент нагретого'),
                 ordering: 'maximize',
                 view(v: number) {
                     if (v == -1)
@@ -99,7 +107,7 @@ export class Heat { //TODO название класса должно совпа
             },
             {
                 name: 't',
-                title: 'Время',
+                title: this.message('Время'),
                 ordering: 'minimize',
                 view(v: number) {
                     if (v == HEAT_POSITION_DEFAULT_VALUE)
