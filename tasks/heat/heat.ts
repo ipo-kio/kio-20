@@ -51,10 +51,10 @@ export class Heat { //TODO название класса должно совпа
 
         stage.enableMouseOver();
         this.blocksRegistry = new BlocksRegistry(kioapi, +this.settings.level, {
-            "glass": 6,
-            "air": 6,
-            "aluminium": 6,
-            "sand": 6,
+            "aluminium": 5,
+            "sand": 5,
+            "air": 7,
+            "glass": 7,
             "tree": 12
         });
         stage.addChild(this.blocksRegistry);

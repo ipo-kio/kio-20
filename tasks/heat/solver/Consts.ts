@@ -40,16 +40,16 @@ export const material2name_ = {
 const MUL_A = 1e3;
 const MUL_K = 1e-2;
 export const A = {
-    "aluminium": 4e-5 * MUL_A,
-    "air": 1.75e-5 * MUL_A,
-    "sand": 1.25e-6 * MUL_A,
-    "glass": 3.7e-7 * MUL_A,
-    "tree": 7.4e-8  * MUL_A
+    "aluminium": 8.418e-5 * MUL_A,
+    "air": 1.9e-5 * MUL_A,
+    "sand": 1.15e-6 * MUL_A,
+    "glass": 3.4e-7 * MUL_A,
+    "tree": 8.2e-8  * MUL_A
 };
 export const K = {
-    "aluminium": 312 * MUL_K,
-    "air": 0.03 * MUL_K,
-    "sand": 1.5 * MUL_K,
-    "glass": 1.04 * MUL_K,
-    "tree": 0.25  * MUL_K
+    "aluminium": 239 * MUL_K,
+    "air": 0.02 * MUL_K,
+    "sand": 1.01 * MUL_K,
+    "glass": 1.01 * MUL_K,
+    "tree": 0.15  * MUL_K
 };
