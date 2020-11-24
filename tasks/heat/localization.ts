@@ -1,11 +1,11 @@
 export const LOCALIZATION = {
     'en': {
         'Цвет температуры:': 'Temperature color',
-        'Аллюминий': 'Aluminum',
-        'Воздух': 'Air',
-        'Песок': 'Sand',
+        'Металл': 'Metal',
+        'Керамика': 'Ceramic',
+        'Камень': 'Stone',
         'Стекло': 'Glass',
-        'Сосна': 'Pine-tree',
+        'Дерево': 'Wood',
         'Вычисление': 'Evaluation',
         'вычислено': 'finished',
         'Процент нагретого': 'Percents of heated',

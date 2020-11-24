@@ -22,18 +22,11 @@ export const material2index = {
 };
 export const index2material: Material[] = ["aluminium", "air", "sand", "glass", "tree"];
 export const material2name = {
-    "aluminium": 'Аллюминий',
-    "air": 'Воздух',
-    "sand": 'Песок',
+    "aluminium": 'Металл',
+    "air": 'Керамика',
+    "sand": 'Камень',
     "glass": 'Стекло',
-    "tree": 'Сосна'
-};
-export const material2name_ = {
-    "aluminium": 'Aluminum',
-    "air": 'Air',
-    "sand": 'Sand',
-    "glass": 'Glass',
-    "tree": 'Pine-tree'
+    "tree": 'Дерево'
 };
 
 // http://scask.ru/q_book_emp.php?id=35
