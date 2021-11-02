@@ -5,6 +5,7 @@ import { Global } from './Classes/Global'
 import { Helper } from './Classes/Helper'
 import { Process } from './Classes/Process'
 import { Config } from './Classes/Config'
+import { LOCALIZATION } from "./localization";
 
 var _thisProblem = null
 
@@ -13,6 +14,8 @@ export class Datacenters
 	static _currentSolution
 	static kioapi
 	static _level
+
+    static LOCALIZATION = LOCALIZATION
 
 	constructor (settings){
 		this.settings = settings
@@ -55,27 +58,30 @@ export class Datacenters
 		выбирается ровно один ближайший, и расстояние скаладывается до него (надо как можно больше)
 		*/
 
+        if (!this.message)
+            this.message = s => s;
+
 		let _dcBadCount = {
 			name: '_dcBadCount',
-			title: 'Пропущено:',
+			title: this.message('Пропущено:'),
 			ordering: 'minimize'
 		}
 
 		let _dcPoints2 = {
 			name: '_dcPoints2',
-			title: 'Дублированные:',
+			title: this.message('Дублированные:'),
 			ordering: 'maximize'
 		}
 
 		let _dcSelectedCount = {
 			name: '_dcSelectedCount',
-			title: 'Количество:',
+			title: this.message('Количество:'),
 			ordering: 'minimize'
 		}
 
 		let _len = {
 			name: '_len',
-			title: 'Расстояние:',
+			title: this.message('Расстояние:'),
 			ordering: 'minimize'
 		}
 
